@@ -12,7 +12,7 @@ import { hubLang, tr } from '../i18n.js';
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { pickNext } from './selection.js';
+import { pickFresh, pickNext } from './selection.js';
 import { recordBattery } from './stats.js';
 import { withWake } from './wake.js';
 
@@ -58,7 +58,8 @@ export function chooseNextImage(db: DB, frame: Frame, a: Assignment): number | n
     .limit(500)
     .all()
     .map((r) => r.imageId);
-  return pickNext(cands, recent, a.orderMode);
+  const ai = db.select({ type: schema.collections.type }).from(schema.collections).where(eq(schema.collections.id, a.collectionId)).get()?.type === 'ai';
+  return ai ? pickFresh(cands, recent) : pickNext(cands, recent, a.orderMode);
 }
 
 /** Put a picture on screen now (frame must be awake, or behind a cloud that queues it). */

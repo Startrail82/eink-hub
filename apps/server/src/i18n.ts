@@ -21,6 +21,7 @@ export type Lang = (typeof languages)[number];
 
 const es = {
   collection_not_found: 'Colección {id} no encontrada',
+  ai_config_invalid: 'Configuración no válida de la colección de IA: {reason}',
   immich_not_configured: 'Immich no está configurado',
   canvas_not_found: 'Canvas {id} no encontrado',
   playlist_empty: 'La playlist «{name}» no tiene imágenes',
@@ -95,6 +96,7 @@ export type Catalogue = Record<MsgKey, string> &
 
 const eu: Catalogue = {
   collection_not_found: 'Ez da {id} bilduma aurkitu',
+  ai_config_invalid: 'IA bildumaren ezarpenak baliogabeak dira: {reason}',
   immich_not_configured: 'Immich ez dago konfiguratuta',
   canvas_not_found: 'Ez da {id} Canvasa aurkitu',
   playlist_empty: '«{name}» zerrendak ez du irudirik',
@@ -163,6 +165,7 @@ const eu: Catalogue = {
 
 const en: Catalogue = {
   collection_not_found: 'Collection {id} not found',
+  ai_config_invalid: 'Invalid AI collection settings: {reason}',
   immich_not_configured: 'Immich is not configured',
   canvas_not_found: 'Canvas {id} not found',
   playlist_empty: 'The playlist "{name}" has no images',
