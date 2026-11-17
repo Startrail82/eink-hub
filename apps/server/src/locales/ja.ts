@@ -2,6 +2,7 @@ import type { Catalogue } from '../i18n.js';
 
 export const ja: Catalogue = {
   collection_not_found: 'コレクション {id} が見つかりません',
+  ai_config_invalid: 'AIコレクションの設定が無効です: {reason}',
   immich_not_configured: 'Immichが設定されていません',
   canvas_not_found: 'Canvas {id} が見つかりません',
   playlist_empty: 'プレイリスト「{name}」に画像がありません',

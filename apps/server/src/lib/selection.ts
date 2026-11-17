@@ -55,3 +55,14 @@ export function nextWindowStart(now: Date, from: string): Date {
   if (start <= now) start.setDate(start.getDate() + 1);
   return start;
 }
+
+/**
+ * For generated pictures: the newest one this frame has not shown yet. When everything was
+ * shown already (a generation failed, say), fall back to a random pick that avoids the last one.
+ * @param recent image ids shown on this frame, most recent first.
+ */
+export function pickFresh(cands: Candidate[], recent: number[], rand = Math.random): number | null {
+  const shown = new Set(recent);
+  const fresh = [...cands].filter((c) => !shown.has(c.id)).sort((a, b) => (b.takenAt ?? 0) - (a.takenAt ?? 0) || b.id - a.id);
+  return fresh.length ? fresh[0].id : pickNext(cands, recent, 'random', rand);
+}

@@ -2,6 +2,7 @@ import type { Catalogue } from '../i18n.js';
 
 export const zhTW: Catalogue = {
   collection_not_found: '找不到相簿 {id}',
+  ai_config_invalid: 'AI 相簿設定無效：{reason}',
   immich_not_configured: 'Immich 尚未設定',
   canvas_not_found: '找不到 Canvas {id}',
   playlist_empty: '播放清單「{name}」中沒有圖片',

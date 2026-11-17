@@ -4,6 +4,7 @@ import { schema } from '../db/index.js';
 import { DeviceError } from '../device/client.js';
 import { describeKind } from '../device/drivers/index.js';
 import { purgeSessions } from '../auth/index.js';
+import { pregenerate } from '../lib/ai/generate.js';
 import { needsSync, prepareCollection, syncCollection } from '../lib/collections.js';
 import type { Ctx } from '../lib/context.js';
 import { assignmentOptions, chooseNextImage, deliverQueued, getAssignment, markOnline, pushImage } from '../lib/display.js';
@@ -80,6 +81,8 @@ export function startScheduler(ctx: Ctx) {
   // `protect` skips a run while the previous one is still going.
   const jobs = [
     new Cron('* * * * *', { protect: true }, guard('tick', () => tick(ctx))),
+    // Generating takes minutes, so it has its own job and never holds up a frame change.
+    new Cron('* * * * *', { protect: true }, guard('ai', () => pregenerate(ctx))),
     new Cron('*/5 * * * *', { protect: true }, guard('status', () => pollStatus(ctx))),
     new Cron('*/15 * * * *', { protect: true }, guard('housekeeping', () => housekeeping(ctx))),
   ];

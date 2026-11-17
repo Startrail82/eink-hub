@@ -45,6 +45,7 @@ export default defineConfig({
             { text: 'Hub addresses', link: '/guide/addresses' },
             { text: 'Collections & schedules', link: '/guide/schedules' },
             { text: 'Immich', link: '/guide/immich' },
+            { text: 'AI images', link: '/guide/ai-images' },
             { text: 'Bluetooth wake', link: '/guide/bluetooth' },
             { text: 'Users & passkeys', link: '/guide/users' },
           ],

@@ -1,11 +1,12 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { CheckCircle2, Images, ScrollText, ShieldCheck, SlidersHorizontal, Users, XCircle } from 'lucide-react';
+import { CheckCircle2, Images, ScrollText, Sparkles, ShieldCheck, SlidersHorizontal, Users, XCircle } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { useAction, useSettings } from '../lib/hooks';
 import { AboutLinks, UpdateNotice } from '../components/About';
 import { languages, useI18n, type Lang, type MsgKey } from '../i18n';
 import { ServerLogs } from '../components/ServerLogs';
+import { AiSettings } from '../components/AiSettings';
 import { AccountSettings, PasskeySettings, UsersSettings } from '../components/Accounts';
 import { useIsAdmin, useMe } from '../lib/me';
 
@@ -13,7 +14,7 @@ const IMMICH_PERMISSIONS_URL = 'https://yayitazale.github.io/eink-hub/guide/immi
 import { Button, Card, Field, SectionTitle, Segmented, Spinner, Toggle, inputClass, useConfirm, useToast } from '../components/ui';
 import { Select } from '../components/Select';
 
-type Tab = 'general' | 'immich' | 'security' | 'users' | 'logs';
+type Tab = 'general' | 'immich' | 'ai' | 'security' | 'users' | 'logs';
 
 function LanguageSettings() {
   const { t, lang, setLang } = useI18n();
@@ -242,6 +243,7 @@ export function SettingsPage() {
         options={[
           { value: 'general' as const, label: label(<SlidersHorizontal className="size-3.5" />, t('settings.tab_general')) },
           ...(admin ? [{ value: 'immich' as const, label: label(<Images className="size-3.5" />, 'Immich') }] : []),
+          ...(admin ? [{ value: 'ai' as const, label: label(<Sparkles className="size-3.5" />, t('settings.tab_ai')) }] : []),
           ...(accounts ? [{ value: 'security' as const, label: label(<ShieldCheck className="size-3.5" />, t('settings.tab_security')) }] : []),
           ...(admin && accounts ? [{ value: 'users' as const, label: label(<Users className="size-3.5" />, t('settings.tab_users')) }] : []),
           ...(admin ? [{ value: 'logs' as const, label: label(<ScrollText className="size-3.5" />, t('settings.tab_logs')) }] : []),
@@ -267,6 +269,11 @@ export function SettingsPage() {
       {tab === 'immich' && admin && (
         <div className="max-w-2xl">
           <ImmichSettings />
+        </div>
+      )}
+      {tab === 'ai' && admin && (
+        <div className="max-w-2xl">
+          <AiSettings />
         </div>
       )}
       {tab === 'security' && accounts && (
