@@ -1,0 +1,22 @@
+# Test/deploy stack for this fork, built from the checked-out branch (for Dockhand "git stack").
+# Variables come from the stack's environment variables; the safe defaults below apply when unset.
+services:
+  eink-hub-test:
+    build: .
+    container_name: eink-hub-test
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8081}:${PORT:-8081}"
+    volumes:
+      - eink-test-data:/data
+    environment:
+      PORT: "${PORT:-8081}"
+      LOCAL_URL: "${LOCAL_URL:?set LOCAL_URL to http://<host-ip>:<port>}"
+      TZ: "${TZ:-Europe/Brussels}"
+      SCHEDULER_DISABLED: "${SCHEDULER_DISABLED:-true}"
+      BLE_DISABLED: "${BLE_DISABLED:-true}"
+      UPDATE_CHECK_DISABLED: "${UPDATE_CHECK_DISABLED:-true}"
+
+volumes:
+  eink-test-data:
+    name: eink-hub-test-data
