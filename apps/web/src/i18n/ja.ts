@@ -599,4 +599,5 @@ export const ja: Catalogue = {
   'ai.setup_needed': 'まず「設定 > AI画像」でAIサービスを設定してください。',
   'library.empty_ai_hint': 'フレームが切り替わる少し前に画像が作られます。「今すぐ生成」で最初の1枚を作れます。',
   'ai.edit': '設定',
+  'ai.auth_hint': 'ComfyUI がログインの背後にある場合のみ必要です（例: Authentik）。Hub は HTTP Basic でサインインします。',
 };

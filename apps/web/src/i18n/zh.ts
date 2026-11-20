@@ -599,4 +599,5 @@ export const zh: Catalogue = {
   'ai.setup_needed': '请先在“设置 > AI 图片”中设置 AI 服务。',
   'library.empty_ai_hint': '相框切换前不久会生成一张图片。点击“立即生成”可先生成第一张。',
   'ai.edit': '设置',
+  'ai.auth_hint': '仅当 ComfyUI 位于登录之后（例如 Authentik）时需要：Hub 通过 HTTP Basic 登录。',
 };

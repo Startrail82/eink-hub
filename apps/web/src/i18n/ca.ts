@@ -599,4 +599,5 @@ export const ca: Catalogue = {
   'ai.setup_needed': 'Configura primer el servei d\'IA a Configuració > Imatges d\'IA.',
   'library.empty_ai_hint': 'Es crea una imatge poc abans que un marc canviï. Prem «Genera ara» per crear la primera.',
   'ai.edit': 'Configuració',
+  'ai.auth_hint': 'Només cal si ComfyUI està darrere d\'un inici de sessió (per exemple Authentik): el Hub inicia sessió amb HTTP Basic.',
 };

@@ -599,4 +599,5 @@ export const nl: Catalogue = {
   'ai.setup_needed': 'Stel eerst de AI-dienst in via Instellingen > AI-beelden.',
   'library.empty_ai_hint': 'Kort voor een frame wisselt wordt een beeld gemaakt. Druk op “Nu genereren” om het eerste te maken.',
   'ai.edit': 'Instellingen',
+  'ai.auth_hint': 'Alleen nodig als ComfyUI achter een login zit (zoals Authentik): de Hub meldt zich aan met HTTP Basic.',
 };

@@ -248,6 +248,7 @@ export interface AiSettings {
   provider: AiProvider;
   url: string;
   apiKeySet: boolean;
+  username: string;
   model: string;
   size: string;
   workflow: string;

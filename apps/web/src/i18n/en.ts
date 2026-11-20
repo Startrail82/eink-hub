@@ -599,4 +599,5 @@ export const en: Messages = {
   'ai.setup_needed': 'Set up the AI service first under Settings > AI images.',
   'library.empty_ai_hint': 'A picture is made shortly before a frame changes. Press “Generate now” to make the first one.',
   'ai.edit': 'Settings',
+  'ai.auth_hint': 'Only needed when ComfyUI sits behind a login (such as Authentik): the Hub signs in with HTTP Basic.',
 };

@@ -599,4 +599,5 @@ export const pt: Catalogue = {
   'ai.setup_needed': 'Configura primeiro o serviço de IA em Definições > Imagens IA.',
   'library.empty_ai_hint': 'Uma imagem é criada pouco antes de uma moldura mudar. Carrega em «Gerar agora» para criar a primeira.',
   'ai.edit': 'Definições',
+  'ai.auth_hint': 'Só se o ComfyUI estiver atrás de um início de sessão (por exemplo Authentik): o Hub inicia sessão com HTTP Basic.',
 };

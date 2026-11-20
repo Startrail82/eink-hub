@@ -615,4 +615,5 @@ export const cs: Catalogue = {
   'ai.setup_needed': 'Nejprve nastav službu AI v Nastavení > AI obrázky.',
   'library.empty_ai_hint': 'Obrázek se vytvoří krátce před změnou rámečku. Prvním stiskni „Vygenerovat nyní“.',
   'ai.edit': 'Nastavení',
+  'ai.auth_hint': 'Jen když je ComfyUI za přihlášením (např. Authentik): Hub se přihlásí přes HTTP Basic.',
 };
