@@ -143,6 +143,8 @@ export interface Collection {
   syncError: string | null;
   itemCount: number;
   coverImageId: number | null;
+  /** An AI collection is busy making a picture. */
+  generating?: boolean;
 }
 
 export interface ImmichAssetLite {

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, FolderPlus, ImagePlus, Images, RefreshCw, Send, Settings2, Sparkles, Trash2, Upload } from 'lucide-react';
 import { api, thumbUrl, type Collection, type Image } from '../lib/api';
@@ -87,6 +87,12 @@ function CollectionView({ collection, onBack }: { collection: Collection; onBack
   const isManual = collection.type === 'manual';
   const isAi = collection.type === 'ai';
   const [editing, setEditing] = useState(false);
+  // When a picture is finished, show it without a reload.
+  const wasGenerating = useRef(false);
+  useEffect(() => {
+    if (wasGenerating.current && !collection.generating) qc.invalidateQueries({ queryKey: ['images'] });
+    wasGenerating.current = !!collection.generating;
+  }, [collection.generating, qc]);
   const generate = useAction(() => api.post(`/api/collections/${collection.id}/generate`), { success: t('ai.generate_started'), invalidate });
 
   const upload = async (files: FileList | null) => {
@@ -146,7 +152,7 @@ function CollectionView({ collection, onBack }: { collection: Collection; onBack
               </>
             ) : isAi ? (
               <>
-                <Button variant="primary" icon={<Sparkles className="size-4" />} loading={generate.isPending} onClick={() => generate.mutate()}>
+                <Button variant="primary" icon={<Sparkles className="size-4" />} loading={generate.isPending || !!collection.generating} onClick={() => generate.mutate()}>
                   {t('ai.generate')}
                 </Button>
                 <Button icon={<Settings2 className="size-4" />} onClick={() => setEditing(true)}>
