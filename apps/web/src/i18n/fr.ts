@@ -590,4 +590,5 @@ export const fr: Catalogue = {
   'ai.setup_needed': 'Configure d’abord le service IA dans Réglages > Images IA.',
   'library.empty_ai_hint': 'Une image est créée peu avant qu’un cadre change. Appuie sur « Générer maintenant » pour la première.',
   'ai.edit': 'Réglages',
+  'ai.auth_hint': 'Seulement si ComfyUI est derrière une connexion (par exemple Authentik) : le Hub se connecte en HTTP Basic.',
 };

@@ -16,6 +16,7 @@ export function AiSettings() {
   const [provider, setProvider] = useState<AiProvider>('');
   const [url, setUrl] = useState('');
   const [key, setKey] = useState('');
+  const [username, setUsername] = useState('');
   const [model, setModel] = useState('');
   const [size, setSize] = useState('');
   const [workflow, setWorkflow] = useState('');
@@ -25,12 +26,13 @@ export function AiSettings() {
     if (!ai.data) return;
     setProvider(ai.data.provider);
     setUrl(ai.data.url);
+    setUsername(ai.data.username);
     setModel(ai.data.model);
     setSize(ai.data.size);
     setWorkflow(ai.data.workflow);
   }, [ai.data]);
 
-  const form = () => ({ provider, url, model, size, workflow, ...(key ? { apiKey: key } : {}) });
+  const form = () => ({ provider, url, model, size, workflow, username, ...(key ? { apiKey: key } : {}) });
   const save = useAction(() => api.put('/api/settings/ai', form()), {
     success: t('ai.saved'),
     invalidate: [['settings', 'ai']],
@@ -74,6 +76,22 @@ export function AiSettings() {
               <input className={inputClass} placeholder="1024x1536" value={size} onChange={(e) => setSize(e.target.value)} />
             </Field>
           </>
+        )}
+        {provider === 'comfyui' && (
+          <Field label={t('login.username')} hint={t('ai.auth_hint')} group>
+            <div className="grid grid-cols-2 gap-3">
+              <input className={inputClass} autoComplete="off" aria-label={t('login.username')} placeholder={t('login.username')} value={username} onChange={(e) => setUsername(e.target.value)} />
+              <input
+                className={inputClass}
+                type="password"
+                autoComplete="new-password"
+                aria-label={t('login.password')}
+                placeholder={ai.data?.apiKeySet ? '••••••••' : t('login.password')}
+                value={key}
+                onChange={(e) => setKey(e.target.value)}
+              />
+            </div>
+          </Field>
         )}
         {provider === 'comfyui' && (
           <Field label={t('ai.workflow')} hint={t('ai.workflow_hint')}>

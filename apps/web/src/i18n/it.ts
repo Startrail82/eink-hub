@@ -590,4 +590,5 @@ export const it: Catalogue = {
   'ai.setup_needed': 'Configura prima il servizio IA in Impostazioni > Immagini IA.',
   'library.empty_ai_hint': 'Un’immagine viene creata poco prima che una cornice cambi. Premi «Genera ora» per la prima.',
   'ai.edit': 'Impostazioni',
+  'ai.auth_hint': 'Solo se ComfyUI è dietro un accesso (ad esempio Authentik): l’Hub accede con HTTP Basic.',
 };

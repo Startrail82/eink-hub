@@ -22,6 +22,7 @@ Anything that implements `POST /v1/images/generations` works.
 | Field | What to enter |
 | --- | --- |
 | Address | Where ComfyUI runs, for example `http://192.168.1.30:8188`. |
+| Username and password | Only when ComfyUI sits behind a login, for example an Authentik proxy. The Hub then signs in with HTTP Basic. With Authentik, use a service account and its app password. Leave empty for a plain ComfyUI. |
 | Workflow | Your workflow in **API format** (see below). |
 
 In ComfyUI, build a workflow you are happy with, then use **Save (API Format)** (enable *Dev mode options* in the settings if the entry is missing) and paste the JSON into the Hub. Then put placeholders where the Hub should fill something in:

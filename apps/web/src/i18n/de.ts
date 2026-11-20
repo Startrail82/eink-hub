@@ -590,4 +590,5 @@ export const de: Catalogue = {
   'ai.setup_needed': 'Richte zuerst den KI-Dienst unter Einstellungen > KI-Bilder ein.',
   'library.empty_ai_hint': 'Kurz bevor ein Rahmen wechselt, wird ein Bild erzeugt. Mit „Jetzt generieren“ entsteht das erste.',
   'ai.edit': 'Einstellungen',
+  'ai.auth_hint': 'Nur nötig, wenn ComfyUI hinter einer Anmeldung liegt (z. B. Authentik): Der Hub meldet sich per HTTP Basic an.',
 };

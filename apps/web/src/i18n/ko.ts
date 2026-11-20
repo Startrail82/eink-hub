@@ -590,4 +590,5 @@ export const ko: Catalogue = {
   'ai.setup_needed': '먼저 설정 > AI 이미지에서 AI 서비스를 설정하세요.',
   'library.empty_ai_hint': '프레임이 바뀌기 직전에 이미지가 만들어집니다. “지금 생성”으로 첫 이미지를 만드세요.',
   'ai.edit': '설정',
+  'ai.auth_hint': 'ComfyUI가 로그인 뒤에 있을 때만 필요합니다(예: Authentik). Hub가 HTTP Basic으로 로그인합니다.',
 };

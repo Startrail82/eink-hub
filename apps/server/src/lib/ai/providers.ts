@@ -21,6 +21,11 @@ export async function generateImage(cfg: AiConfig, prompt: string, opts: Generat
   throw new AiError('No AI provider is configured');
 }
 
+/** ComfyUI has no login of its own; behind a proxy that asks for one, sign in with HTTP Basic. */
+function comfyHeaders(cfg: AiConfig): Record<string, string> {
+  return cfg.username ? { authorization: `Basic ${Buffer.from(`${cfg.username}:${cfg.apiKey}`).toString('base64')}` } : {};
+}
+
 async function http(url: string, init: RequestInit, timeout: number): Promise<Response> {
   let res: Response;
   try {
@@ -98,15 +103,16 @@ async function comfyImage(cfg: AiConfig, prompt: string, opts: GenerateOpts, tim
   const base = cfg.url.replace(/\/+$/, '');
   const started = Date.now();
   const left = () => Math.max(1000, timeout - (Date.now() - started));
+  const auth = comfyHeaders(cfg);
   const workflow = fillWorkflow(cfg.workflow, prompt, opts);
-  const queued = await http(`${base}/prompt`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: workflow, client_id: crypto.randomUUID() }) }, left());
+  const queued = await http(`${base}/prompt`, { method: 'POST', headers: { 'content-type': 'application/json', ...auth }, body: JSON.stringify({ prompt: workflow, client_id: crypto.randomUUID() }) }, left());
   const promptId = ((await queued.json().catch(() => null)) as { prompt_id?: string } | null)?.prompt_id;
   if (!promptId) throw new AiError('ComfyUI did not accept the workflow');
 
   for (;;) {
     if (Date.now() - started > timeout) throw new AiError('ComfyUI took too long');
     await new Promise((r) => setTimeout(r, 1000));
-    const history = (await (await http(`${base}/history/${promptId}`, {}, left())).json().catch(() => ({}))) as ComfyHistory;
+    const history = (await (await http(`${base}/history/${promptId}`, { headers: auth }, left())).json().catch(() => ({}))) as ComfyHistory;
     const entry = history[promptId];
     if (!entry) continue;
     if (entry.status?.status_str === 'error') throw new AiError('ComfyUI reported an error while running the workflow');
@@ -116,7 +122,7 @@ async function comfyImage(cfg: AiConfig, prompt: string, opts: GenerateOpts, tim
       continue;
     }
     const q = new URLSearchParams({ filename: image.filename, subfolder: image.subfolder ?? '', type: image.type ?? 'output' });
-    return Buffer.from(await (await http(`${base}/view?${q}`, {}, left())).arrayBuffer());
+    return Buffer.from(await (await http(`${base}/view?${q}`, { headers: auth }, left())).arrayBuffer());
   }
 }
 
@@ -131,7 +137,7 @@ export async function testConnection(cfg: AiConfig): Promise<string> {
   }
   if (cfg.provider === 'comfyui') {
     if (!cfg.url) throw new AiError('The ComfyUI address is empty');
-    await http(`${cfg.url.replace(/\/+$/, '')}/system_stats`, {}, 15_000);
+    await http(`${cfg.url.replace(/\/+$/, '')}/system_stats`, { headers: comfyHeaders(cfg) }, 15_000);
     if (cfg.workflow) fillWorkflow(cfg.workflow, 'test', { width: 512, height: 512 });
     return new URL(cfg.url).host;
   }

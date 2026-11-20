@@ -606,4 +606,5 @@ export const pl: Catalogue = {
   'ai.setup_needed': 'Najpierw skonfiguruj usługę AI w Ustawienia > Obrazy AI.',
   'library.empty_ai_hint': 'Obraz powstaje tuż przed zmianą ramki. Naciśnij „Generuj teraz”, aby zrobić pierwszy.',
   'ai.edit': 'Ustawienia',
+  'ai.auth_hint': 'Potrzebne tylko, gdy ComfyUI jest za logowaniem (np. Authentik): Hub loguje się przez HTTP Basic.',
 };

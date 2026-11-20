@@ -590,4 +590,5 @@ export const eu: Messages = {
   'ai.setup_needed': 'Konfiguratu lehenik IA zerbitzua Ezarpenak > IA irudiak atalean.',
   'library.empty_ai_hint': 'Marko bat aldatu baino pixka bat lehenago irudi bat sortzen da. Sakatu «Orain sortu» lehenengoa egiteko.',
   'ai.edit': 'Ezarpenak',
+  'ai.auth_hint': 'ComfyUI saio-hasiera baten atzean badago soilik (adibidez Authentik): Hub-a HTTP Basic bidez saioa hasten du.',
 };

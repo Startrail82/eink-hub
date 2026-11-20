@@ -19,7 +19,7 @@ import { aiConfigured, type AiConfig } from '../src/lib/ai/settings.js';
 import { fillTemplate, nextFeedItem, parseFeed, weatherCondition, weatherVars } from '../src/lib/ai/sources.js';
 import { pickFresh } from '../src/lib/selection.js';
 
-const cfg = (c: Partial<AiConfig>): AiConfig => ({ provider: '', url: '', apiKey: '', model: '', size: '', workflow: '', ...c });
+const cfg = (c: Partial<AiConfig>): AiConfig => ({ provider: '', url: '', apiKey: '', username: '', model: '', size: '', workflow: '', ...c });
 const jsonRes = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
 
 afterEach(() => vi.unstubAllGlobals());
@@ -167,6 +167,21 @@ describe('generating', () => {
     const out = await generateImage(cfg({ provider: 'comfyui', url: 'http://comfy:8188/', workflow: '{"3":{"inputs":{"text":"{{prompt}}"}}}' }), 'a fox', { width: 512, height: 512 });
     expect(out.equals(png)).toBe(true);
     expect(seen[0]).toBe('POST http://comfy:8188/prompt');
+  }, 15000);
+
+  it('signs in with HTTP Basic when ComfyUI sits behind a login', async () => {
+    const auths: (string | undefined)[] = [];
+    vi.stubGlobal('fetch', async (url: string, init?: RequestInit) => {
+      auths.push((init?.headers as Record<string, string> | undefined)?.authorization);
+      if (url.endsWith('/prompt')) return jsonRes({ prompt_id: 'a' });
+      if (url.includes('/history/')) return jsonRes({ a: { outputs: { '1': { images: [{ filename: 'o.png' }] } } } });
+      return new Response(png);
+    });
+    await generateImage(cfg({ provider: 'comfyui', url: 'https://comfy', username: 'eink-hub', apiKey: 'pw', workflow: '{"a":"{{prompt}}"}' }), 'p', { width: 8, height: 8 });
+    expect(auths).toHaveLength(3);
+    for (const a of auths) expect(a).toBe(`Basic ${Buffer.from('eink-hub:pw').toString('base64')}`);
+    await testConnection(cfg({ provider: 'comfyui', url: 'https://comfy', username: 'eink-hub', apiKey: 'pw' }));
+    expect(auths[3]).toBe(auths[0]);
   }, 15000);
 
   it('reports a ComfyUI error status', async () => {
