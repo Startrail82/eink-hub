@@ -122,7 +122,7 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
       .groupBy(schema.collectionItems.collectionId)
       .all();
     const coverOf = new Map(covers.map((c) => [c.collectionId, c.imageId]));
-    return cols.map((c) => ({ ...c, coverImageId: coverOf.get(c.id) ?? null }));
+    return cols.map((c) => ({ ...c, coverImageId: coverOf.get(c.id) ?? null, generating: isGenerating(c.id) }));
   });
 
   app.post<{ Body: { name: string; type: CollectionType; config?: Record<string, unknown>; imageIds?: number[] } }>(
