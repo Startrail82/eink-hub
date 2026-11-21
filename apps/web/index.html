@@ -1,7 +1,15 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      // Set the page language before anything else, so the browser does not offer to translate it.
+      // The app takes over (and keeps it in sync) once it has loaded.
+      try {
+        var l = localStorage.getItem('lang') || navigator.language || 'en';
+        document.documentElement.lang = l.replace('_', '-');
+      } catch (e) {}
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f4f1eb" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
