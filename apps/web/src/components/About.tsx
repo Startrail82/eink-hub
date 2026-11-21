@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ArrowUpRight, BookOpen, CircleArrowUp } from 'lucide-react';
 import type { SVGProps } from 'react';
 import { api } from '../lib/api';
+import { FORK_FEATURE } from '../lib/fork';
 import { APP_VERSION, CHANGELOG_URL, DOCS_URL, REPO_URL } from '../lib/version';
 import { useI18n } from '../i18n';
 import { cx } from './ui';
@@ -44,8 +45,11 @@ export function AboutLinks({ compact, className }: { compact?: boolean; classNam
   const u = useUpdate().data;
   return (
     <div className={cx('flex items-center text-[11px] font-semibold', compact ? 'flex-col gap-2' : 'gap-3', className)}>
-      <a href={u?.changelogUrl ?? CHANGELOG_URL} target="_blank" rel="noreferrer" className={cx(link, 'opacity-80')}>
-        v{u?.current ?? APP_VERSION}
+      <a href={u?.changelogUrl ?? CHANGELOG_URL} target="_blank" rel="noreferrer" className={cx(link, 'opacity-80', compact ? 'flex flex-col items-center' : 'flex items-center gap-1.5')}>
+        <span>v{u?.current ?? APP_VERSION}</span>
+        <span className="rounded-full bg-accent/10 px-1.5 py-px text-[10px] font-bold text-accent" title={`Fork build FR${FORK_FEATURE}`}>
+          FR{FORK_FEATURE}
+        </span>
       </a>
       <a href={u?.docsUrl ?? DOCS_URL} target="_blank" rel="noreferrer" className={link} title={t('about.docs')} aria-label={t('about.docs')}>
         <BookOpen className="size-3.5" />
