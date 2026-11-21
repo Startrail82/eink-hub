@@ -12,9 +12,9 @@ const DEFAULT_KEEP = 20;
 
 /** Placeholders each source fills in (see the server's lib/ai/sources). */
 const TAGS: Record<AiSource, string[]> = {
-  prompt: ['date', 'season'],
-  rss: ['title', 'description', 'date', 'season'],
-  weather: ['condition', 'temperature', 'high', 'low', 'wind', 'daypart', 'date', 'season'],
+  prompt: ['date', 'time', 'season'],
+  rss: ['title', 'description', 'date', 'time', 'season'],
+  weather: ['condition', 'temperature', 'high', 'low', 'wind', 'daypart', 'date', 'time', 'season'],
 };
 
 async function copyText(text: string) {
