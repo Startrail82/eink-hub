@@ -107,8 +107,11 @@ export async function buildPrompt(cfg: AiCollectionConfig, seen: string[]): Prom
 
 // --- Generation -----------------------------------------------------------------------------
 
+/** Longest side to generate: about 1 megapixel at a 3:4 shape, which is what SDXL-class models are trained on. */
+const MAX_SIDE = 1216;
+
 /** The size to ask for: the frame's shape, longest side capped, multiples of 8 (what diffusion models like). */
-export function targetSize(frame: Pick<Frame, 'width' | 'height' | 'orientation'> | undefined, cap = 1024): { width: number; height: number } {
+export function targetSize(frame: Pick<Frame, 'width' | 'height' | 'orientation'> | undefined, cap = MAX_SIDE): { width: number; height: number } {
   const w = frame?.width ?? 1200;
   const h = frame?.height ?? 1600;
   const [long, short] = [Math.max(w, h), Math.min(w, h)];

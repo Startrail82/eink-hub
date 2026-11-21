@@ -121,18 +121,18 @@ describe('time tag', () => {
 
 describe('sizes', () => {
   it('follows the frame shape with the longest side capped and multiples of 8', () => {
-    expect(targetSize({ width: 1200, height: 1600, orientation: 'portrait' })).toEqual({ width: 768, height: 1024 });
-    expect(targetSize({ width: 1200, height: 1600, orientation: 'landscape' })).toEqual({ width: 1024, height: 768 });
-    expect(targetSize(undefined)).toEqual({ width: 768, height: 1024 });
+    expect(targetSize({ width: 1200, height: 1600, orientation: 'portrait' })).toEqual({ width: 912, height: 1216 });
+    expect(targetSize({ width: 1200, height: 1600, orientation: 'landscape' })).toEqual({ width: 1216, height: 912 });
+    expect(targetSize(undefined)).toEqual({ width: 912, height: 1216 });
   });
 
   it('sizes a picture for the collection panel and orientation, not the frame', () => {
     const cfg = (panel: string | null, orientation: 'portrait' | 'landscape') => collectionConfig({ config: { panel, orientation } } as never);
     const landscapeFrame = { width: 1200, height: 1600, orientation: 'landscape' as const };
-    expect(sizeFor(cfg('1200x1600', 'portrait'), landscapeFrame)).toEqual({ width: 768, height: 1024 });
+    expect(sizeFor(cfg('1200x1600', 'portrait'), landscapeFrame)).toEqual({ width: 912, height: 1216 });
     expect(sizeFor(cfg('480x800', 'landscape'), undefined)).toEqual({ width: 800, height: 480 });
     // No panel chosen (older collection): follow the frame.
-    expect(sizeFor(cfg(null, 'portrait'), landscapeFrame)).toEqual({ width: 1024, height: 768 });
+    expect(sizeFor(cfg(null, 'portrait'), landscapeFrame)).toEqual({ width: 1216, height: 912 });
     expect(collectionConfig({ config: { panel: 'nonsense' } } as never)).toMatchObject({ panel: null, orientation: 'portrait' });
   });
   it('picks an OpenAI size by aspect', () => {
