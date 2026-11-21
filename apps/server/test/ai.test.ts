@@ -62,7 +62,7 @@ describe('weather', () => {
   });
   it('turns an Open-Meteo answer into prompt variables', () => {
     const v = weatherVars({ current: { temperature_2m: 12.4, weather_code: 3, is_day: 0, wind_speed_10m: 20.2 }, daily: { temperature_2m_max: [15.6], temperature_2m_min: [8.1] } });
-    expect(v).toMatchObject({ condition: 'overcast', temperature: '12', high: '16', low: '8', wind: '20', daypart: 'moonlit night' });
+    expect(v).toMatchObject({ condition: 'overcast', temperature: '12', high: '16', low: '8', wind: '20', daypart: 'night time' });
   });
   it('refuses an answer without current weather', () => {
     expect(() => weatherVars({})).toThrow(AiError);
@@ -93,19 +93,17 @@ describe('daypart', () => {
       current: { time: `2026-11-21T${time}`, temperature_2m: 5, weather_code: code, is_day: 1, wind_speed_10m: 3 },
       daily: { sunrise: ['2026-11-21T07:58'], sunset: ['2026-11-21T16:38'] },
     });
-  it('knows night, sunrise, daytime and sunset', () => {
-    expect(at('03:10').daypart).toBe('moonlit night');
-    expect(at('07:40').daypart).toBe('soft golden sunrise light'); // hour 08:00
-    expect(at('12:20').daypart).toBe('bright daylight');
-    expect(at('16:20').daypart).toBe('warm golden sunset glow'); // hour 16:00
-    expect(at('17:10').daypart).toBe('warm golden sunset glow'); // hour 17:00
-    expect(at('21:00').daypart).toBe('moonlit night');
+  it('knows night, sunrise, day time and sunset', () => {
+    expect(at('03:10').daypart).toBe('night time');
+    expect(at('07:40').daypart).toBe('sunrise'); // hour 08:00
+    expect(at('12:20').daypart).toBe('day time');
+    expect(at('16:20').daypart).toBe('sunset'); // hour 16:00
+    expect(at('17:10').daypart).toBe('sunset'); // hour 17:00
+    expect(at('21:00').daypart).toBe('night time');
   });
-  it('drops sun and moon when the weather hides them', () => {
-    expect(at('12:20', 95).daypart).toBe('diffuse grey daylight'); // thunderstorm
-    expect(at('03:10', 3).daypart).toBe('dark night');
-    expect(at('16:20', 61).daypart).toBe('dim dusk light');
-    expect(at('12:20', 2).daypart).toBe('bright daylight'); // partly cloudy keeps the light
+  it('does not depend on the weather', () => {
+    expect(at('12:20', 95).daypart).toBe('day time'); // thunderstorm
+    expect(at('03:10', 3).daypart).toBe('night time');
   });
   it('gives the sun times', () => {
     expect(at('12:00')).toMatchObject({ sunrise: '07:58', sunset: '16:38' });
