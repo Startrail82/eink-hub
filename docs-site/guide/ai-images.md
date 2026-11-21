@@ -30,8 +30,9 @@ In ComfyUI, build a workflow you are happy with, then use **Save (API Format)** 
 | Placeholder | Replaced by |
 | --- | --- |
 | `{{prompt}}` | The prompt, inside any text value, for example the `text` of a `CLIPTextEncode` node. Required. |
+| `{{negative}}` | The collection's *Negative prompt* (what the picture should not look like), inside any text value, for example the `text` of the second `CLIPTextEncode` node. Optional: without it, collections have no negative prompt. Empty when the collection has none. |
 | `"{{seed}}"` | A random number. Write it as a string; the Hub turns it into a number. |
-| `"{{width}}"`, `"{{height}}"` | The size for the Canvas, as numbers. |
+| `"{{width}}"`, `"{{height}}"` | The size for the Canvas, as numbers (the longest side is at most 1216 pixels). |
 
 **Test connection** checks the address (and your key) without generating a picture.
 

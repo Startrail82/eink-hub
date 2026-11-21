@@ -594,4 +594,6 @@ export const it: Catalogue = {
   'ai.panel': 'Tipo di cornice',
   'ai.panel_hint': 'Le immagini vengono generate per questo tipo di schermo e questo orientamento.',
   'ai.mismatch': 'Questa raccolta crea immagini per {made}, ma questa cornice è {frame}. Le immagini verranno ritagliate o ridimensionate.',
+  'ai.negative': 'Prompt negativo',
+  'ai.negative_hint': 'Cosa non deve apparire nell\'immagine. Metti {{negative}} nel workflow dove va questo testo. Vuoto non aggiunge nulla.',
 };

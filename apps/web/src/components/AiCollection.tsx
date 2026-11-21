@@ -62,6 +62,7 @@ function configOf(c?: Collection): AiCollectionConfig {
   return {
     source: raw.source ?? 'prompt',
     prompt: raw.prompt ?? '',
+    negative: raw.negative ?? '',
     feedUrl: raw.feedUrl ?? '',
     latitude: raw.latitude ?? null,
     longitude: raw.longitude ?? null,
@@ -151,6 +152,11 @@ export function AiCollectionDialog({ open, onClose, collection, onCreated }: { o
           <textarea className={`${inputClass} h-28 resize-y py-3`} value={cfg.prompt} onChange={(e) => set('prompt', e.target.value)} />
           <TagChips tags={TAGS[cfg.source]} />
         </Field>
+        {ai.data?.provider === 'comfyui' && (
+          <Field label={t('ai.negative')} hint={t('ai.negative_hint')}>
+            <textarea className={`${inputClass} h-20 resize-y py-3`} value={cfg.negative} onChange={(e) => set('negative', e.target.value)} />
+          </Field>
+        )}
         <Field label={t('ai.panel')} hint={t('ai.panel_hint')} group>
           <div className="space-y-3">
             <Select aria-label={t('ai.panel')} value={cfg.panel ?? DEFAULT_PANEL} onChange={(v) => set('panel', String(v))} options={panelOptions(frames.data)} />

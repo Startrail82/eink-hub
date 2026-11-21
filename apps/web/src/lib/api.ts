@@ -255,6 +255,7 @@ export type AiSource = 'prompt' | 'rss' | 'weather';
 export interface AiCollectionConfig {
   source: AiSource;
   prompt: string;
+  negative: string;
   feedUrl: string;
   latitude: number | null;
   longitude: number | null;

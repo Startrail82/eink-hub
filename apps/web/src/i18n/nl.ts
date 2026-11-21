@@ -594,4 +594,6 @@ export const nl: Catalogue = {
   'ai.panel': 'Frametype',
   'ai.panel_hint': 'Beelden worden gegenereerd voor dit schermtype en deze oriëntatie.',
   'ai.mismatch': 'Deze collectie maakt beelden voor {made}, maar dit frame is {frame}. De beelden worden bijgesneden of geschaald.',
+  'ai.negative': 'Negatieve prompt',
+  'ai.negative_hint': 'Wat het beeld niet mag tonen. Zet {{negative}} in de workflow op de plek van deze tekst. Leeg voegt niets toe.',
 };

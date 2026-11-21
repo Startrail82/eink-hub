@@ -158,6 +158,14 @@ describe('ComfyUI workflow', () => {
     const out = fillWorkflow(wf, 'a "quoted" fox', { width: 768, height: 1024 }, 42) as { '6': { inputs: Record<string, unknown> } };
     expect(out['6'].inputs).toEqual({ text: 'cartoon: a "quoted" fox, bold', seed: 42, w: 768, h: 1024 });
   });
+  it('fills the negative prompt, or nothing when the collection has none', () => {
+    const neg = JSON.stringify({ '7': { inputs: { text: '{{negative}}' } }, '8': { inputs: { text: 'blurry, {{negative}}' } } });
+    expect(fillWorkflow(neg, 'x', { width: 8, height: 8, negative: 'cartoon, 3d render' })).toEqual({
+      '7': { inputs: { text: 'cartoon, 3d render' } },
+      '8': { inputs: { text: 'blurry, cartoon, 3d render' } },
+    });
+    expect(fillWorkflow(neg, 'x', { width: 8, height: 8 })).toEqual({ '7': { inputs: { text: '' } }, '8': { inputs: { text: 'blurry, ' } } });
+  });
   it('rejects broken JSON', () => {
     expect(() => fillWorkflow('{nope', 'x', { width: 1, height: 1 })).toThrow(AiError);
   });

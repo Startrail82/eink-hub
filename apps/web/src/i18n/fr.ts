@@ -594,4 +594,6 @@ export const fr: Catalogue = {
   'ai.panel': 'Type de cadre',
   'ai.panel_hint': 'Les images sont générées pour ce type d\'écran et cette orientation.',
   'ai.mismatch': 'Cette collection crée des images pour {made}, mais ce cadre est {frame}. Les images seront recadrées ou mises à l\'échelle.',
+  'ai.negative': 'Prompt négatif',
+  'ai.negative_hint': 'Ce que l\'image ne doit pas montrer. Mets {{negative}} dans le workflow à l\'endroit de ce texte. Vide, il n\'ajoute rien.',
 };
