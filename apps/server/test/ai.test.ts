@@ -16,7 +16,7 @@ import { openDb, schema, setSetting } from '../src/db/index.js';
 import { aiState, buildPrompt, collectionConfig, generationDue, generateFor, LEAD_MS, prune, RETRY_MS, sizeFor, targetSize, validateCollectionConfig } from '../src/lib/ai/generate.js';
 import { AiError, fillWorkflow, generateImage, openaiSize, testConnection } from '../src/lib/ai/providers.js';
 import { aiConfigured, type AiConfig } from '../src/lib/ai/settings.js';
-import { fillTemplate, nextFeedItem, parseFeed, weatherCondition, weatherVars } from '../src/lib/ai/sources.js';
+import { commonVars, fillTemplate, nextFeedItem, parseFeed, weatherCondition, weatherVars } from '../src/lib/ai/sources.js';
 import { pickFresh } from '../src/lib/selection.js';
 
 const cfg = (c: Partial<AiConfig>): AiConfig => ({ provider: '', url: '', apiKey: '', username: '', model: '', size: '', workflow: '', ...c });
@@ -84,6 +84,15 @@ describe('collection config', () => {
     expect(() => validateCollectionConfig({ ...base, source: 'weather' })).toThrow(AiError);
     expect(() => validateCollectionConfig({ ...base, source: 'weather', latitude: 51, longitude: 4 })).not.toThrow();
     expect(() => validateCollectionConfig({ ...base, source: 'weather', latitude: 95, longitude: 4 })).toThrow(AiError);
+  });
+});
+
+describe('time tag', () => {
+  it('gives the nearest full hour', () => {
+    const at = (h: number, m: number) => commonVars(new Date(2026, 10, 21, h, m)).time;
+    expect(at(13, 15)).toBe('13:00');
+    expect(at(13, 50)).toBe('14:00');
+    expect(at(23, 40)).toBe('00:00');
   });
 });
 

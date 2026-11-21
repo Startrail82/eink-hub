@@ -39,7 +39,7 @@ In ComfyUI, build a workflow you are happy with, then use **Save (API Format)** 
 
 In the **Library**, choose **New AI collection** and pick what to draw:
 
-- **A fixed prompt.** The same description every time. The result still differs from picture to picture. `{date}` and `{season}` can be used in it.
+- **A fixed prompt.** The same description every time. The result still differs from picture to picture. `{date}`, `{time}` (the nearest full hour, like `14:00`) and `{season}` can be used in it. `{date}`, `{time}` and `{season}` work in every kind of collection.
 - **An RSS feed.** Each picture is made from the newest feed item that has not been drawn yet. When all items were drawn, it starts again with the newest. Leave the prompt empty for a cartoon of the headline, or write your own with `{title}` and `{description}`. RSS 2.0 and Atom are supported.
 - **The weather.** Uses [Open-Meteo](https://open-meteo.com/) for a latitude and longitude (no account needed). Leave the prompt empty for a weather illustration, or write your own with `{condition}`, `{temperature}`, `{high}`, `{low}`, `{wind}`, `{daypart}` and `{season}`.
 

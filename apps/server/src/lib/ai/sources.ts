@@ -11,9 +11,17 @@ export function fillTemplate(template: string, vars: PromptVars): string {
 }
 
 /** Variables every source offers. */
+function nearestHour(now: Date) {
+  const d = new Date(now);
+  d.setMinutes(d.getMinutes() >= 30 ? 60 : 0, 0, 0);
+  return d;
+}
+
 export function commonVars(now = new Date()): PromptVars {
   return {
     date: new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(now),
+    // Nearest full hour in the Hub's time zone: a picture is made ~10 minutes before the Canvas changes.
+    time: `${String(nearestHour(now).getHours()).padStart(2, '0')}:00`,
     season: ['winter', 'winter', 'spring', 'spring', 'spring', 'summer', 'summer', 'summer', 'autumn', 'autumn', 'autumn', 'winter'][now.getMonth()],
   };
 }
