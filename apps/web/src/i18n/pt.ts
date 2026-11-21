@@ -627,4 +627,6 @@ export const pt: Catalogue = {
   'canvasSettings.pill_reset': 'Repor',
   'assign.match_orientation': 'Só fotos que combinem com o Canvas',
   'assign.match_orientation_hint': 'Num Canvas vertical só se escolhem fotos verticais, e num horizontal só fotos horizontais. As quadradas servem para ambos. Se nenhuma servir, usam-se todas.',
+  'ai.negative': 'Prompt negativo',
+  'ai.negative_hint': 'O que não deve aparecer na imagem. Coloca {{negative}} no workflow onde vai este texto. Vazio não acrescenta nada.',
 };

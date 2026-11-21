@@ -626,6 +626,8 @@ export const es = {
   'canvasSettings.pill_reset': 'Restablecer',
   'assign.match_orientation': 'Solo fotos que encajen con el Canvas',
   'assign.match_orientation_hint': 'Con un Canvas vertical solo se eligen fotos verticales, y con uno horizontal solo fotos horizontales. Las cuadradas valen para ambos. Si no hay ninguna que encaje, se usan todas.',
+  'ai.negative': 'Prompt negativo',
+  'ai.negative_hint': 'Qué no debe aparecer en la imagen. Pon {{negative}} en el workflow donde va este texto. Vacío no añade nada.',
 };
 
 export type Messages = Record<keyof typeof es, string>;

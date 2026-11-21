@@ -627,4 +627,6 @@ export const gl: Catalogue = {
   'canvasSettings.pill_reset': 'Restablecer',
   'assign.match_orientation': 'Só fotos que encaixen co Canvas',
   'assign.match_orientation_hint': 'Nun Canvas vertical só se escollen fotos verticais, e nun horizontal só fotos horizontais. As cadradas serven para ambos. Se ningunha encaixa, úsanse todas.',
+  'ai.negative': 'Prompt negativo',
+  'ai.negative_hint': 'O que non debe aparecer na imaxe. Pon {{negative}} no workflow onde vai este texto. Baleiro non engade nada.',
 };

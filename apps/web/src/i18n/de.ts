@@ -627,4 +627,6 @@ export const de: Catalogue = {
   'canvasSettings.pill_reset': 'Zurücksetzen',
   'assign.match_orientation': 'Nur Bilder, die zum Canvas passen',
   'assign.match_orientation_hint': 'Bei einem Hochformat-Canvas werden nur Hochformat-Bilder gewählt, bei einem Querformat-Canvas nur Querformat-Bilder. Quadratische passen zu beiden. Passt keines, werden alle verwendet.',
+  'ai.negative': 'Negativ-Prompt',
+  'ai.negative_hint': 'Was das Bild nicht zeigen soll. Setze {{negative}} im Workflow an die Stelle dieses Textes. Leer fügt nichts hinzu.',
 };

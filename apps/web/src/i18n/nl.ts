@@ -627,4 +627,6 @@ export const nl: Catalogue = {
   'canvasSettings.pill_reset': 'Standaard',
   'assign.match_orientation': 'Alleen foto\'s die bij het Canvas passen',
   'assign.match_orientation_hint': 'Op een staand Canvas worden alleen staande foto\'s gekozen, op een liggend Canvas alleen liggende. Vierkante passen bij beide. Past er geen enkele, dan worden ze allemaal gebruikt.',
+  'ai.negative': 'Negatieve prompt',
+  'ai.negative_hint': 'Wat het beeld niet mag tonen. Zet {{negative}} in de workflow op de plek van deze tekst. Leeg voegt niets toe.',
 };
