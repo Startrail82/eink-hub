@@ -5,6 +5,8 @@ export interface GenerateOpts {
   /** The frame's shape, used to pick a fitting size. */
   width: number;
   height: number;
+  /** What the picture should not look like (ComfyUI: fills "{{negative}}"). */
+  negative?: string;
   /** Give up after this long. */
   timeoutMs?: number;
 }
@@ -72,8 +74,8 @@ async function openaiImage(cfg: AiConfig, prompt: string, opts: GenerateOpts, ti
 // --- ComfyUI (POST /prompt, poll /history, GET /view) -------------------------------------
 
 /**
- * Fill in a workflow (API format): "{{prompt}}" inside any text, and a value that is exactly
- * "{{seed}}", "{{width}}" or "{{height}}" becomes a number.
+ * Fill in a workflow (API format): "{{prompt}}" and "{{negative}}" inside any text, and a value
+ * that is exactly "{{seed}}", "{{width}}" or "{{height}}" becomes a number.
  */
 export function fillWorkflow(workflow: string, prompt: string, opts: GenerateOpts, seed = crypto.randomInt(0, 2 ** 32)): unknown {
   let parsed: unknown;
@@ -84,7 +86,7 @@ export function fillWorkflow(workflow: string, prompt: string, opts: GenerateOpt
   }
   const numbers: Record<string, number> = { '{{seed}}': seed, '{{width}}': opts.width, '{{height}}': opts.height };
   const walk = (v: unknown): unknown => {
-    if (typeof v === 'string') return v in numbers ? numbers[v] : v.replaceAll('{{prompt}}', prompt);
+    if (typeof v === 'string') return v in numbers ? numbers[v] : v.replaceAll('{{prompt}}', prompt).replaceAll('{{negative}}', opts.negative ?? '');
     if (Array.isArray(v)) return v.map(walk);
     if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, walk(x)]));
     return v;

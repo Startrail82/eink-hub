@@ -611,4 +611,6 @@ export const zh: Catalogue = {
   'week.none': '此 Canvas 没有启用的计划。',
   'plan.add': '添加计划',
   'plan.warn_close': '注意：此 Canvas 的另一个计划在 {time} 切换，仅相差 {minutes} 分钟。',
+  'ai.negative': '反向提示词',
+  'ai.negative_hint': '画面中不希望出现的内容。请在工作流中此文本所在位置放入 {{negative}}。留空则不添加任何内容。',
 };

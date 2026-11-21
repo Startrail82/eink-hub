@@ -611,4 +611,6 @@ export const nl: Catalogue = {
   'week.none': 'Dit Canvas heeft geen actieve planningen.',
   'plan.add': 'Planning toevoegen',
   'plan.warn_close': 'Let op: een andere planning van dit Canvas wisselt om {time}, slechts {minutes} min verschil.',
+  'ai.negative': 'Negatieve prompt',
+  'ai.negative_hint': 'Wat het beeld niet mag tonen. Zet {{negative}} in de workflow op de plek van deze tekst. Leeg voegt niets toe.',
 };

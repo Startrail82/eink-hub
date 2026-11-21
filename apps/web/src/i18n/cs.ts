@@ -627,4 +627,6 @@ export const cs: Catalogue = {
   'week.none': 'Tento Canvas nemá žádné aktivní plány.',
   'plan.add': 'Přidat plán',
   'plan.warn_close': 'Pozor: další plán tohoto Canvasu se mění v {time}, jen {minutes} min od tohoto.',
+  'ai.negative': 'Negativní prompt',
+  'ai.negative_hint': 'Co se na obrázku nemá objevit. Vlož {{negative}} do workflow na místo tohoto textu. Prázdné nic nepřidá.',
 };

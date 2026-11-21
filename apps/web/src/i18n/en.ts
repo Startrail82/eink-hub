@@ -611,4 +611,6 @@ export const en: Messages = {
   'week.none': 'This Canvas has no active schedules.',
   'plan.add': 'Add schedule',
   'plan.warn_close': 'Note: another schedule of this Canvas changes at {time}, only {minutes} min apart.',
+  'ai.negative': 'Negative prompt',
+  'ai.negative_hint': 'What the picture should not look like. Put {{negative}} in the workflow where this text goes. Empty adds nothing.',
 };

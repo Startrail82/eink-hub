@@ -611,4 +611,6 @@ export const it: Catalogue = {
   'week.none': 'Questo Canvas non ha programmazioni attive.',
   'plan.add': 'Aggiungi programmazione',
   'plan.warn_close': 'Attenzione: un\'altra programmazione di questo Canvas cambia alle {time}, a soli {minutes} min.',
+  'ai.negative': 'Prompt negativo',
+  'ai.negative_hint': 'Cosa non deve apparire nell\'immagine. Metti {{negative}} nel workflow dove va questo testo. Vuoto non aggiunge nulla.',
 };

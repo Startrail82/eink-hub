@@ -611,4 +611,6 @@ export const ja: Catalogue = {
   'week.none': 'このCanvasには有効なスケジュールがありません。',
   'plan.add': 'スケジュールを追加',
   'plan.warn_close': '注意：このCanvasの別のスケジュールが{time}に切り替わります（わずか{minutes}分差）。',
+  'ai.negative': 'ネガティブプロンプト',
+  'ai.negative_hint': '画像に含めたくないもの。ワークフローのこのテキストの位置に {{negative}} を置いてください。空の場合は何も追加されません。',
 };

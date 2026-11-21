@@ -611,4 +611,6 @@ export const zhTW: Catalogue = {
   'week.none': '此 Canvas 沒有啟用的排程。',
   'plan.add': '新增排程',
   'plan.warn_close': '注意：此 Canvas 的另一個排程在 {time} 切換，僅相差 {minutes} 分鐘。',
+  'ai.negative': '反向提示詞',
+  'ai.negative_hint': '畫面中不希望出現的內容。請在工作流程中此文字所在位置放入 {{negative}}。留空則不新增任何內容。',
 };

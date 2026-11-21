@@ -611,4 +611,6 @@ export const ko: Catalogue = {
   'week.none': '이 Canvas에는 활성 일정이 없습니다.',
   'plan.add': '일정 추가',
   'plan.warn_close': '주의: 이 Canvas의 다른 일정이 {time}에 바뀝니다. 불과 {minutes}분 차이입니다.',
+  'ai.negative': '네거티브 프롬프트',
+  'ai.negative_hint': '이미지에 나오지 않았으면 하는 것. 워크플로에서 이 텍스트가 들어갈 자리에 {{negative}} 를 넣으세요. 비워 두면 아무것도 추가되지 않습니다.',
 };

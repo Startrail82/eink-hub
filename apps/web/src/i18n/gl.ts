@@ -611,4 +611,6 @@ export const gl: Catalogue = {
   'week.none': 'Este Canvas non ten programacións activas.',
   'plan.add': 'Engadir programación',
   'plan.warn_close': 'Ollo: outra programación deste Canvas cambia ás {time}, a só {minutes} min.',
+  'ai.negative': 'Prompt negativo',
+  'ai.negative_hint': 'O que non debe aparecer na imaxe. Pon {{negative}} no workflow onde vai este texto. Baleiro non engade nada.',
 };

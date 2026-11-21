@@ -611,4 +611,6 @@ export const de: Catalogue = {
   'week.none': 'Dieses Canvas hat keine aktiven Zeitpläne.',
   'plan.add': 'Zeitplan hinzufügen',
   'plan.warn_close': 'Achtung: Ein anderer Zeitplan dieses Canvas wechselt um {time}, nur {minutes} Min. entfernt.',
+  'ai.negative': 'Negativ-Prompt',
+  'ai.negative_hint': 'Was das Bild nicht zeigen soll. Setze {{negative}} im Workflow an die Stelle dieses Textes. Leer fügt nichts hinzu.',
 };
