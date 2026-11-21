@@ -30,7 +30,7 @@ export const DEFAULT_KEEP = 20;
 
 export const DEFAULT_PROMPTS: Record<Exclude<AiSource, 'prompt'>, string> = {
   rss: 'A witty, friendly editorial cartoon about this news headline: "{title}". {description} Clean line art with a few flat colours, no text or lettering.',
-  weather: 'A charming illustration of {condition} weather, {temperature} degrees Celsius, in the {daypart}, {season}. Soft colours, no text or lettering.',
+  weather: 'A charming illustration of {condition} weather, {temperature} degrees Celsius, {daypart}, {season}. Soft colours, no text or lettering.',
 };
 
 export function collectionConfig(c: Collection): AiCollectionConfig {

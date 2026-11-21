@@ -14,7 +14,7 @@ const DEFAULT_KEEP = 20;
 const TAGS: Record<AiSource, string[]> = {
   prompt: ['date', 'time', 'season'],
   rss: ['title', 'description', 'date', 'time', 'season'],
-  weather: ['condition', 'temperature', 'high', 'low', 'wind', 'daypart', 'date', 'time', 'season'],
+  weather: ['condition', 'temperature', 'high', 'low', 'wind', 'daypart', 'sunrise', 'sunset', 'date', 'time', 'season'],
 };
 
 async function copyText(text: string) {
