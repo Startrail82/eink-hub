@@ -627,6 +627,4 @@ export const zhTW: Catalogue = {
   'canvasSettings.pill_reset': '重設',
   'assign.match_orientation': '僅使用適合 Canvas 的照片',
   'assign.match_orientation_hint': '直式 Canvas 只選直式照片，橫式 Canvas 只選橫式照片。方形照片兩者皆適用。如果沒有合適的，則使用全部照片。',
-  'ai.negative': '反向提示詞',
-  'ai.negative_hint': '畫面中不希望出現的內容。請在工作流程中此文字所在位置放入 {{negative}}。留空則不新增任何內容。',
 };

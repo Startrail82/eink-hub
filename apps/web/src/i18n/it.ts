@@ -627,6 +627,4 @@ export const it: Catalogue = {
   'canvasSettings.pill_reset': 'Ripristina',
   'assign.match_orientation': 'Solo foto adatte al Canvas',
   'assign.match_orientation_hint': 'Su un Canvas verticale si scelgono solo foto verticali, su uno orizzontale solo foto orizzontali. Quelle quadrate vanno bene per entrambi. Se nessuna è adatta, si usano tutte.',
-  'ai.negative': 'Prompt negativo',
-  'ai.negative_hint': 'Cosa non deve apparire nell\'immagine. Metti {{negative}} nel workflow dove va questo testo. Vuoto non aggiunge nulla.',
 };

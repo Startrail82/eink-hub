@@ -627,6 +627,4 @@ export const fr: Catalogue = {
   'canvasSettings.pill_reset': 'Réinitialiser',
   'assign.match_orientation': 'Seulement les photos adaptées au Canvas',
   'assign.match_orientation_hint': 'Sur un Canvas en portrait, seules les photos verticales sont choisies, et sur un Canvas en paysage seulement les horizontales. Les carrées conviennent aux deux. Si aucune ne convient, toutes sont utilisées.',
-  'ai.negative': 'Prompt négatif',
-  'ai.negative_hint': 'Ce que l\'image ne doit pas montrer. Mets {{negative}} dans le workflow à l\'endroit de ce texte. Vide, il n\'ajoute rien.',
 };

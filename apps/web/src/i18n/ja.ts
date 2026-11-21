@@ -627,6 +627,4 @@ export const ja: Catalogue = {
   'canvasSettings.pill_reset': 'リセット',
   'assign.match_orientation': 'Canvas に合う写真だけを使う',
   'assign.match_orientation_hint': '縦向きの Canvas では縦向きの写真だけ、横向きの Canvas では横向きの写真だけを選びます。正方形はどちらにも使えます。合う写真がなければすべてを使います。',
-  'ai.negative': 'ネガティブプロンプト',
-  'ai.negative_hint': '画像に含めたくないもの。ワークフローのこのテキストの位置に {{negative}} を置いてください。空の場合は何も追加されません。',
 };

@@ -627,6 +627,4 @@ export const en: Messages = {
   'canvasSettings.pill_reset': 'Reset',
   'assign.match_orientation': 'Only pictures that suit the Canvas',
   'assign.match_orientation_hint': 'On a portrait Canvas only upright pictures are chosen, on a landscape Canvas only wide ones. Square ones suit both. If none fit, all pictures are used.',
-  'ai.negative': 'Negative prompt',
-  'ai.negative_hint': 'What the picture should not look like. Put {{negative}} in the workflow where this text goes. Empty adds nothing.',
 };

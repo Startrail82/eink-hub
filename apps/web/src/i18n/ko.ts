@@ -627,6 +627,4 @@ export const ko: Catalogue = {
   'canvasSettings.pill_reset': '초기화',
   'assign.match_orientation': 'Canvas에 맞는 사진만 사용',
   'assign.match_orientation_hint': '세로형 Canvas에서는 세로 사진만, 가로형 Canvas에서는 가로 사진만 고릅니다. 정사각형은 둘 다에 맞습니다. 맞는 사진이 없으면 모두 사용합니다.',
-  'ai.negative': '네거티브 프롬프트',
-  'ai.negative_hint': '이미지에 나오지 않았으면 하는 것. 워크플로에서 이 텍스트가 들어갈 자리에 {{negative}} 를 넣으세요. 비워 두면 아무것도 추가되지 않습니다.',
 };

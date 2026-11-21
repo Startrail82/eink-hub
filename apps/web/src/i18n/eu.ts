@@ -627,6 +627,4 @@ export const eu: Messages = {
   'canvasSettings.pill_reset': 'Berrezarri',
   'assign.match_orientation': 'Canvasari egokitzen zaizkion argazkiak soilik',
   'assign.match_orientation_hint': 'Canvas bertikal batean argazki bertikalak bakarrik hautatzen dira, eta horizontal batean horizontalak. Karratuak biei egokitzen zaizkie. Bat ere egokitzen ez bada, guztiak erabiltzen dira.',
-  'ai.negative': 'Prompt negatiboa',
-  'ai.negative_hint': 'Irudian agertu behar ez dena. Jarri {{negative}} workflow-an testu hau doan lekuan. Hutsik badago, ez da ezer gehitzen.',
 };

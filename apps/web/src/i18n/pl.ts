@@ -643,6 +643,4 @@ export const pl: Catalogue = {
   'canvasSettings.pill_reset': 'Przywróć',
   'assign.match_orientation': 'Tylko zdjęcia pasujące do Canvasa',
   'assign.match_orientation_hint': 'Na pionowym Canvasie wybierane są tylko zdjęcia pionowe, na poziomym tylko poziome. Kwadratowe pasują do obu. Jeśli żadne nie pasuje, używane są wszystkie.',
-  'ai.negative': 'Negatywny prompt',
-  'ai.negative_hint': 'Czego nie powinno być na obrazie. Wstaw {{negative}} w workflow tam, gdzie ma trafić ten tekst. Puste nic nie dodaje.',
 };
