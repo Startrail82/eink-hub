@@ -66,4 +66,6 @@ export const ja: Catalogue = {
   switchbot_not_configured: 'SwitchBotのトークン、シークレット、またはデバイスがありません',
   switchbot_public_url: 'SwitchBotはインターネット経由で写真をダウンロードします。設定で公開httpsアドレス（外部用、またはクラウドフレーム用）を設定してください',
   trmnl_mac_missing: 'TRMNLデバイスのMACアドレスがありません',
+  schedule_conflict: 'このCanvasの別のスケジュール({name})が既に {time} に切り替わります',
+  assignment_not_found: 'スケジュール {id} が見つかりません',
 };

@@ -1,12 +1,13 @@
 import type { FastifyInstance } from 'fastify';
 import sharp from 'sharp';
 import { and, desc, eq, inArray, sql } from 'drizzle-orm';
-import { requestLang, tr } from '../i18n.js';
+import { requestLang, tr, type Lang } from '../i18n.js';
 import { schema } from '../db/index.js';
-import { collectionTypes, fitModes, orderModes, type CollectionType, type DisplayOptions } from '../db/schema.js';
+import { collectionTypes, fitModes, orderModes, type Assignment, type CollectionType, type DisplayOptions } from '../db/schema.js';
 import { addItems, getCollection, refreshCount, syncCollection } from '../lib/collections.js';
 import { HttpError, type Ctx } from '../lib/context.js';
-import { getAssignment, getFrame } from '../lib/display.js';
+import { getAssignment, getAssignmentById, getAssignments, getFrame } from '../lib/display.js';
+import { checkSchedule, overview } from '../lib/plan.js';
 import { DEFAULT_SCHEDULE, MEMORIES_SCHEDULE, firstRun, isFrequent, parseSchedule, upcoming } from '../lib/schedule.js';
 import { deleteImage, frameAspect, getCrop, getImage, imageThumbnail, loadSource, readRender, renderFor, saveLocalUpload, setCrop } from '../lib/images.js';
 import { formatMime, thumbnail } from '../imaging/pipeline.js';
@@ -163,22 +164,20 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
   // --- Assignments (collection → frame rotation) -----------------------------------------
   app.get('/api/assignments', async () => db.select().from(schema.assignments).all());
 
-  app.put<{
-    Params: { frameId: string };
-    Body: {
-      collectionId: number;
-      orderMode?: (typeof orderModes)[number];
-      schedule?: unknown;
-      activeFrom?: string | null;
-      activeTo?: string | null;
-      fit?: (typeof fitModes)[number];
-      bg?: string;
-      showDate?: boolean;
-      enabled?: boolean;
-    };
-  }>('/api/frames/:frameId/assignment', async (req) => {
-    const frameId = getFrame(db, +req.params.frameId).id;
-    const b = req.body;
+  interface AssignmentBody {
+    collectionId: number;
+    orderMode?: (typeof orderModes)[number];
+    schedule?: unknown;
+    activeFrom?: string | null;
+    activeTo?: string | null;
+    fit?: (typeof fitModes)[number];
+    bg?: string;
+    showDate?: boolean;
+    enabled?: boolean;
+  }
+
+  /** Create (no `prev`) or change one schedule of a Canvas. Two schedules may not change at the same minute. */
+  function saveAssignment(frameId: number, prev: Assignment | undefined, b: AssignmentBody, lang: Lang) {
     const collection = getCollection(db, b.collectionId);
     // "On this day" is a daily feed: one random memory per day, changing at midnight.
     const isMemories = collection.type === 'immich_memories';
@@ -187,40 +186,92 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
     // Active hours only make sense for hourly schedules; longer ones already pick a time.
     const hourly = schedule.kind === 'interval';
     const window = { activeFrom: hourly ? hhmm(b.activeFrom) : null, activeTo: hourly ? hhmm(b.activeTo) : null };
-    const prev = getAssignment(db, frameId);
+    const enabled = b.enabled ?? prev?.enabled ?? true;
+
+    const check = enabled ? checkSchedule(db, frameId, { id: prev?.id, schedule, ...window }) : {};
+    if (check.clash) {
+      const name = db.select({ name: schema.collections.name }).from(schema.collections).where(eq(schema.collections.id, check.clash.other.collectionId)).get()?.name ?? '';
+      throw new HttpError(409, 'schedule_conflict', { name, time: new Date(check.clash.at).toLocaleString(lang, { dateStyle: 'short', timeStyle: 'short' }) });
+    }
+
+    const others = getAssignments(db, frameId).filter((x) => x.id !== prev?.id);
     // New rotation or new collection: change right away. New timing: start counting from now.
-    // Anything else (fit, order…): keep the pending change time.
-    const nextChange =
-      !prev || prev.collectionId !== b.collectionId
+    // Anything else (fit, order…): keep the pending change time. A schedule added next to
+    // others starts counting from now too, so it does not replace the picture the moment it is saved.
+    const nextChange = !prev
+      ? others.length
+        ? (firstRun(schedule, new Date(), window)?.getTime() ?? null)
+        : null
+      : prev.collectionId !== b.collectionId
         ? null
         : JSON.stringify(prev.schedule) !== JSON.stringify(schedule) || prev.activeFrom !== window.activeFrom || prev.activeTo !== window.activeTo
           ? (firstRun(schedule, new Date(), window)?.getTime() ?? null)
           : prev.nextChange;
     const values = {
       collectionId: b.collectionId,
-      orderMode: isMemories ? 'random' : orderModes.includes(b.orderMode!) ? b.orderMode! : 'random',
+      orderMode: isMemories ? ('random' as const) : orderModes.includes(b.orderMode!) ? b.orderMode! : ('random' as const),
       schedule,
       nextChange,
       ...window,
-      fit: fitModes.includes(b.fit!) ? b.fit! : 'cover',
+      fit: fitModes.includes(b.fit!) ? b.fit! : ('cover' as const),
       bg: /^#[0-9a-f]{6}$/i.test(b.bg ?? '') ? b.bg! : '#ffffff',
       showDate: b.showDate ?? isMemories,
-      enabled: b.enabled ?? true,
+      enabled,
     };
-    return db
-      .insert(schema.assignments)
-      .values({ frameId, ...values })
-      .onConflictDoUpdate({ target: schema.assignments.frameId, set: values })
-      .returning()
-      .get();
+    const assignment = prev
+      ? db.update(schema.assignments).set(values).where(eq(schema.assignments.id, prev.id)).returning().get()
+      : db.insert(schema.assignments).values({ frameId, ...values }).returning().get();
+    const close = check.close && {
+      minutes: check.close.minutes,
+      at: check.close.at,
+      otherAt: check.close.otherAt,
+      otherAssignmentId: check.close.other.id,
+      otherCollectionId: check.close.other.collectionId,
+    };
+    return { assignment, warnings: close ? [{ kind: 'close' as const, ...close }] : [] };
+  }
+
+  // The schedule that changes next, for clients that only know one schedule per Canvas.
+  app.put<{ Params: { frameId: string }; Body: AssignmentBody }>('/api/frames/:frameId/assignment', async (req) => {
+    const frameId = getFrame(db, +req.params.frameId).id;
+    return saveAssignment(frameId, getAssignment(db, frameId), req.body, requestLang(req, db)).assignment;
   });
 
-  // Pause / resume without touching the rest. A change that fell due while paused starts
-  // counting again from now rather than firing the moment it is resumed.
-  app.patch<{ Params: { frameId: string }; Body: { enabled?: boolean } }>('/api/frames/:frameId/assignment', async (req) => {
-    const prev = getAssignment(db, getFrame(db, +req.params.frameId).id);
-    if (!prev) return null;
+  // Several schedules per Canvas.
+  app.get<{ Params: { frameId: string } }>('/api/frames/:frameId/assignments', async (req) => getAssignments(db, getFrame(db, +req.params.frameId).id));
+  app.post<{ Params: { frameId: string }; Body: AssignmentBody }>('/api/frames/:frameId/assignments', async (req) => {
+    const frameId = getFrame(db, +req.params.frameId).id;
+    return saveAssignment(frameId, undefined, req.body, requestLang(req, db));
+  });
+  app.put<{ Params: { id: string }; Body: AssignmentBody }>('/api/assignments/:id', async (req) => {
+    const prev = getAssignmentById(db, +req.params.id);
+    return saveAssignment(prev.frameId, prev, req.body, requestLang(req, db));
+  });
+  app.patch<{ Params: { id: string }; Body: { enabled?: boolean } }>('/api/assignments/:id', async (req) => {
+    const prev = getAssignmentById(db, +req.params.id);
     const enabled = req.body?.enabled === true;
+    if (enabled && !prev.enabled) {
+      const check = checkSchedule(db, prev.frameId, { id: prev.id, schedule: prev.schedule, activeFrom: prev.activeFrom, activeTo: prev.activeTo });
+      if (check.clash) {
+        const name = db.select({ name: schema.collections.name }).from(schema.collections).where(eq(schema.collections.id, check.clash.other.collectionId)).get()?.name ?? '';
+        throw new HttpError(409, 'schedule_conflict', { name, time: new Date(check.clash.at).toLocaleString(requestLang(req, db), { dateStyle: 'short', timeStyle: 'short' }) });
+      }
+    }
+    return setEnabled(prev, enabled);
+  });
+  app.delete<{ Params: { id: string } }>('/api/assignments/:id', async (req) => {
+    db.delete(schema.assignments).where(eq(schema.assignments.id, getAssignmentById(db, +req.params.id).id)).run();
+    return { ok: true };
+  });
+
+  /** The coming changes of a Canvas, per day. */
+  app.get<{ Params: { frameId: string }; Querystring: { days?: string } }>('/api/frames/:frameId/overview', async (req) => {
+    const days = Math.min(31, Math.max(1, Math.floor(Number(req.query.days)) || 7));
+    return overview(db, getFrame(db, +req.params.frameId).id, days);
+  });
+
+  /** Pause or resume one schedule. A change that fell due while paused starts counting again from now. */
+  function setEnabled(prev: Assignment, enabled: boolean) {
     const window = { activeFrom: prev.activeFrom, activeTo: prev.activeTo };
     const stale = enabled && !prev.enabled && prev.nextChange !== null && prev.nextChange <= Date.now();
     return db
@@ -229,6 +280,12 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
       .where(eq(schema.assignments.id, prev.id))
       .returning()
       .get();
+  }
+
+  // Pause / resume the schedule that changes next (one-schedule clients).
+  app.patch<{ Params: { frameId: string }; Body: { enabled?: boolean } }>('/api/frames/:frameId/assignment', async (req) => {
+    const prev = getAssignment(db, getFrame(db, +req.params.frameId).id);
+    return prev ? setEnabled(prev, req.body?.enabled === true) : null;
   });
 
   /** Validates a schedule and returns its next runs, so the UI shows exactly what will happen. */
