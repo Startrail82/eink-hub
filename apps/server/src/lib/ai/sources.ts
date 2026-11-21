@@ -124,6 +124,36 @@ export function weatherCondition(code: number): string {
   return WMO[code] ?? 'changeable weather';
 }
 
+/**
+ * The weather as something a picture can show, for {condition}: the plain name first, then what
+ * you would see. A clear sky shows nothing by itself, so by night it gets a moon and stars.
+ */
+const LOOK: Record<number, string> = {
+  0: 'clear sky', 1: 'mostly clear sky with a few small clouds', 2: 'partly cloudy sky with drifting clouds',
+  3: 'overcast sky with heavy grey clouds',
+  45: 'thick swirling fog', 48: 'thick swirling fog with frost on the trees',
+  51: 'light drizzle with fine raindrops', 53: 'drizzle with fine raindrops', 55: 'heavy drizzle with raindrops',
+  56: 'freezing drizzle with glistening ice', 57: 'heavy freezing drizzle with glistening ice',
+  61: 'light rain with raindrops and ripples in puddles', 63: 'steady rain with raindrops and puddles', 65: 'heavy rain pouring down',
+  66: 'freezing rain with glistening ice', 67: 'heavy freezing rain with glistening ice',
+  71: 'light snowfall with drifting snowflakes', 73: 'snowfall with drifting snowflakes', 75: 'heavy snowfall with thick snowflakes',
+  77: 'fine snow grains falling',
+  80: 'light rain showers with raindrops', 81: 'rain showers with raindrops and puddles', 82: 'heavy rain showers pouring down',
+  85: 'snow showers with drifting snowflakes', 86: 'heavy snow showers with thick snowflakes',
+  95: 'thunderstorm with dark clouds and flashes of lightning', 96: 'thunderstorm with dark clouds, lightning and hail',
+  99: 'severe thunderstorm with dark clouds, lightning and hail',
+};
+const LOOK_NIGHT: Record<number, string> = {
+  0: 'clear sky with a bright moon and stars', 1: 'mostly clear sky with a moon, stars and a few small clouds',
+  2: 'partly cloudy sky with a moon behind drifting clouds',
+};
+
+export function weatherLook(code: number, when: 'night' | 'sun' | 'day'): string {
+  if (when === 'night' && LOOK_NIGHT[code]) return LOOK_NIGHT[code];
+  if (when === 'day' && code === 0) return 'clear sky with bright sunshine';
+  return LOOK[code] ?? 'changeable weather';
+}
+
 interface OpenMeteo {
   current?: { time?: string; temperature_2m?: number; weather_code?: number; is_day?: number; wind_speed_10m?: number };
   daily?: { temperature_2m_max?: number[]; temperature_2m_min?: number[]; sunrise?: string[]; sunset?: string[] };
@@ -133,7 +163,12 @@ interface OpenMeteo {
 const SUN_WINDOW_MIN = 45;
 
 /** Plain moments of the day: neutral, so they never contradict {condition} (a thunderstorm at "day time" is fine). */
-const DAYPARTS = { night: 'night time', sunrise: 'sunrise', daytime: 'day time', sunset: 'sunset' };
+const DAYPARTS = {
+  night: 'night time, dark night',
+  sunrise: 'sunrise, soft golden light on the horizon',
+  daytime: 'day time',
+  sunset: 'sunset, warm glowing sky',
+};
 
 /** Minutes after midnight and "HH:MM" of an Open-Meteo local time ("2026-11-21T07:58"). */
 function clock(iso: string | undefined) {
@@ -158,13 +193,14 @@ export function weatherVars(w: OpenMeteo): PromptVars {
   const c = w.current;
   if (!c || c.weather_code === undefined || c.temperature_2m === undefined) throw new AiError('Open-Meteo returned no current weather');
   const round = (n: number | undefined) => (n === undefined ? '' : String(Math.round(n)));
+  const part = daypart(w);
   return {
-    condition: weatherCondition(c.weather_code),
+    condition: weatherLook(c.weather_code, part === DAYPARTS.night ? 'night' : part === DAYPARTS.daytime ? 'day' : 'sun'),
     temperature: round(c.temperature_2m),
     high: round(w.daily?.temperature_2m_max?.[0]),
     low: round(w.daily?.temperature_2m_min?.[0]),
     wind: round(c.wind_speed_10m),
-    daypart: daypart(w),
+    daypart: part,
     sunrise: clock(w.daily?.sunrise?.[0])?.text ?? '',
     sunset: clock(w.daily?.sunset?.[0])?.text ?? '',
   };
