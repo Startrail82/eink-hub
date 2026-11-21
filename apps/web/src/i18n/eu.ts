@@ -549,4 +549,12 @@ export const eu: Messages = {
   'settings.passkey_never': 'erabili gabe',
   'settings.passkey_https_only': 'Passkey-ek Hub-a HTTPS bidez (Tailscale, alderantzizko proxy bat) edo localhost-en irekitzen baduzu bakarrik funtzionatzen dute.',
   'settings.passkey_guide': 'Nola konfiguratu',
+  'scheduleView.tab_plans': 'Programazioak',
+  'scheduleView.tab_week': 'Asteko ikuspegia',
+  'week.today': 'Gaur',
+  'week.tomorrow': 'Bihar',
+  'week.empty_day': 'Aldaketarik ez',
+  'week.none': 'Canvas honek ez du programazio aktiborik.',
+  'plan.add': 'Gehitu programazioa',
+  'plan.warn_close': 'Kontuz: Canvas honen beste programazio batek {time}etan aldatzen du, {minutes} min besterik gabe.',
 };

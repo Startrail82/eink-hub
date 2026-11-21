@@ -548,6 +548,14 @@ export const es = {
   'settings.passkey_never': 'sin usar',
   'settings.passkey_https_only': 'Las passkeys solo funcionan si abres el Hub por HTTPS (Tailscale, un proxy inverso) o en localhost.',
   'settings.passkey_guide': 'Cómo configurarlo',
+  'scheduleView.tab_plans': 'Programaciones',
+  'scheduleView.tab_week': 'Vista semanal',
+  'week.today': 'Hoy',
+  'week.tomorrow': 'Mañana',
+  'week.empty_day': 'Sin cambios',
+  'week.none': 'Este Canvas no tiene programaciones activas.',
+  'plan.add': 'Añadir programación',
+  'plan.warn_close': 'Ojo: otra programación de este Canvas cambia a las {time}, a solo {minutes} min.',
 };
 
 export type Messages = Record<keyof typeof es, string>;

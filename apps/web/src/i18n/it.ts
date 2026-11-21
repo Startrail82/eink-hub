@@ -549,4 +549,12 @@ export const it: Catalogue = {
   'settings.passkey_never': 'mai usata',
   'settings.passkey_https_only': 'Le passkey funzionano solo se apri l\'Hub in HTTPS (Tailscale, un reverse proxy) o su localhost.',
   'settings.passkey_guide': 'Come configurarlo',
+  'scheduleView.tab_plans': 'Programmazioni',
+  'scheduleView.tab_week': 'Vista settimanale',
+  'week.today': 'Oggi',
+  'week.tomorrow': 'Domani',
+  'week.empty_day': 'Nessun cambio',
+  'week.none': 'Questo Canvas non ha programmazioni attive.',
+  'plan.add': 'Aggiungi programmazione',
+  'plan.warn_close': 'Attenzione: un\'altra programmazione di questo Canvas cambia alle {time}, a soli {minutes} min.',
 };

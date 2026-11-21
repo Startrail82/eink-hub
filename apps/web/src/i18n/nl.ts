@@ -549,4 +549,12 @@ export const nl: Catalogue = {
   'settings.passkey_never': 'nooit gebruikt',
   'settings.passkey_https_only': 'Passkeys werken alleen als de Hub via HTTPS (Tailscale, een reverse proxy) of op localhost wordt geopend.',
   'settings.passkey_guide': 'Zo stel je het in',
+  'scheduleView.tab_plans': 'Plannings',
+  'scheduleView.tab_week': 'Weekoverzicht',
+  'week.today': 'Vandaag',
+  'week.tomorrow': 'Morgen',
+  'week.empty_day': 'Geen wissels',
+  'week.none': 'Dit Canvas heeft geen actieve plannings.',
+  'plan.add': 'Planning toevoegen',
+  'plan.warn_close': 'Let op: een andere planning van dit Canvas wisselt om {time}, slechts {minutes} min verschil.',
 };

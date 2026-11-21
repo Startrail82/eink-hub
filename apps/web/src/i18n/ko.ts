@@ -549,4 +549,12 @@ export const ko: Catalogue = {
   'settings.passkey_never': '사용 안 함',
   'settings.passkey_https_only': '패스키는 Hub를 HTTPS(Tailscale, 리버스 프록시) 또는 localhost로 열 때만 작동합니다.',
   'settings.passkey_guide': '설정 방법',
+  'scheduleView.tab_plans': '일정',
+  'scheduleView.tab_week': '주간 보기',
+  'week.today': '오늘',
+  'week.tomorrow': '내일',
+  'week.empty_day': '변경 없음',
+  'week.none': '이 Canvas에는 활성 일정이 없습니다.',
+  'plan.add': '일정 추가',
+  'plan.warn_close': '주의: 이 Canvas의 다른 일정이 {time}에 바뀝니다. 불과 {minutes}분 차이입니다.',
 };

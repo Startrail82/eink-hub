@@ -549,4 +549,12 @@ export const zh: Catalogue = {
   'settings.passkey_never': '从未使用',
   'settings.passkey_https_only': '只有通过 HTTPS（Tailscale、反向代理）或 localhost 打开 Hub 时，通行密钥才可用。',
   'settings.passkey_guide': '如何设置',
+  'scheduleView.tab_plans': '计划',
+  'scheduleView.tab_week': '周视图',
+  'week.today': '今天',
+  'week.tomorrow': '明天',
+  'week.empty_day': '无切换',
+  'week.none': '此 Canvas 没有启用的计划。',
+  'plan.add': '添加计划',
+  'plan.warn_close': '注意：此 Canvas 的另一个计划在 {time} 切换，仅相差 {minutes} 分钟。',
 };

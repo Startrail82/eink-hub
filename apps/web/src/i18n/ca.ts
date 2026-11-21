@@ -549,4 +549,12 @@ export const ca: Catalogue = {
   'settings.passkey_never': 'sense ús',
   'settings.passkey_https_only': 'Les passkeys només funcionen si obres el Hub per HTTPS (Tailscale, un servidor intermediari invers) o a localhost.',
   'settings.passkey_guide': 'Com configurar-ho',
+  'scheduleView.tab_plans': 'Programacions',
+  'scheduleView.tab_week': 'Vista setmanal',
+  'week.today': 'Avui',
+  'week.tomorrow': 'Demà',
+  'week.empty_day': 'Sense canvis',
+  'week.none': 'Aquest Canvas no té programacions actives.',
+  'plan.add': 'Afegeix programació',
+  'plan.warn_close': 'Atenció: una altra programació d\'aquest Canvas canvia a les {time}, a només {minutes} min.',
 };

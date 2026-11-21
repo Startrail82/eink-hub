@@ -549,4 +549,12 @@ export const zhTW: Catalogue = {
   'settings.passkey_never': '從未使用',
   'settings.passkey_https_only': '只有透過 HTTPS（Tailscale、反向代理）或 localhost 開啟 Hub 時，通行金鑰才能使用。',
   'settings.passkey_guide': '如何設定',
+  'scheduleView.tab_plans': '排程',
+  'scheduleView.tab_week': '週檢視',
+  'week.today': '今天',
+  'week.tomorrow': '明天',
+  'week.empty_day': '無切換',
+  'week.none': '此 Canvas 沒有啟用的排程。',
+  'plan.add': '新增排程',
+  'plan.warn_close': '注意：此 Canvas 的另一個排程在 {time} 切換，僅相差 {minutes} 分鐘。',
 };
