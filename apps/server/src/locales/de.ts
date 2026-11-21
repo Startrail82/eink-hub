@@ -66,4 +66,6 @@ export const de: Catalogue = {
   switchbot_not_configured: 'Token, Secret oder Gerät von SwitchBot fehlen',
   switchbot_public_url: 'SwitchBot lädt das Foto über das Internet herunter: Lege in den Einstellungen eine öffentliche https-Adresse fest (extern oder die für Cloud-Rahmen)',
   trmnl_mac_missing: 'Die MAC-Adresse des TRMNL-Geräts fehlt',
+  schedule_conflict: 'Ein anderer Zeitplan dieses Canvas ({name}) wechselt bereits um {time}',
+  assignment_not_found: 'Zeitplan {id} nicht gefunden',
 };

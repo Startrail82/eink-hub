@@ -66,4 +66,6 @@ export const ko: Catalogue = {
   switchbot_not_configured: 'SwitchBot 토큰, 시크릿 또는 기기가 없습니다',
   switchbot_public_url: 'SwitchBot은 인터넷으로 사진을 내려받습니다. 설정에서 공개 https 주소(외부용 또는 클라우드 프레임용)를 지정하세요',
   trmnl_mac_missing: 'TRMNL 기기의 MAC 주소가 없습니다',
+  schedule_conflict: '이 Canvas의 다른 일정({name})이 이미 {time}에 바뀝니다',
+  assignment_not_found: '일정 {id}을(를) 찾을 수 없습니다',
 };

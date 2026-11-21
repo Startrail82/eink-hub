@@ -12,7 +12,7 @@ import { discover } from '../device/discovery.js';
 import { inferDiagonal } from '../device/sizes.js';
 import { HttpError, cloudUrlSetting, detectLocalUrl, localUrlSetting, qrUrl, type Ctx } from '../lib/context.js';
 import { prepareCollection } from '../lib/collections.js';
-import { assignmentOptions, chooseNextImage, deliverQueued, displayImage, getAssignment, getFrame, markOnline, pushWelcome, requeueWelcome } from '../lib/display.js';
+import { assignmentOptions, chooseNextImage, deliverQueued, displayImage, getAssignment, getAssignments, getFrame, markOnline, pushWelcome, requeueWelcome } from '../lib/display.js';
 import { wakeFrame, withWake } from '../lib/wake.js';
 import { nextRun, parseSchedule } from '../lib/schedule.js';
 import { requestLang, tr } from '../i18n.js';
@@ -58,7 +58,9 @@ export function publicFrame(ctx: Ctx, f: Frame) {
     diagonal,
     diagonalInferred: f.diagonal == null,
     ...kind,
+    // The schedule that changes next (for clients with one schedule per Canvas), and all of them.
     assignment: getAssignment(ctx.db, f.id) ?? null,
+    assignments: getAssignments(ctx.db, f.id),
     simulated: isSimulated(ctx.db, f.id),
   };
 }

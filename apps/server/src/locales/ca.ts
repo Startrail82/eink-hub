@@ -66,4 +66,6 @@ export const ca: Catalogue = {
   switchbot_not_configured: 'Falten el token, el secret o el dispositiu de SwitchBot',
   switchbot_public_url: 'SwitchBot baixa la foto des d’Internet: configura a Configuració una adreça pública amb https (externa o per a marcs al núvol)',
   trmnl_mac_missing: 'Falta l’adreça MAC del dispositiu TRMNL',
+  schedule_conflict: 'Una altra programació d\'aquest Canvas ({name}) ja canvia a les {time}',
+  assignment_not_found: 'No s\'ha trobat la programació {id}',
 };
