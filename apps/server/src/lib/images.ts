@@ -244,7 +244,7 @@ export interface Rendered {
 export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: DisplayOptions = {}): Promise<Rendered> {
   if (opts.showLocation && opts.showLocation !== 'off') img = await withLocation(ctx, img);
   const landscape = frame.orientation === 'landscape';
-  const weather = opts.weatherBar ? await fetchDayForecast(opts.weatherBar.latitude, opts.weatherBar.longitude).catch((err) => (ctx.log.debug({ err }, 'weather bar: no forecast'), null)) : null;
+  const weather = opts.weatherBar ? await fetchDayForecast(opts.weatherBar.latitude, opts.weatherBar.longitude).catch((err) => (ctx.log.warn({ err }, 'weather bar: no forecast, picture shown without it'), null)) : null;
   const crop = opts.crop !== undefined ? opts.crop : getCrop(ctx.db, img.id, frameAspect(frame));
   const target = renderTarget(frame);
   const ext = formatExt(target.format);
