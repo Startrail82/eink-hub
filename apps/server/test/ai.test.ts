@@ -74,11 +74,11 @@ describe('weather', () => {
     expect(weatherCondition(1234)).toBe('changeable weather');
   });
   it('describes the weather as something a picture can show', () => {
-    expect(weatherLook(63, 'day')).toBe('steady rain with raindrops and puddles');
+    expect(weatherLook(63, 'day')).toBe('steady rain, rain streaks falling, wet glistening ground with puddle reflections');
     expect(weatherLook(0, 'day')).toBe('clear sky with bright sunshine');
     expect(weatherLook(0, 'sun')).toBe('clear sky');
     expect(weatherLook(0, 'night')).toBe('clear sky with a bright moon and stars');
-    expect(weatherLook(63, 'night')).toBe('steady rain with raindrops and puddles');
+    expect(weatherLook(63, 'night')).toBe('steady rain, rain streaks falling, wet glistening ground with puddle reflections');
     expect(weatherLook(1234, 'day')).toBe('changeable weather');
   });
   it('turns an Open-Meteo answer into prompt variables', () => {
