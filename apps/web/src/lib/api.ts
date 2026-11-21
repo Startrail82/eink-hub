@@ -259,4 +259,7 @@ export interface AiCollectionConfig {
   latitude: number | null;
   longitude: number | null;
   keep: number;
+  /** Panel resolution "shortxlong" the pictures are made for, and how that panel hangs. */
+  panel: string | null;
+  orientation: 'portrait' | 'landscape';
 }

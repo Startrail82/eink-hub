@@ -21,6 +21,9 @@ export interface AiCollectionConfig {
   longitude: number | null;
   /** How many generated pictures to keep; 0 = keep them all. */
   keep: number;
+  /** Panel resolution to generate for, "shortxlong" (e.g. "1200x1600"). Null = follow the first frame showing the collection. */
+  panel: string | null;
+  orientation: 'portrait' | 'landscape';
 }
 
 export const DEFAULT_KEEP = 20;
@@ -41,7 +44,16 @@ export function collectionConfig(c: Collection): AiCollectionConfig {
     latitude: num(raw.latitude),
     longitude: num(raw.longitude),
     keep: Number.isInteger(keep) && keep >= 0 ? keep : DEFAULT_KEEP,
+    panel: typeof raw.panel === 'string' && /^\d{2,5}x\d{2,5}$/.test(raw.panel) ? raw.panel : null,
+    orientation: raw.orientation === 'landscape' ? 'landscape' : 'portrait',
   };
+}
+
+/** The panel and orientation to generate for: the collection's own choice, else the first frame showing it. */
+export function sizeFor(cfg: AiCollectionConfig, frame: Pick<Frame, 'width' | 'height' | 'orientation'> | undefined) {
+  if (!cfg.panel) return targetSize(frame);
+  const [short, long] = cfg.panel.split('x').map(Number);
+  return targetSize({ width: short, height: long, orientation: cfg.orientation });
 }
 
 /** What a generation needs from the collection's own settings; throws a readable error when incomplete. */
@@ -145,7 +157,7 @@ export async function generateFor(ctx: Ctx, collectionId: number): Promise<boole
     validateCollectionConfig(cfg);
     const state = aiState(ctx.db, c.id);
     const { prompt, itemId } = await buildPrompt(cfg, state.seen);
-    const buf = await generateImage(provider, prompt, targetSize(framesOf(ctx.db, c.id)[0]));
+    const buf = await generateImage(provider, prompt, sizeFor(cfg, framesOf(ctx.db, c.id)[0]));
     const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
     const img = await saveLocalUpload(ctx.db, buf, `ai-${c.id}-${stamp}.png`);
     addItems(ctx.db, c.id, [img.id]);

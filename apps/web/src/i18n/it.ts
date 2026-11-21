@@ -591,4 +591,7 @@ export const it: Catalogue = {
   'library.empty_ai_hint': 'Un’immagine viene creata poco prima che una cornice cambi. Premi «Genera ora» per la prima.',
   'ai.edit': 'Impostazioni',
   'ai.auth_hint': 'Solo se ComfyUI è dietro un accesso (ad esempio Authentik): l’Hub accede con HTTP Basic.',
+  'ai.panel': 'Tipo di cornice',
+  'ai.panel_hint': 'Le immagini vengono generate per questo tipo di schermo e questo orientamento.',
+  'ai.mismatch': 'Questa raccolta crea immagini per {made}, ma questa cornice è {frame}. Le immagini verranno ritagliate o ridimensionate.',
 };

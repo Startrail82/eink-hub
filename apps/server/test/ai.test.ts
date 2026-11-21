@@ -13,7 +13,7 @@ const dataDir = vi.hoisted(() => {
 
 import { ensureDirs } from '../src/config.js';
 import { openDb, schema, setSetting } from '../src/db/index.js';
-import { aiState, buildPrompt, collectionConfig, generationDue, generateFor, LEAD_MS, prune, RETRY_MS, targetSize, validateCollectionConfig } from '../src/lib/ai/generate.js';
+import { aiState, buildPrompt, collectionConfig, generationDue, generateFor, LEAD_MS, prune, RETRY_MS, sizeFor, targetSize, validateCollectionConfig } from '../src/lib/ai/generate.js';
 import { AiError, fillWorkflow, generateImage, openaiSize, testConnection } from '../src/lib/ai/providers.js';
 import { aiConfigured, type AiConfig } from '../src/lib/ai/settings.js';
 import { fillTemplate, nextFeedItem, parseFeed, weatherCondition, weatherVars } from '../src/lib/ai/sources.js';
@@ -92,6 +92,16 @@ describe('sizes', () => {
     expect(targetSize({ width: 1200, height: 1600, orientation: 'portrait' })).toEqual({ width: 768, height: 1024 });
     expect(targetSize({ width: 1200, height: 1600, orientation: 'landscape' })).toEqual({ width: 1024, height: 768 });
     expect(targetSize(undefined)).toEqual({ width: 768, height: 1024 });
+  });
+
+  it('sizes a picture for the collection panel and orientation, not the frame', () => {
+    const cfg = (panel: string | null, orientation: 'portrait' | 'landscape') => collectionConfig({ config: { panel, orientation } } as never);
+    const landscapeFrame = { width: 1200, height: 1600, orientation: 'landscape' as const };
+    expect(sizeFor(cfg('1200x1600', 'portrait'), landscapeFrame)).toEqual({ width: 768, height: 1024 });
+    expect(sizeFor(cfg('480x800', 'landscape'), undefined)).toEqual({ width: 800, height: 480 });
+    // No panel chosen (older collection): follow the frame.
+    expect(sizeFor(cfg(null, 'portrait'), landscapeFrame)).toEqual({ width: 1024, height: 768 });
+    expect(collectionConfig({ config: { panel: 'nonsense' } } as never)).toMatchObject({ panel: null, orientation: 'portrait' });
   });
   it('picks an OpenAI size by aspect', () => {
     expect(openaiSize(1200, 1600)).toBe('1024x1536');

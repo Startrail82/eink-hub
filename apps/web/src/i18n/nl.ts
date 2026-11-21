@@ -591,4 +591,7 @@ export const nl: Catalogue = {
   'library.empty_ai_hint': 'Kort voor een frame wisselt wordt een beeld gemaakt. Druk op “Nu genereren” om het eerste te maken.',
   'ai.edit': 'Instellingen',
   'ai.auth_hint': 'Alleen nodig als ComfyUI achter een login zit (zoals Authentik): de Hub meldt zich aan met HTTP Basic.',
+  'ai.panel': 'Frametype',
+  'ai.panel_hint': 'Beelden worden gegenereerd voor dit schermtype en deze oriëntatie.',
+  'ai.mismatch': 'Deze collectie maakt beelden voor {made}, maar dit frame is {frame}. De beelden worden bijgesneden of geschaald.',
 };

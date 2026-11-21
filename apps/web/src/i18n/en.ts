@@ -591,4 +591,7 @@ export const en: Messages = {
   'library.empty_ai_hint': 'A picture is made shortly before a frame changes. Press “Generate now” to make the first one.',
   'ai.edit': 'Settings',
   'ai.auth_hint': 'Only needed when ComfyUI sits behind a login (such as Authentik): the Hub signs in with HTTP Basic.',
+  'ai.panel': 'Frame type',
+  'ai.panel_hint': 'Pictures are generated for this screen type and orientation.',
+  'ai.mismatch': 'This collection makes pictures for {made}, but this canvas is {frame}. The pictures will be cropped or scaled.',
 };

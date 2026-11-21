@@ -590,6 +590,9 @@ export const es = {
   'library.empty_ai_hint': 'Se crea una imagen poco antes de que un marco cambie. Pulsa «Generar ahora» para crear la primera.',
   'ai.edit': 'Ajustes',
   'ai.auth_hint': 'Solo si ComfyUI está detrás de un inicio de sesión (por ejemplo Authentik): el Hub inicia sesión con HTTP Basic.',
+  'ai.panel': 'Tipo de marco',
+  'ai.panel_hint': 'Las imágenes se generan para este tipo de pantalla y esta orientación.',
+  'ai.mismatch': 'Esta colección crea imágenes para {made}, pero este marco es {frame}. Las imágenes se recortarán o escalarán.',
 };
 
 export type Messages = Record<keyof typeof es, string>;

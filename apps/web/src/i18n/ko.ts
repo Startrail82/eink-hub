@@ -591,4 +591,7 @@ export const ko: Catalogue = {
   'library.empty_ai_hint': '프레임이 바뀌기 직전에 이미지가 만들어집니다. “지금 생성”으로 첫 이미지를 만드세요.',
   'ai.edit': '설정',
   'ai.auth_hint': 'ComfyUI가 로그인 뒤에 있을 때만 필요합니다(예: Authentik). Hub가 HTTP Basic으로 로그인합니다.',
+  'ai.panel': '프레임 종류',
+  'ai.panel_hint': '이미지는 이 화면 종류와 방향에 맞게 생성됩니다.',
+  'ai.mismatch': '이 컬렉션은 {made}용 이미지를 만들지만, 이 프레임은 {frame}입니다. 이미지가 잘리거나 크기가 조정됩니다.',
 };

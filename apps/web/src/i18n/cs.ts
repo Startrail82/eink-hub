@@ -607,4 +607,7 @@ export const cs: Catalogue = {
   'library.empty_ai_hint': 'Obrázek se vytvoří krátce před změnou rámečku. Prvním stiskni „Vygenerovat nyní“.',
   'ai.edit': 'Nastavení',
   'ai.auth_hint': 'Jen když je ComfyUI za přihlášením (např. Authentik): Hub se přihlásí přes HTTP Basic.',
+  'ai.panel': 'Typ rámečku',
+  'ai.panel_hint': 'Obrázky se vytvářejí pro tento typ displeje a tuto orientaci.',
+  'ai.mismatch': 'Tato kolekce vytváří obrázky pro {made}, ale tento rámeček je {frame}. Obrázky budou oříznuty nebo zmenšeny.',
 };

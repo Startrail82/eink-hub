@@ -591,4 +591,7 @@ export const ja: Catalogue = {
   'library.empty_ai_hint': 'フレームが切り替わる少し前に画像が作られます。「今すぐ生成」で最初の1枚を作れます。',
   'ai.edit': '設定',
   'ai.auth_hint': 'ComfyUI がログインの背後にある場合のみ必要です（例: Authentik）。Hub は HTTP Basic でサインインします。',
+  'ai.panel': 'フレームの種類',
+  'ai.panel_hint': '画像はこの画面タイプと向きに合わせて生成されます。',
+  'ai.mismatch': 'このコレクションは {made} 向けの画像を作成しますが、このフレームは {frame} です。画像はトリミングまたは拡大縮小されます。',
 };

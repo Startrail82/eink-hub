@@ -591,4 +591,7 @@ export const eu: Messages = {
   'library.empty_ai_hint': 'Marko bat aldatu baino pixka bat lehenago irudi bat sortzen da. Sakatu «Orain sortu» lehenengoa egiteko.',
   'ai.edit': 'Ezarpenak',
   'ai.auth_hint': 'ComfyUI saio-hasiera baten atzean badago soilik (adibidez Authentik): Hub-a HTTP Basic bidez saioa hasten du.',
+  'ai.panel': 'Markoaren mota',
+  'ai.panel_hint': 'Irudiak pantaila mota eta norabide honetarako sortzen dira.',
+  'ai.mismatch': 'Bilduma honek {made} motarako sortzen ditu irudiak, baina marko hau {frame} da. Irudiak moztu edo eskalatu egingo dira.',
 };

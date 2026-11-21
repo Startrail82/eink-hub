@@ -591,4 +591,7 @@ export const fr: Catalogue = {
   'library.empty_ai_hint': 'Une image est créée peu avant qu’un cadre change. Appuie sur « Générer maintenant » pour la première.',
   'ai.edit': 'Réglages',
   'ai.auth_hint': 'Seulement si ComfyUI est derrière une connexion (par exemple Authentik) : le Hub se connecte en HTTP Basic.',
+  'ai.panel': 'Type de cadre',
+  'ai.panel_hint': 'Les images sont générées pour ce type d\'écran et cette orientation.',
+  'ai.mismatch': 'Cette collection crée des images pour {made}, mais ce cadre est {frame}. Les images seront recadrées ou mises à l\'échelle.',
 };

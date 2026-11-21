@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { api, type AiCollectionConfig, type AiSource, type Collection } from '../lib/api';
-import { useAction } from '../lib/hooks';
+import { useAction, useFrames } from '../lib/hooks';
+import { DEFAULT_PANEL, panelKey, panelOptions } from '../lib/panels';
 import { useI18n, type MsgKey } from '../i18n';
-import { Button, Field, Modal, inputClass } from './ui';
+import { Button, Field, Modal, Segmented, inputClass } from './ui';
 import { Select } from './Select';
 import { useAiSettings } from './AiSettings';
 
@@ -17,6 +18,8 @@ function configOf(c?: Collection): AiCollectionConfig {
     latitude: raw.latitude ?? null,
     longitude: raw.longitude ?? null,
     keep: raw.keep ?? DEFAULT_KEEP,
+    panel: raw.panel ?? null,
+    orientation: raw.orientation === 'landscape' ? 'landscape' : 'portrait',
   };
 }
 
@@ -24,6 +27,7 @@ function configOf(c?: Collection): AiCollectionConfig {
 export function AiCollectionDialog({ open, onClose, collection, onCreated }: { open: boolean; onClose: () => void; collection?: Collection; onCreated?: (c: Collection) => void }) {
   const { t } = useI18n();
   const ai = useAiSettings();
+  const frames = useFrames();
   const [name, setName] = useState('');
   const [cfg, setCfg] = useState<AiCollectionConfig>(configOf());
   const [lat, setLat] = useState('');
@@ -33,12 +37,18 @@ export function AiCollectionDialog({ open, onClose, collection, onCreated }: { o
   useEffect(() => {
     if (!open) return;
     const c = configOf(collection);
+    // Nothing chosen yet (new, or made before this setting existed): start from the first frame showing it, else any frame.
+    if (!c.panel) {
+      const first = frames.data?.find((f) => f.assignment?.collectionId === collection?.id) ?? (collection ? undefined : frames.data?.[0]);
+      c.panel = first ? panelKey(first) : DEFAULT_PANEL;
+      if (first) c.orientation = first.orientation;
+    }
     setName(collection?.name ?? '');
     setCfg(c);
     setLat(c.latitude === null ? '' : String(c.latitude));
     setLon(c.longitude === null ? '' : String(c.longitude));
     setKeep(String(c.keep));
-  }, [open, collection]);
+  }, [open, collection, frames.data]);
 
   const set = <K extends keyof AiCollectionConfig>(k: K, v: AiCollectionConfig[K]) => setCfg((c) => ({ ...c, [k]: v }));
   const num = (s: string) => (s.trim() === '' || !Number.isFinite(Number(s)) ? null : Number(s));
@@ -91,6 +101,20 @@ export function AiCollectionDialog({ open, onClose, collection, onCreated }: { o
         )}
         <Field label={t('ai.prompt')} hint={t(hint[cfg.source])}>
           <textarea className={`${inputClass} h-28 resize-y py-3`} value={cfg.prompt} onChange={(e) => set('prompt', e.target.value)} />
+        </Field>
+        <Field label={t('ai.panel')} hint={t('ai.panel_hint')} group>
+          <div className="space-y-3">
+            <Select aria-label={t('ai.panel')} value={cfg.panel ?? DEFAULT_PANEL} onChange={(v) => set('panel', String(v))} options={panelOptions(frames.data)} />
+            <Segmented
+              fill
+              value={cfg.orientation}
+              onChange={(v) => set('orientation', v)}
+              options={[
+                { value: 'portrait', label: t('canvasSettings.portrait') },
+                { value: 'landscape', label: t('canvasSettings.landscape') },
+              ]}
+            />
+          </div>
         </Field>
         <Field label={t('ai.keep')} hint={t('ai.keep_hint')}>
           <input className={inputClass} type="number" min={0} step={1} value={keep} onChange={(e) => setKeep(e.target.value)} />
