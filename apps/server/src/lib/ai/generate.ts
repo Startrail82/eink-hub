@@ -169,7 +169,7 @@ export async function generateFor(ctx: Ctx, collectionId: number): Promise<boole
     addItems(ctx.db, c.id, [img.id]);
     saveState(ctx.db, c.id, { seen: itemId ? [...state.seen, itemId] : state.seen, lastGenerated: Date.now() });
     setStatus(ctx.db, c.id, null);
-    ctx.log.info({ collection: c.id, image: img.id }, 'AI picture generated');
+    ctx.log.info({ collection: c.id, image: img.id, prompt }, 'AI picture generated');
     await prune(ctx.db, c.id, cfg.keep);
     return true;
   } catch (err) {
