@@ -16,7 +16,7 @@ import { openDb, schema, setSetting } from '../src/db/index.js';
 import { aiState, buildPrompt, collectionConfig, generationDue, generateFor, LEAD_MS, prune, RETRY_MS, sizeFor, targetSize, validateCollectionConfig } from '../src/lib/ai/generate.js';
 import { AiError, fillWorkflow, generateImage, openaiSize, testConnection } from '../src/lib/ai/providers.js';
 import { aiConfigured, type AiConfig } from '../src/lib/ai/settings.js';
-import { commonVars, fillTemplate, nextFeedItem, parseFeed, weatherCondition, weatherVars } from '../src/lib/ai/sources.js';
+import { commonVars, fillTemplate, nextFeedItem, parseFeed, weatherCondition, weatherLook, weatherVars } from '../src/lib/ai/sources.js';
 import { pickFresh } from '../src/lib/selection.js';
 
 const cfg = (c: Partial<AiConfig>): AiConfig => ({ provider: '', url: '', apiKey: '', username: '', model: '', size: '', workflow: '', ...c });
@@ -73,9 +73,17 @@ describe('weather', () => {
     expect(weatherCondition(63)).toBe('rain');
     expect(weatherCondition(1234)).toBe('changeable weather');
   });
+  it('describes the weather as something a picture can show', () => {
+    expect(weatherLook(63, 'day')).toBe('steady rain with raindrops and puddles');
+    expect(weatherLook(0, 'day')).toBe('clear sky with bright sunshine');
+    expect(weatherLook(0, 'sun')).toBe('clear sky');
+    expect(weatherLook(0, 'night')).toBe('clear sky with a bright moon and stars');
+    expect(weatherLook(63, 'night')).toBe('steady rain with raindrops and puddles');
+    expect(weatherLook(1234, 'day')).toBe('changeable weather');
+  });
   it('turns an Open-Meteo answer into prompt variables', () => {
     const v = weatherVars({ current: { temperature_2m: 12.4, weather_code: 3, is_day: 0, wind_speed_10m: 20.2 }, daily: { temperature_2m_max: [15.6], temperature_2m_min: [8.1] } });
-    expect(v).toMatchObject({ condition: 'overcast', temperature: '12', high: '16', low: '8', wind: '20', daypart: 'night time' });
+    expect(v).toMatchObject({ condition: 'overcast sky with heavy grey clouds', temperature: '12', high: '16', low: '8', wind: '20', daypart: 'night time, dark night' });
   });
   it('refuses an answer without current weather', () => {
     expect(() => weatherVars({})).toThrow(AiError);
@@ -107,16 +115,21 @@ describe('daypart', () => {
       daily: { sunrise: ['2026-11-21T07:58'], sunset: ['2026-11-21T16:38'] },
     });
   it('knows night, sunrise, day time and sunset', () => {
-    expect(at('03:10').daypart).toBe('night time');
-    expect(at('07:40').daypart).toBe('sunrise'); // hour 08:00
+    expect(at('03:10').daypart).toBe('night time, dark night');
+    expect(at('07:40').daypart).toMatch(/^sunrise/); // hour 08:00
     expect(at('12:20').daypart).toBe('day time');
-    expect(at('16:20').daypart).toBe('sunset'); // hour 16:00
-    expect(at('17:10').daypart).toBe('sunset'); // hour 17:00
-    expect(at('21:00').daypart).toBe('night time');
+    expect(at('16:20').daypart).toMatch(/^sunset/); // hour 16:00
+    expect(at('17:10').daypart).toMatch(/^sunset/); // hour 17:00
+    expect(at('21:00').daypart).toMatch(/^night time/);
   });
   it('does not depend on the weather', () => {
     expect(at('12:20', 95).daypart).toBe('day time'); // thunderstorm
-    expect(at('03:10', 3).daypart).toBe('night time');
+    expect(at('03:10', 3).daypart).toMatch(/^night time/);
+  });
+  it('gives the weather a visible form for the time of day', () => {
+    expect(at('03:10').condition).toBe('clear sky with a bright moon and stars');
+    expect(at('12:20').condition).toBe('clear sky with bright sunshine');
+    expect(at('16:20').condition).toBe('clear sky');
   });
   it('gives the sun times', () => {
     expect(at('12:00')).toMatchObject({ sunrise: '07:58', sunset: '16:38' });
