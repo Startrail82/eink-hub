@@ -10,6 +10,7 @@ import type { DisplayOptions, Frame, Image, LocationMode } from '../db/schema.js
 import { assetSize, type ImmichAsset } from '../immich/client.js';
 import { aspectKey, formatExt, probeImage, renderForFrame, thumbnail, type CropRect } from '../imaging/pipeline.js';
 import { renderTarget } from '../device/drivers/index.js';
+import { fetchDayForecast } from './ai/sources.js';
 import { HttpError, immichFor, type Ctx } from './context.js';
 
 const RENDER_VERSION = 1;
@@ -243,6 +244,7 @@ export interface Rendered {
 export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: DisplayOptions = {}): Promise<Rendered> {
   if (opts.showLocation && opts.showLocation !== 'off') img = await withLocation(ctx, img);
   const landscape = frame.orientation === 'landscape';
+  const weather = opts.weatherBar ? await fetchDayForecast(opts.weatherBar.latitude, opts.weatherBar.longitude).catch((err) => (ctx.log.debug({ err }, 'weather bar: no forecast'), null)) : null;
   const crop = opts.crop !== undefined ? opts.crop : getCrop(ctx.db, img.id, frameAspect(frame));
   const target = renderTarget(frame);
   const ext = formatExt(target.format);
@@ -264,6 +266,8 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
       hideHomeCountry: opts.hideHomeCountry,
       homeCountry: getSetting(ctx.db, 'homeCountry'),
     }),
+    // Only when present, so existing renders keep their hash.
+    ...(weather ? { weather } : {}),
     // Only when not the default, so existing JPEG renders keep their hash.
     ...(ext === 'jpg' && !target.format.palette ? {} : { format: target.format }),
   } as const;
@@ -281,6 +285,7 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
     bg: params.bg,
     crop: params.crop,
     caption: params.caption,
+    weather,
     format: target.format,
   });
   await fs.writeFile(file, buf);

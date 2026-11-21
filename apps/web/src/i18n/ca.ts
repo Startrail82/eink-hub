@@ -614,4 +614,6 @@ export const ca: Catalogue = {
   'ai.negative': 'Prompt negatiu',
   'ai.negative_hint': 'Què no ha d\'aparèixer a la imatge. Posa {{negative}} al workflow on va aquest text. Buit no afegeix res.',
   'ai.pick_hint': 'Tria una opció a l\'atzar a cada imatge, per exemple {pick: muntanyes | costa | bosc}. Clic per copiar.',
+  'ai.weather_bar': 'Barra del temps a la imatge',
+  'ai.weather_bar_hint': 'Dibuixa a baix a la dreta la mínima, la màxima i la probabilitat de pluja d\'avui, en una etiqueta semitransparent.',
 };

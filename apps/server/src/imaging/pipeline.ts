@@ -1,4 +1,4 @@
-import sharp, { type Sharp } from 'sharp';
+import sharp, { type OverlayOptions, type Sharp } from 'sharp';
 import type { FitMode } from '../db/schema.js';
 import type { ImageFormat } from '../device/drivers/types.js';
 import { PALETTES, ditherToPalette, encodeBmp, indicesToRgb } from './dither.js';
@@ -23,6 +23,8 @@ export interface RenderOptions {
   crop?: CropRect | null;
   /** Text drawn in a label at the bottom-left, e.g. the photo's date. */
   caption?: string | null;
+  /** Today's weather, drawn in a translucent label at the bottom-right. */
+  weather?: { min: number; max: number; rain: number | null } | null;
   quality?: number;
   /** Baseline JPEG unless the frame asks for something else. */
   format?: ImageFormat;
@@ -73,7 +75,9 @@ export async function renderForFrame(src: Buffer, o: RenderOptions): Promise<Buf
     composed = await sharp(oriented).resize(tw, th, { fit: 'cover', position: sharp.strategy.attention }).toBuffer();
   }
 
-  if (o.caption) composed = await addCaption(composed, o.caption, tw, th);
+  let captionBox: Box | null = null;
+  if (o.caption) ({ img: composed, box: captionBox } = await addCaption(composed, o.caption, tw, th));
+  if (o.weather) composed = await addWeatherBar(composed, o.weather, tw, th, captionBox);
 
   let out = sharp(composed);
   if (o.landscape && o.rotate) out = out.rotate(o.rotate);
@@ -114,7 +118,14 @@ const escapeMarkup = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;
  * Solid white rounded label with dark text, bottom-left. Solid colours dither cleanly on
  * colour e-ink; translucent gradients would turn into noise.
  */
-async function addCaption(img: Buffer, caption: string, w: number, h: number): Promise<Buffer> {
+interface Box {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
+async function addCaption(img: Buffer, caption: string, w: number, h: number): Promise<{ img: Buffer; box: Box }> {
   const size = Math.max(14, Math.round(Math.min(w, h) * 0.032));
   const label = await sharp({
     text: { text: `<span foreground="#1d1c1a">${escapeMarkup(caption)}</span>`, font: `Inter,Arial,DejaVu Sans,Sans Semi-Bold ${size}`, dpi: 72, rgba: true },
@@ -130,12 +141,59 @@ async function addCaption(img: Buffer, caption: string, w: number, h: number): P
     `<svg xmlns="http://www.w3.org/2000/svg" width="${pillW}" height="${pillH}"><rect width="${pillW}" height="${pillH}" rx="${pillH / 2}" fill="#ffffff"/></svg>`,
   );
   const top = h - margin - pillH;
-  return sharp(img)
+  const out = await sharp(img)
     .composite([
       { input: pill, left: margin, top },
       { input: label.data, left: margin + padX, top: top + padY },
     ])
     .toBuffer();
+  return { img: out, box: { left: margin, top, width: pillW, height: pillH } };
+}
+
+const textLabel = (text: string, size: number) =>
+  sharp({ text: { text: `<span foreground="#1d1c1a">${escapeMarkup(text)}</span>`, font: `Inter,Arial,DejaVu Sans,Sans Semi-Bold ${size}`, dpi: 72, rgba: true } })
+    .png()
+    .toBuffer({ resolveWithObject: true });
+
+/**
+ * Today's low, high and chance of rain in a label at the bottom-right, like the caption but
+ * translucent so the picture shows through. The drop is drawn, not a font symbol: the umbrella
+ * is missing from most fonts. When the caption is in the way, the label goes above it.
+ */
+async function addWeatherBar(img: Buffer, wx: { min: number; max: number; rain: number | null }, w: number, h: number, caption: Box | null): Promise<Buffer> {
+  const size = Math.max(14, Math.round(Math.min(w, h) * 0.032));
+  const temps = await textLabel(`\u2193 ${wx.min}\u00b0   \u2191 ${wx.max}\u00b0`, size);
+  const rain = wx.rain === null ? null : await textLabel(`${wx.rain}%`, size);
+  const padX = Math.round(size * 0.75);
+  const padY = Math.round(size * 0.45);
+  const margin = Math.round(Math.min(w, h) * 0.04);
+  const dropH = Math.round(size * 0.95);
+  const dropW = Math.round(dropH * 0.72);
+  const gap = Math.round(size * 0.9);
+  const gapSmall = Math.round(size * 0.3);
+  const inner = temps.info.width + (rain ? gap + dropW + gapSmall + rain.info.width : 0);
+  const pillW = Math.min(w - 2 * margin, inner + 2 * padX);
+  const pillH = Math.max(temps.info.height, rain?.info.height ?? 0) + 2 * padY;
+  const left = w - margin - pillW;
+  const gapAbove = Math.round(margin / 2);
+  const clash = caption && caption.left + caption.width + gapAbove > left;
+  const top = clash ? caption.top - gapAbove - pillH : h - margin - pillH;
+  const pill = Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${pillW}" height="${pillH}"><rect width="${pillW}" height="${pillH}" rx="${pillH / 2}" fill="#ffffff" fill-opacity="0.72"/></svg>`,
+  );
+  const layers: OverlayOptions[] = [
+    { input: pill, left, top },
+    { input: temps.data, left: left + padX, top: top + Math.round((pillH - temps.info.height) / 2) },
+  ];
+  if (rain) {
+    const dropLeft = left + padX + temps.info.width + gap;
+    const drop = Buffer.from(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="${dropW}" height="${dropH}" viewBox="0 0 10 14"><path d="M5 0C5 0 0 6 0 9a5 5 0 0 0 10 0C10 6 5 0 5 0Z" fill="#1d1c1a"/></svg>`,
+    );
+    layers.push({ input: drop, left: dropLeft, top: top + Math.round((pillH - dropH) / 2) });
+    layers.push({ input: rain.data, left: dropLeft + dropW + gapSmall, top: top + Math.round((pillH - rain.info.height) / 2) });
+  }
+  return sharp(img).composite(layers).toBuffer();
 }
 
 /** Small JPEG thumbnail for the web UI. */

@@ -614,4 +614,6 @@ export const zh: Catalogue = {
   'ai.negative': '反向提示词',
   'ai.negative_hint': '画面中不希望出现的内容。请在工作流中此文本所在位置放入 {{negative}}。留空则不添加任何内容。',
   'ai.pick_hint': '每张图片随机选取一个选项，例如 {pick: 山 | 海岸 | 森林}。点击复制。',
+  'ai.weather_bar': '在图片上显示天气栏',
+  'ai.weather_bar_hint': '在右下角用半透明标签绘制今天的最低温、最高温和降雨概率。',
 };

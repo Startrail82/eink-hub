@@ -614,4 +614,6 @@ export const eu: Messages = {
   'ai.negative': 'Prompt negatiboa',
   'ai.negative_hint': 'Irudian agertu behar ez dena. Jarri {{negative}} workflow-an testu hau doan lekuan. Hutsik badago, ez da ezer gehitzen.',
   'ai.pick_hint': 'Aukeretako bat ausaz hautatzen du irudi bakoitzeko, adibidez {pick: mendiak | kostaldea | basoa}. Egin klik kopiatzeko.',
+  'ai.weather_bar': 'Eguraldi-barra irudian',
+  'ai.weather_bar_hint': 'Beheko eskuinean gaurko minimoa, maximoa eta euri-probabilitatea marrazten ditu, etiketa erdi-gardenean.',
 };

@@ -614,4 +614,6 @@ export const ja: Catalogue = {
   'ai.negative': 'ネガティブプロンプト',
   'ai.negative_hint': '画像に含めたくないもの。ワークフローのこのテキストの位置に {{negative}} を置いてください。空の場合は何も追加されません。',
   'ai.pick_hint': '画像ごとに選択肢の1つをランダムに選びます。例：{pick: 山 | 海岸 | 森}。クリックでコピー。',
+  'ai.weather_bar': '画像に天気バーを表示',
+  'ai.weather_bar_hint': '右下に今日の最低気温・最高気温・降水確率を半透明のラベルで表示します。',
 };

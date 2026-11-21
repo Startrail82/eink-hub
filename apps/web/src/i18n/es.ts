@@ -613,6 +613,8 @@ export const es = {
   'ai.negative': 'Prompt negativo',
   'ai.negative_hint': 'Qué no debe aparecer en la imagen. Pon {{negative}} en el workflow donde va este texto. Vacío no añade nada.',
   'ai.pick_hint': 'Elige una opción al azar en cada imagen, por ejemplo {pick: montañas | costa | bosque}. Clic para copiar.',
+  'ai.weather_bar': 'Barra del tiempo en la imagen',
+  'ai.weather_bar_hint': 'Dibuja abajo a la derecha la mínima, la máxima y la probabilidad de lluvia de hoy, en una etiqueta semitransparente.',
 };
 
 export type Messages = Record<keyof typeof es, string>;

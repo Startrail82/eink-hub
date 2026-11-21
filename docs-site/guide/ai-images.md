@@ -51,6 +51,9 @@ Use **Generate now** in the collection to make a first picture and check the res
 ### Random choices in a prompt
 
 Write `{pick: one | two | three}` to let the Hub choose one of the options at random for every picture, for example `a vast landscape of {pick: mountains | a rocky coast | a pine forest | rolling hills}`. You can use it several times in one prompt and put other tags inside an option. In the dialog, click the `{pick: … | …}` chip to copy an example. `{pick}` works in every kind of collection.
+### Weather bar
+
+For a weather collection you can switch on **Weather bar**. The picture then gets a small translucent label at the bottom right with today's lowest and highest temperature and the chance of rain (for example `↓ 8°  ↑ 13°  💧 60%`), taken from Open-Meteo for the coordinates you entered. If the date is shown too and the two would overlap, the weather label moves just above it. When the forecast can't be fetched, the picture is shown without the bar. The label is translucent on purpose; on a colour e-ink panel the see-through edge can look slightly grainy.
 
 ## 3. Show it on a Canvas
 

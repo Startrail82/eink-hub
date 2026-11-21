@@ -614,4 +614,6 @@ export const nl: Catalogue = {
   'ai.negative': 'Negatieve prompt',
   'ai.negative_hint': 'Wat het beeld niet mag tonen. Zet {{negative}} in de workflow op de plek van deze tekst. Leeg voegt niets toe.',
   'ai.pick_hint': 'Kiest voor elk beeld willekeurig één optie, bijvoorbeeld {pick: bergen | kust | bos}. Klik om te kopiëren.',
+  'ai.weather_bar': 'Weerbalk op het beeld',
+  'ai.weather_bar_hint': 'Tekent rechtsonder de minimum- en maximumtemperatuur van vandaag en de kans op regen in een half-transparant label.',
 };

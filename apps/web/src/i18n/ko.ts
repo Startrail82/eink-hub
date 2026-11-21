@@ -614,4 +614,6 @@ export const ko: Catalogue = {
   'ai.negative': '네거티브 프롬프트',
   'ai.negative_hint': '이미지에 나오지 않았으면 하는 것. 워크플로에서 이 텍스트가 들어갈 자리에 {{negative}} 를 넣으세요. 비워 두면 아무것도 추가되지 않습니다.',
   'ai.pick_hint': '이미지마다 선택지 중 하나를 무작위로 고릅니다. 예: {pick: 산 | 해안 | 숲}. 클릭하여 복사.',
+  'ai.weather_bar': '이미지에 날씨 막대 표시',
+  'ai.weather_bar_hint': '오른쪽 아래에 오늘의 최저·최고 기온과 강수 확률을 반투명 라벨로 그립니다.',
 };

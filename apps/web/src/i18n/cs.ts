@@ -630,4 +630,6 @@ export const cs: Catalogue = {
   'ai.negative': 'Negativní prompt',
   'ai.negative_hint': 'Co se na obrázku nemá objevit. Vlož {{negative}} do workflow na místo tohoto textu. Prázdné nic nepřidá.',
   'ai.pick_hint': 'Pro každý obrázek náhodně vybere jednu možnost, například {pick: hory | pobřeží | les}. Kliknutím zkopíruješ.',
+  'ai.weather_bar': 'Pruh s počasím v obrázku',
+  'ai.weather_bar_hint': 'Vpravo dole nakreslí dnešní minimum, maximum a pravděpodobnost deště v průhledném štítku.',
 };

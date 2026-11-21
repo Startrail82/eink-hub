@@ -630,4 +630,6 @@ export const pl: Catalogue = {
   'ai.negative': 'Negatywny prompt',
   'ai.negative_hint': 'Czego nie powinno być na obrazie. Wstaw {{negative}} w workflow tam, gdzie ma trafić ten tekst. Puste nic nie dodaje.',
   'ai.pick_hint': 'Losuje jedną opcję dla każdego obrazu, na przykład {pick: góry | wybrzeże | las}. Kliknij, aby skopiować.',
+  'ai.weather_bar': 'Pasek pogody na obrazie',
+  'ai.weather_bar_hint': 'Rysuje w prawym dolnym rogu dzisiejsze minimum, maksimum i szansę na deszcz w półprzezroczystej etykiecie.',
 };

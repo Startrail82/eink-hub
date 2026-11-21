@@ -225,3 +225,39 @@ export async function fetchWeather(latitude: number, longitude: number): Promise
   });
   return weatherVars(JSON.parse(await fetchText(`https://api.open-meteo.com/v1/forecast?${q}`, 'application/json', 200_000)) as OpenMeteo);
 }
+
+/** Today's minimum, maximum and chance of rain at a place, for the bar drawn on the picture. */
+export interface DayForecast {
+  min: number;
+  max: number;
+  /** Percent; null when the service has no probability for this place. */
+  rain: number | null;
+}
+
+const forecastCache = new Map<string, { at: number; value: DayForecast }>();
+const FORECAST_TTL_MS = 15 * 60_000;
+
+export async function fetchDayForecast(latitude: number, longitude: number, now = Date.now()): Promise<DayForecast> {
+  const key = `${latitude.toFixed(3)},${longitude.toFixed(3)}`;
+  const hit = forecastCache.get(key);
+  if (hit && now - hit.at < FORECAST_TTL_MS) return hit.value;
+  const q = new URLSearchParams({
+    latitude: String(latitude),
+    longitude: String(longitude),
+    daily: 'temperature_2m_max,temperature_2m_min,precipitation_probability_max',
+    timezone: 'auto',
+    forecast_days: '1',
+  });
+  const value = parseDayForecast(JSON.parse(await fetchText(`https://api.open-meteo.com/v1/forecast?${q}`, 'application/json', 200_000)));
+  forecastCache.set(key, { at: now, value });
+  return value;
+}
+
+export function parseDayForecast(raw: { daily?: { temperature_2m_max?: number[]; temperature_2m_min?: number[]; precipitation_probability_max?: (number | null)[] } }): DayForecast {
+  const d = raw.daily;
+  const max = d?.temperature_2m_max?.[0];
+  const min = d?.temperature_2m_min?.[0];
+  if (typeof max !== 'number' || typeof min !== 'number') throw new AiError('Open-Meteo returned no forecast');
+  const rain = d?.precipitation_probability_max?.[0];
+  return { min: Math.round(min), max: Math.round(max), rain: typeof rain === 'number' ? Math.round(rain) : null };
+}

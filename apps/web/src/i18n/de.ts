@@ -614,4 +614,6 @@ export const de: Catalogue = {
   'ai.negative': 'Negativ-Prompt',
   'ai.negative_hint': 'Was das Bild nicht zeigen soll. Setze {{negative}} im Workflow an die Stelle dieses Textes. Leer fügt nichts hinzu.',
   'ai.pick_hint': 'Wählt für jedes Bild zufällig eine Option, zum Beispiel {pick: Berge | Küste | Wald}. Zum Kopieren klicken.',
+  'ai.weather_bar': 'Wetterleiste im Bild',
+  'ai.weather_bar_hint': 'Zeichnet unten rechts das heutige Minimum, Maximum und die Regenwahrscheinlichkeit in einem halbtransparenten Label.',
 };

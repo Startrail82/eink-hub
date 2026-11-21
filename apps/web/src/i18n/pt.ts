@@ -614,4 +614,6 @@ export const pt: Catalogue = {
   'ai.negative': 'Prompt negativo',
   'ai.negative_hint': 'O que não deve aparecer na imagem. Coloca {{negative}} no workflow onde vai este texto. Vazio não acrescenta nada.',
   'ai.pick_hint': 'Escolhe uma opção ao acaso para cada imagem, por exemplo {pick: montanhas | costa | floresta}. Clica para copiar.',
+  'ai.weather_bar': 'Barra do tempo na imagem',
+  'ai.weather_bar_hint': 'Desenha em baixo à direita a mínima, a máxima e a probabilidade de chuva de hoje, numa etiqueta semitransparente.',
 };
