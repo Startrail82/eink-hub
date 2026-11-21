@@ -125,11 +125,35 @@ export function weatherCondition(code: number): string {
 }
 
 interface OpenMeteo {
-  current?: { temperature_2m?: number; weather_code?: number; is_day?: number; wind_speed_10m?: number };
-  daily?: { temperature_2m_max?: number[]; temperature_2m_min?: number[] };
+  current?: { time?: string; temperature_2m?: number; weather_code?: number; is_day?: number; wind_speed_10m?: number };
+  daily?: { temperature_2m_max?: number[]; temperature_2m_min?: number[]; sunrise?: string[]; sunset?: string[] };
 }
 
-/** Variables for a prompt: {condition}, {temperature}, {high}, {low}, {wind}, {daypart}. */
+/** Within this many minutes of sunrise or sunset the picture gets that light. */
+const SUN_WINDOW_MIN = 45;
+
+/** Descriptions a picture model understands as lighting (not "night light", which it may draw as a lamp). */
+const DAYPARTS = { night: 'moonlit night', sunrise: 'soft golden sunrise light', daytime: 'bright daylight', sunset: 'warm golden sunset glow' };
+
+/** Minutes after midnight and "HH:MM" of an Open-Meteo local time ("2026-11-21T07:58"). */
+function clock(iso: string | undefined) {
+  const m = /T(\d{2}):(\d{2})/.exec(iso ?? '');
+  return m ? { minutes: Number(m[1]) * 60 + Number(m[2]), text: `${m[1]}:${m[2]}` } : null;
+}
+
+/** Night, sunrise, daytime or sunset for the full hour nearest to now, at the location. */
+function daypart(w: OpenMeteo): string {
+  const now = clock(w.current?.time);
+  const rise = clock(w.daily?.sunrise?.[0]);
+  const set = clock(w.daily?.sunset?.[0]);
+  if (!now || !rise || !set) return w.current?.is_day === 0 ? DAYPARTS.night : DAYPARTS.daytime;
+  const hour = Math.round(now.minutes / 60) * 60;
+  if (Math.abs(hour - rise.minutes) <= SUN_WINDOW_MIN) return DAYPARTS.sunrise;
+  if (Math.abs(hour - set.minutes) <= SUN_WINDOW_MIN) return DAYPARTS.sunset;
+  return hour > rise.minutes && hour < set.minutes ? DAYPARTS.daytime : DAYPARTS.night;
+}
+
+/** Variables for a prompt: {condition}, {temperature}, {high}, {low}, {wind}, {daypart}, {sunrise}, {sunset}. */
 export function weatherVars(w: OpenMeteo): PromptVars {
   const c = w.current;
   if (!c || c.weather_code === undefined || c.temperature_2m === undefined) throw new AiError('Open-Meteo returned no current weather');
@@ -140,7 +164,9 @@ export function weatherVars(w: OpenMeteo): PromptVars {
     high: round(w.daily?.temperature_2m_max?.[0]),
     low: round(w.daily?.temperature_2m_min?.[0]),
     wind: round(c.wind_speed_10m),
-    daypart: c.is_day === 0 ? 'night' : 'day',
+    daypart: daypart(w),
+    sunrise: clock(w.daily?.sunrise?.[0])?.text ?? '',
+    sunset: clock(w.daily?.sunset?.[0])?.text ?? '',
   };
 }
 
@@ -149,7 +175,7 @@ export async function fetchWeather(latitude: number, longitude: number): Promise
     latitude: String(latitude),
     longitude: String(longitude),
     current: 'temperature_2m,weather_code,is_day,wind_speed_10m',
-    daily: 'temperature_2m_max,temperature_2m_min',
+    daily: 'temperature_2m_max,temperature_2m_min,sunrise,sunset',
     timezone: 'auto',
     forecast_days: '1',
   });
