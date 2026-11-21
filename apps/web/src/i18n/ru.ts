@@ -575,4 +575,12 @@ export const ru: Catalogue = {
   'settings.passkey_never': 'не использовался',
   'settings.passkey_https_only': 'Ключи доступа работают, только если Hub открыт по HTTPS (Tailscale, обратный прокси) или на localhost.',
   'settings.passkey_guide': 'Как настроить',
+  'scheduleView.tab_plans': 'Расписания',
+  'scheduleView.tab_week': 'Обзор недели',
+  'week.today': 'Сегодня',
+  'week.tomorrow': 'Завтра',
+  'week.empty_day': 'Без смен',
+  'week.none': 'У этого Canvas нет активных расписаний.',
+  'plan.add': 'Добавить расписание',
+  'plan.warn_close': 'Внимание: другое расписание этого Canvas меняет картинку в {time}, всего в {minutes} мин.',
 };

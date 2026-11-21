@@ -559,4 +559,12 @@ export const en: Messages = {
   'settings.passkey_never': 'never used',
   'settings.passkey_https_only': 'Passkeys only work when the Hub is opened over HTTPS (Tailscale, a reverse proxy) or on localhost.',
   'settings.passkey_guide': 'How to set it up',
+  'scheduleView.tab_plans': 'Schedules',
+  'scheduleView.tab_week': 'Week view',
+  'week.today': 'Today',
+  'week.tomorrow': 'Tomorrow',
+  'week.empty_day': 'No changes',
+  'week.none': 'This Canvas has no active schedules.',
+  'plan.add': 'Add schedule',
+  'plan.warn_close': 'Note: another schedule of this Canvas changes at {time}, only {minutes} min apart.',
 };

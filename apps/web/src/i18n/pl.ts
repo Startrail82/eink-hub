@@ -575,4 +575,12 @@ export const pl: Catalogue = {
   'settings.passkey_never': 'nieużywany',
   'settings.passkey_https_only': 'Klucze dostępu działają tylko wtedy, gdy Hub jest otwierany przez HTTPS (Tailscale, reverse proxy) lub na localhost.',
   'settings.passkey_guide': 'Jak to skonfigurować',
+  'scheduleView.tab_plans': 'Harmonogramy',
+  'scheduleView.tab_week': 'Widok tygodnia',
+  'week.today': 'Dzisiaj',
+  'week.tomorrow': 'Jutro',
+  'week.empty_day': 'Brak zmian',
+  'week.none': 'Ten Canvas nie ma aktywnych harmonogramów.',
+  'plan.add': 'Dodaj harmonogram',
+  'plan.warn_close': 'Uwaga: inny harmonogram tego Canvasa zmienia się o {time}, zaledwie {minutes} min różnicy.',
 };

@@ -575,4 +575,12 @@ export const cs: Catalogue = {
   'settings.passkey_never': 'nepoužit',
   'settings.passkey_https_only': 'Přístupové klíče fungují jen tehdy, když Hub otevřete přes HTTPS (Tailscale, reverzní proxy) nebo na localhost.',
   'settings.passkey_guide': 'Jak to nastavit',
+  'scheduleView.tab_plans': 'Plány',
+  'scheduleView.tab_week': 'Týdenní přehled',
+  'week.today': 'Dnes',
+  'week.tomorrow': 'Zítra',
+  'week.empty_day': 'Žádné změny',
+  'week.none': 'Tento Canvas nemá žádné aktivní plány.',
+  'plan.add': 'Přidat plán',
+  'plan.warn_close': 'Pozor: další plán tohoto Canvasu se mění v {time}, jen {minutes} min od tohoto.',
 };

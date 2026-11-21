@@ -38,6 +38,31 @@ export interface Assignment {
   lastChange: number | null;
 }
 
+/** Two changes of one Canvas that are close together (allowed, but worth a warning). */
+export interface CloseWarning {
+  kind: 'close';
+  minutes: number;
+  at: number;
+  otherAt: number;
+  otherAssignmentId: number;
+  otherCollectionId: number;
+}
+export interface SavedAssignment {
+  assignment: Assignment;
+  warnings: CloseWarning[];
+}
+export interface OverviewItem {
+  at: number;
+  assignmentId: number;
+  collectionId: number;
+  collection: string;
+}
+export interface OverviewDay {
+  /** Local date, YYYY-MM-DD. */
+  date: string;
+  items: OverviewItem[];
+}
+
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 export interface LogEntry {
   t: number;
@@ -99,7 +124,9 @@ export interface Frame {
   currentImageId: number | null;
   currentRender: string | null;
   nextWake: number | null;
+  /** The first schedule (kept for older code); all of them are in `assignments`. */
   assignment: Assignment | null;
+  assignments: Assignment[];
   /** A simulated Canvas running inside the hub. */
   simulated?: boolean;
   /** Bluetooth address used to wake it ("AA:BB:CC:DD:EE:FF"). */

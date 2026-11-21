@@ -559,4 +559,12 @@ export const ja: Catalogue = {
   'settings.passkey_never': '未使用',
   'settings.passkey_https_only': 'パスキーは Hub を HTTPS（Tailscale、リバースプロキシ）または localhost で開いた場合のみ使えます。',
   'settings.passkey_guide': '設定方法',
+  'scheduleView.tab_plans': 'スケジュール',
+  'scheduleView.tab_week': '週間ビュー',
+  'week.today': '今日',
+  'week.tomorrow': '明日',
+  'week.empty_day': '切り替えなし',
+  'week.none': 'このCanvasには有効なスケジュールがありません。',
+  'plan.add': 'スケジュールを追加',
+  'plan.warn_close': '注意：このCanvasの別のスケジュールが{time}に切り替わります（わずか{minutes}分差）。',
 };

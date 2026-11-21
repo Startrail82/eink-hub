@@ -559,4 +559,12 @@ export const de: Catalogue = {
   'settings.passkey_never': 'nie verwendet',
   'settings.passkey_https_only': 'Passkeys funktionieren nur, wenn der Hub über HTTPS (Tailscale, ein Reverse Proxy) oder auf localhost geöffnet wird.',
   'settings.passkey_guide': 'So richtest du es ein',
+  'scheduleView.tab_plans': 'Zeitpläne',
+  'scheduleView.tab_week': 'Wochenansicht',
+  'week.today': 'Heute',
+  'week.tomorrow': 'Morgen',
+  'week.empty_day': 'Keine Wechsel',
+  'week.none': 'Dieses Canvas hat keine aktiven Zeitpläne.',
+  'plan.add': 'Zeitplan hinzufügen',
+  'plan.warn_close': 'Achtung: Ein anderer Zeitplan dieses Canvas wechselt um {time}, nur {minutes} Min. entfernt.',
 };
