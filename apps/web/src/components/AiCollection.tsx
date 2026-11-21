@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Check } from 'lucide-react';
 import { api, type AiCollectionConfig, type AiSource, type Collection } from '../lib/api';
 import { useAction, useFrames } from '../lib/hooks';
 import { DEFAULT_PANEL, panelKey, panelOptions } from '../lib/panels';
@@ -8,6 +9,53 @@ import { Select } from './Select';
 import { useAiSettings } from './AiSettings';
 
 const DEFAULT_KEEP = 20;
+
+/** Placeholders each source fills in (see the server's lib/ai/sources). */
+const TAGS: Record<AiSource, string[]> = {
+  prompt: ['date', 'season'],
+  rss: ['title', 'description', 'date', 'season'],
+  weather: ['condition', 'temperature', 'high', 'low', 'wind', 'daypart', 'date', 'season'],
+};
+
+async function copyText(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    // Plain http has no clipboard API: fall back to a throwaway selection.
+    const el = document.createElement('textarea');
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    el.remove();
+  }
+}
+
+/** Click a placeholder to copy it, ready to paste into the prompt. */
+function TagChips({ tags }: { tags: string[] }) {
+  const { t } = useI18n();
+  const [done, setDone] = useState<string | null>(null);
+  return (
+    <div className="mt-2 flex flex-wrap gap-1.5">
+      {tags.map((tag) => (
+        <button
+          key={tag}
+          type="button"
+          title={t('common.copy')}
+          className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2.5 py-1 font-mono text-xs text-ink-2 transition hover:bg-accent/10 hover:text-accent"
+          onClick={() => {
+            void copyText(`{${tag}}`);
+            setDone(tag);
+            setTimeout(() => setDone((d) => (d === tag ? null : d)), 1500);
+          }}
+        >
+          {`{${tag}}`}
+          {done === tag && <Check className="size-3" />}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 function configOf(c?: Collection): AiCollectionConfig {
   const raw = (c?.config ?? {}) as Partial<AiCollectionConfig>;
@@ -101,6 +149,7 @@ export function AiCollectionDialog({ open, onClose, collection, onCreated }: { o
         )}
         <Field label={t('ai.prompt')} hint={t(hint[cfg.source])}>
           <textarea className={`${inputClass} h-28 resize-y py-3`} value={cfg.prompt} onChange={(e) => set('prompt', e.target.value)} />
+          <TagChips tags={TAGS[cfg.source]} />
         </Field>
         <Field label={t('ai.panel')} hint={t('ai.panel_hint')} group>
           <div className="space-y-3">
