@@ -594,4 +594,5 @@ export const pt: Catalogue = {
   'ai.panel': 'Tipo de moldura',
   'ai.panel_hint': 'As imagens são geradas para este tipo de ecrã e esta orientação.',
   'ai.mismatch': 'Esta coleção cria imagens para {made}, mas esta moldura é {frame}. As imagens serão cortadas ou redimensionadas.',
+  'ai.pick_hint': 'Escolhe uma opção ao acaso para cada imagem, por exemplo {pick: montanhas | costa | floresta}. Clica para copiar.',
 };

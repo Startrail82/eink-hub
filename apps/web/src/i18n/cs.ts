@@ -610,4 +610,5 @@ export const cs: Catalogue = {
   'ai.panel': 'Typ rámečku',
   'ai.panel_hint': 'Obrázky se vytvářejí pro tento typ displeje a tuto orientaci.',
   'ai.mismatch': 'Tato kolekce vytváří obrázky pro {made}, ale tento rámeček je {frame}. Obrázky budou oříznuty nebo zmenšeny.',
+  'ai.pick_hint': 'Pro každý obrázek náhodně vybere jednu možnost, například {pick: hory | pobřeží | les}. Kliknutím zkopíruješ.',
 };

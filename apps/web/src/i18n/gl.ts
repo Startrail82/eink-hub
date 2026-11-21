@@ -594,4 +594,5 @@ export const gl: Catalogue = {
   'ai.panel': 'Tipo de marco',
   'ai.panel_hint': 'As imaxes xéranse para este tipo de pantalla e esta orientación.',
   'ai.mismatch': 'Esta colección crea imaxes para {made}, pero este marco é {frame}. As imaxes recortaranse ou escalaranse.',
+  'ai.pick_hint': 'Escolle unha opción ao chou en cada imaxe, por exemplo {pick: montañas | costa | bosque}. Preme para copiar.',
 };

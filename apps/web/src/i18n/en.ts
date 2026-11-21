@@ -594,4 +594,5 @@ export const en: Messages = {
   'ai.panel': 'Frame type',
   'ai.panel_hint': 'Pictures are generated for this screen type and orientation.',
   'ai.mismatch': 'This collection makes pictures for {made}, but this canvas is {frame}. The pictures will be cropped or scaled.',
+  'ai.pick_hint': 'Picks one option at random for every picture, for example {pick: mountains | coast | forest}. Click to copy.',
 };

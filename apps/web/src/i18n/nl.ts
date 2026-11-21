@@ -594,4 +594,5 @@ export const nl: Catalogue = {
   'ai.panel': 'Frametype',
   'ai.panel_hint': 'Beelden worden gegenereerd voor dit schermtype en deze oriëntatie.',
   'ai.mismatch': 'Deze collectie maakt beelden voor {made}, maar dit frame is {frame}. De beelden worden bijgesneden of geschaald.',
+  'ai.pick_hint': 'Kiest voor elk beeld willekeurig één optie, bijvoorbeeld {pick: bergen | kust | bos}. Klik om te kopiëren.',
 };

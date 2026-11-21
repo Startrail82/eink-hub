@@ -594,4 +594,5 @@ export const zhTW: Catalogue = {
   'ai.panel': '相框類型',
   'ai.panel_hint': '圖片將依此螢幕類型與方向產生。',
   'ai.mismatch': '此圖集依 {made} 產生圖片,但此相框為 {frame}。圖片將被裁切或縮放。',
+  'ai.pick_hint': '每張圖片隨機選取一個選項，例如 {pick: 山 | 海岸 | 森林}。點擊複製。',
 };

@@ -47,6 +47,10 @@ Choose the **Frame type** (screen) and **orientation** the pictures are made for
 
 Use **Generate now** in the collection to make a first picture and check the result. Failures (an unreachable service, a refused key) show up on the collection.
 
+### Random choices in a prompt
+
+Write `{pick: one | two | three}` to let the Hub choose one of the options at random for every picture, for example `a vast landscape of {pick: mountains | a rocky coast | a pine forest | rolling hills}`. You can use it several times in one prompt and put other tags inside an option. In the dialog, click the `{pick: … | …}` chip to copy an example. `{pick}` works in every kind of collection.
+
 ## 3. Show it on a Canvas
 
 Use the collection in a schedule like any other. Frames show the newest picture they have not displayed yet.

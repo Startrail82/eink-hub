@@ -594,4 +594,5 @@ export const ca: Catalogue = {
   'ai.panel': 'Tipus de marc',
   'ai.panel_hint': 'Les imatges es generen per a aquest tipus de pantalla i aquesta orientació.',
   'ai.mismatch': 'Aquesta col·lecció crea imatges per a {made}, però aquest marc és {frame}. Les imatges es retallaran o s\'escalaran.',
+  'ai.pick_hint': 'Tria una opció a l\'atzar a cada imatge, per exemple {pick: muntanyes | costa | bosc}. Clic per copiar.',
 };

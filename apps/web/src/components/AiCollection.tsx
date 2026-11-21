@@ -12,9 +12,9 @@ const DEFAULT_KEEP = 20;
 
 /** Placeholders each source fills in (see the server's lib/ai/sources). */
 const TAGS: Record<AiSource, string[]> = {
-  prompt: ['date', 'time', 'season'],
-  rss: ['title', 'description', 'date', 'time', 'season'],
-  weather: ['condition', 'temperature', 'high', 'low', 'wind', 'daypart', 'sunrise', 'sunset', 'date', 'time', 'season'],
+  prompt: ['pick', 'date', 'time', 'season'],
+  rss: ['pick', 'title', 'description', 'date', 'time', 'season'],
+  weather: ['pick', 'condition', 'temperature', 'high', 'low', 'wind', 'daypart', 'sunrise', 'sunset', 'date', 'time', 'season'],
 };
 
 async function copyText(text: string) {
@@ -41,15 +41,15 @@ function TagChips({ tags }: { tags: string[] }) {
         <button
           key={tag}
           type="button"
-          title={t('common.copy')}
+          title={tag === 'pick' ? t('ai.pick_hint') : t('common.copy')}
           className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2.5 py-1 font-mono text-xs text-ink-2 transition hover:bg-accent/10 hover:text-accent"
           onClick={() => {
-            void copyText(`{${tag}}`);
+            void copyText(tag === 'pick' ? '{pick: one | two | three}' : `{${tag}}`);
             setDone(tag);
             setTimeout(() => setDone((d) => (d === tag ? null : d)), 1500);
           }}
         >
-          {`{${tag}}`}
+          {tag === 'pick' ? '{pick: … | …}' : `{${tag}}`}
           {done === tag && <Check className="size-3" />}
         </button>
       ))}
