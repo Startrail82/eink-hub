@@ -67,4 +67,6 @@ export const gl: Catalogue = {
   switchbot_not_configured: 'Faltan o token, o segredo ou o dispositivo de SwitchBot',
   switchbot_public_url: 'SwitchBot descarga a foto desde Internet: configura en Axustes un enderezo público con https (externo ou para marcos na nube)',
   trmnl_mac_missing: 'Falta o enderezo MAC do dispositivo TRMNL',
+  schedule_conflict: 'Outra programación deste Canvas ({name}) xa cambia ás {time}',
+  assignment_not_found: 'Non se atopou a programación {id}',
 };

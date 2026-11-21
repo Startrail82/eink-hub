@@ -70,4 +70,6 @@ export const pl: Catalogue = {
   switchbot_not_configured: 'Brakuje tokena, secretu lub urządzenia SwitchBot',
   switchbot_public_url: 'SwitchBot pobiera zdjęcie przez internet: ustaw w Ustawieniach publiczny adres https (zewnętrzny lub dla ramek w chmurze)',
   trmnl_mac_missing: 'Brakuje adresu MAC urządzenia TRMNL',
+  schedule_conflict: 'Inny harmonogram tego Canvasa ({name}) zmienia obraz już o {time}',
+  assignment_not_found: 'Nie znaleziono harmonogramu {id}',
 };

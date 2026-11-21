@@ -603,4 +603,12 @@ export const en: Messages = {
   'ai.panel': 'Frame type',
   'ai.panel_hint': 'Pictures are generated for this screen type and orientation.',
   'ai.mismatch': 'This collection makes pictures for {made}, but this canvas is {frame}. The pictures will be cropped or scaled.',
+  'scheduleView.tab_plans': 'Schedules',
+  'scheduleView.tab_week': 'Week view',
+  'week.today': 'Today',
+  'week.tomorrow': 'Tomorrow',
+  'week.empty_day': 'No changes',
+  'week.none': 'This Canvas has no active schedules.',
+  'plan.add': 'Add schedule',
+  'plan.warn_close': 'Note: another schedule of this Canvas changes at {time}, only {minutes} min apart.',
 };

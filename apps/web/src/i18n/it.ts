@@ -603,4 +603,12 @@ export const it: Catalogue = {
   'ai.panel': 'Tipo di cornice',
   'ai.panel_hint': 'Le immagini vengono generate per questo tipo di schermo e questo orientamento.',
   'ai.mismatch': 'Questa raccolta crea immagini per {made}, ma questa cornice è {frame}. Le immagini verranno ritagliate o ridimensionate.',
+  'scheduleView.tab_plans': 'Programmazioni',
+  'scheduleView.tab_week': 'Vista settimanale',
+  'week.today': 'Oggi',
+  'week.tomorrow': 'Domani',
+  'week.empty_day': 'Nessun cambio',
+  'week.none': 'Questo Canvas non ha programmazioni attive.',
+  'plan.add': 'Aggiungi programmazione',
+  'plan.warn_close': 'Attenzione: un\'altra programmazione di questo Canvas cambia alle {time}, a soli {minutes} min.',
 };

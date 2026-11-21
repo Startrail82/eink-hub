@@ -7,9 +7,9 @@ import { purgeSessions } from '../auth/index.js';
 import { pregenerate } from '../lib/ai/generate.js';
 import { needsSync, prepareCollection, syncCollection } from '../lib/collections.js';
 import type { Ctx } from '../lib/context.js';
-import { assignmentOptions, chooseNextImage, deliverQueued, getAssignment, markOnline, pushImage } from '../lib/display.js';
+import { assignmentOptions, chooseNextImage, deliverQueued, dueAssignment, markOnline, pushImage } from '../lib/display.js';
 import { getImage } from '../lib/images.js';
-import { isDue, nextRun } from '../lib/schedule.js';
+import { nextRun } from '../lib/schedule.js';
 import { pruneBatterySamples } from '../lib/stats.js';
 import { withWake } from '../lib/wake.js';
 import { refreshFrame } from '../routes/frames.js';
@@ -29,8 +29,9 @@ export async function tick(ctx: Ctx, now = new Date()) {
         await deliverQueued(ctx, frame, awake);
         continue;
       }
-      const a = getAssignment(ctx.db, frame.id);
-      if (!a?.enabled || !isDue(a.nextChange, now, a.schedule, a)) continue;
+      // Each schedule of the Canvas runs on its own; one that is due now changes the picture.
+      const a = dueAssignment(ctx.db, frame.id, now);
+      if (!a) continue;
       await prepareCollection(ctx, a.collectionId);
       const imageId = chooseNextImage(ctx.db, frame, a);
       if (!imageId) continue;

@@ -603,4 +603,12 @@ export const eu: Messages = {
   'ai.panel': 'Markoaren mota',
   'ai.panel_hint': 'Irudiak pantaila mota eta norabide honetarako sortzen dira.',
   'ai.mismatch': 'Bilduma honek {made} motarako sortzen ditu irudiak, baina marko hau {frame} da. Irudiak moztu edo eskalatu egingo dira.',
+  'scheduleView.tab_plans': 'Programazioak',
+  'scheduleView.tab_week': 'Asteko ikuspegia',
+  'week.today': 'Gaur',
+  'week.tomorrow': 'Bihar',
+  'week.empty_day': 'Aldaketarik ez',
+  'week.none': 'Canvas honek ez du programazio aktiborik.',
+  'plan.add': 'Gehitu programazioa',
+  'plan.warn_close': 'Kontuz: Canvas honen beste programazio batek {time}etan aldatzen du, {minutes} min besterik gabe.',
 };

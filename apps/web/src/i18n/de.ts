@@ -603,4 +603,12 @@ export const de: Catalogue = {
   'ai.panel': 'Rahmentyp',
   'ai.panel_hint': 'Bilder werden für diesen Bildschirmtyp und diese Ausrichtung erzeugt.',
   'ai.mismatch': 'Diese Sammlung erzeugt Bilder für {made}, dieser Rahmen ist jedoch {frame}. Die Bilder werden zugeschnitten oder skaliert.',
+  'scheduleView.tab_plans': 'Zeitpläne',
+  'scheduleView.tab_week': 'Wochenansicht',
+  'week.today': 'Heute',
+  'week.tomorrow': 'Morgen',
+  'week.empty_day': 'Keine Wechsel',
+  'week.none': 'Dieses Canvas hat keine aktiven Zeitpläne.',
+  'plan.add': 'Zeitplan hinzufügen',
+  'plan.warn_close': 'Achtung: Ein anderer Zeitplan dieses Canvas wechselt um {time}, nur {minutes} Min. entfernt.',
 };

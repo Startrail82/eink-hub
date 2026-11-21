@@ -603,4 +603,12 @@ export const nl: Catalogue = {
   'ai.panel': 'Frametype',
   'ai.panel_hint': 'Beelden worden gegenereerd voor dit schermtype en deze oriëntatie.',
   'ai.mismatch': 'Deze collectie maakt beelden voor {made}, maar dit frame is {frame}. De beelden worden bijgesneden of geschaald.',
+  'scheduleView.tab_plans': 'Plannings',
+  'scheduleView.tab_week': 'Weekoverzicht',
+  'week.today': 'Vandaag',
+  'week.tomorrow': 'Morgen',
+  'week.empty_day': 'Geen wissels',
+  'week.none': 'Dit Canvas heeft geen actieve plannings.',
+  'plan.add': 'Planning toevoegen',
+  'plan.warn_close': 'Let op: een andere planning van dit Canvas wisselt om {time}, slechts {minutes} min verschil.',
 };

@@ -67,4 +67,6 @@ export const zh: Catalogue = {
   switchbot_not_configured: '缺少 SwitchBot 的令牌、密钥或设备',
   switchbot_public_url: 'SwitchBot 通过互联网下载照片：请在设置中配置公网 https 地址（外部地址，或云端相框专用地址）',
   trmnl_mac_missing: '缺少 TRMNL 设备的 MAC 地址',
+  schedule_conflict: '此 Canvas 的另一个计划({name})已在 {time} 切换',
+  assignment_not_found: '未找到计划 {id}',
 };

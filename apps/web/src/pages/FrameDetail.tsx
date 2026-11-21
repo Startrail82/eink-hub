@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Bluetooth, Copy, Download, Eraser, Moon, Play, RefreshCw, RotateCcw, SkipForward, Smartphone, Trash2 } from 'lucide-react';
-import { api, thumbUrl, type Frame, type FrameAppearance, type HistoryEntry, type ImageFormat, type Schedule } from '../lib/api';
+import { ArrowLeft, Bluetooth, Copy, Download, Eraser, Moon, Play, Plus, RefreshCw, RotateCcw, SkipForward, Smartphone, Trash2 } from 'lucide-react';
+import { api, thumbUrl, type Assignment, type Frame, type FrameAppearance, type HistoryEntry, type ImageFormat, type Schedule } from '../lib/api';
 import { FRAME_COLORS, FRAME_STYLES, KNOWN_DIAGONALS, formatCm, frameGeometry, withDefaults } from '../lib/frameGeometry';
 import { dateTime, formatBytes, formatPercent, relativeTime } from '../lib/format';
 import { useAction, useBleStatus, useFrame, useSettings } from '../lib/hooks';
@@ -12,9 +12,11 @@ import { useI18n, type MsgKey, type TFunction } from '../i18n';
 import { OrientationField } from '../components/OrientationField';
 import { FrameMockup } from '../components/FrameMockup';
 import { AssignmentEditor } from '../components/AssignmentEditor';
+import { PlanCard } from '../components/PlanCard';
+import { WeekOverview } from '../components/WeekOverview';
 import { StatsTab } from '../components/StatsTab';
 import { SchedulePicker } from '../components/SchedulePicker';
-import { Button, Card, Field, Pill, Segmented, Spinner, Toggle, cx, inputClass, useConfirm } from '../components/ui';
+import { Button, Card, Field, Modal, Pill, Segmented, Spinner, Toggle, cx, inputClass, useConfirm } from '../components/ui';
 import { Battery, DOCS_URL, FrameStatus, KindPill, TestPill } from './Frames';
 import { Select } from '../components/Select';
 import { useIsAdmin } from '../lib/me';
@@ -45,14 +47,48 @@ function TwoLines({ main, sub }: { main: React.ReactNode; sub?: React.ReactNode 
 /** When the schedule changes the photo next: pull frames on their next wake, push ones at the schedule's time. */
 function NextChange({ frame: f }: { frame: Frame }) {
   const { t } = useI18n();
-  const a = f.assignment;
-  if (!a) return <>—</>;
-  if (!a.enabled) return <>{t('scheduleView.paused')}</>;
-  const next = f.mode === 'pull' ? f.nextWake : a.nextChange;
+  if (!f.assignments.length) return <>—</>;
+  const running = f.assignments.filter((x) => x.enabled);
+  if (!running.length) return <>{t('scheduleView.paused')}</>;
+  // With several schedules: the one that changes first (one waiting for the Canvas counts as first).
+  const a = running.reduce((x, y) => ((x.nextChange ?? 0) <= (y.nextChange ?? 0) ? x : y));
+  const next = f.mode === 'pull' && f.assignments.length <= 1 ? f.nextWake : a.nextChange;
   // No time yet, or already past: it waits for the Canvas.
   if (next === null || next < Date.now() - 60_000)
     return <TwoLines main={t('detail.pending')} sub={t(f.mode === 'pull' ? 'detail.when_wakes' : 'detail.when_responds')} />;
   return <TwoLines main={relativeTime(next)} sub={dateTime(next)} />;
+}
+
+/** The schedules of this Canvas, with the coming week below. */
+function PlansTab({ frame: f }: { frame: Frame }) {
+  const { t } = useI18n();
+  const [editing, setEditing] = useState<Assignment | 'new' | null>(null);
+  return (
+    <div className="space-y-6">
+      {f.assignments.length === 0 ? (
+        // The first one: straight into the form, as before.
+        <AssignmentEditor frame={f} />
+      ) : (
+        <>
+          <div className="space-y-3">
+            {f.assignments.map((a) => (
+              <PlanCard key={a.id} frame={f} assignment={a} showFrame={false} onEdit={() => setEditing(a)} />
+            ))}
+            <Button icon={<Plus className="size-4" />} onClick={() => setEditing('new')}>
+              {t('plan.add')}
+            </Button>
+          </div>
+          <div className="space-y-3">
+            <h2 className="text-[13px] font-semibold text-muted">{t('scheduleView.tab_week')}</h2>
+            <WeekOverview frame={f} />
+          </div>
+        </>
+      )}
+      <Modal open={!!editing} onClose={() => setEditing(null)} title={`${t('nav.schedule')} · ${f.name}`}>
+        {editing && <AssignmentEditor key={editing === 'new' ? 'new' : editing.id} frame={f} assignment={editing === 'new' ? undefined : editing} onSaved={() => setEditing(null)} />}
+      </Modal>
+    </div>
+  );
 }
 
 /** Free storage on the Canvas: share of the card first, the absolute size beside it. */
@@ -762,7 +798,7 @@ export function FrameDetail() {
             ]}
           />
           <Card className="p-6">
-            {tab === 'schedule' && <AssignmentEditor key={f.assignment?.id ?? 'new'} frame={f} />}
+            {tab === 'schedule' && <PlansTab frame={f} />}
             {tab === 'mode' && admin && caps.pullToggle && <ModeTab frame={f} />}
             {tab === 'connection' && admin && <ConnectionTab frame={f} />}
             {tab === 'history' && <HistoryTab frame={f} />}

@@ -603,4 +603,12 @@ export const zh: Catalogue = {
   'ai.panel': '相框类型',
   'ai.panel_hint': '图片将按此屏幕类型和方向生成。',
   'ai.mismatch': '此图集按 {made} 生成图片,但此相框为 {frame}。图片将被裁剪或缩放。',
+  'scheduleView.tab_plans': '计划',
+  'scheduleView.tab_week': '周视图',
+  'week.today': '今天',
+  'week.tomorrow': '明天',
+  'week.empty_day': '无切换',
+  'week.none': '此 Canvas 没有启用的计划。',
+  'plan.add': '添加计划',
+  'plan.warn_close': '注意：此 Canvas 的另一个计划在 {time} 切换，仅相差 {minutes} 分钟。',
 };

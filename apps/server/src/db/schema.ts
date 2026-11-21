@@ -158,7 +158,8 @@ export type FitMode = (typeof fitModes)[number];
 
 export const assignments = sqliteTable('assignments', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  frameId: integer('frame_id').notNull().unique(),
+  /** A Canvas can have several schedules; each one runs on its own. */
+  frameId: integer('frame_id').notNull(),
   collectionId: integer('collection_id').notNull(),
   orderMode: text('order_mode', { enum: orderModes }).notNull().default('random'),
   schedule: text('schedule', { mode: 'json' }).$type<Schedule>().notNull().$defaultFn(defaultSchedule),

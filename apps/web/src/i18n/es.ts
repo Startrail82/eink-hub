@@ -602,6 +602,14 @@ export const es = {
   'ai.panel': 'Tipo de marco',
   'ai.panel_hint': 'Las imágenes se generan para este tipo de pantalla y esta orientación.',
   'ai.mismatch': 'Esta colección crea imágenes para {made}, pero este marco es {frame}. Las imágenes se recortarán o escalarán.',
+  'scheduleView.tab_plans': 'Programaciones',
+  'scheduleView.tab_week': 'Vista semanal',
+  'week.today': 'Hoy',
+  'week.tomorrow': 'Mañana',
+  'week.empty_day': 'Sin cambios',
+  'week.none': 'Este Canvas no tiene programaciones activas.',
+  'plan.add': 'Añadir programación',
+  'plan.warn_close': 'Ojo: otra programación de este Canvas cambia a las {time}, a solo {minutes} min.',
 };
 
 export type Messages = Record<keyof typeof es, string>;

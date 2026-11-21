@@ -603,4 +603,12 @@ export const ja: Catalogue = {
   'ai.panel': 'フレームの種類',
   'ai.panel_hint': '画像はこの画面タイプと向きに合わせて生成されます。',
   'ai.mismatch': 'このコレクションは {made} 向けの画像を作成しますが、このフレームは {frame} です。画像はトリミングまたは拡大縮小されます。',
+  'scheduleView.tab_plans': 'スケジュール',
+  'scheduleView.tab_week': '週間ビュー',
+  'week.today': '今日',
+  'week.tomorrow': '明日',
+  'week.empty_day': '切り替えなし',
+  'week.none': 'このCanvasには有効なスケジュールがありません。',
+  'plan.add': 'スケジュールを追加',
+  'plan.warn_close': '注意：このCanvasの別のスケジュールが{time}に切り替わります（わずか{minutes}分差）。',
 };

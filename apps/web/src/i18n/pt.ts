@@ -603,4 +603,12 @@ export const pt: Catalogue = {
   'ai.panel': 'Tipo de moldura',
   'ai.panel_hint': 'As imagens são geradas para este tipo de ecrã e esta orientação.',
   'ai.mismatch': 'Esta coleção cria imagens para {made}, mas esta moldura é {frame}. As imagens serão cortadas ou redimensionadas.',
+  'scheduleView.tab_plans': 'Programações',
+  'scheduleView.tab_week': 'Vista semanal',
+  'week.today': 'Hoje',
+  'week.tomorrow': 'Amanhã',
+  'week.empty_day': 'Sem alterações',
+  'week.none': 'Este Canvas não tem programações ativas.',
+  'plan.add': 'Adicionar programação',
+  'plan.warn_close': 'Atenção: outra programação deste Canvas muda às {time}, a apenas {minutes} min.',
 };

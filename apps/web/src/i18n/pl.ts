@@ -619,4 +619,12 @@ export const pl: Catalogue = {
   'ai.panel': 'Typ ramki',
   'ai.panel_hint': 'Obrazy są generowane dla tego typu ekranu i tej orientacji.',
   'ai.mismatch': 'Ta kolekcja tworzy obrazy dla {made}, ale ta ramka to {frame}. Obrazy zostaną przycięte lub przeskalowane.',
+  'scheduleView.tab_plans': 'Harmonogramy',
+  'scheduleView.tab_week': 'Widok tygodnia',
+  'week.today': 'Dzisiaj',
+  'week.tomorrow': 'Jutro',
+  'week.empty_day': 'Brak zmian',
+  'week.none': 'Ten Canvas nie ma aktywnych harmonogramów.',
+  'plan.add': 'Dodaj harmonogram',
+  'plan.warn_close': 'Uwaga: inny harmonogram tego Canvasa zmienia się o {time}, zaledwie {minutes} min różnicy.',
 };

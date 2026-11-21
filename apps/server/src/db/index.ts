@@ -213,6 +213,32 @@ export const migrations: string[] = [
   ALTER TABLE assignments ADD COLUMN show_location TEXT NOT NULL DEFAULT 'off';
   ALTER TABLE assignments ADD COLUMN hide_home_country INTEGER NOT NULL DEFAULT 0;
   `,
+  // v13: several schedules per Canvas. Rebuild `assignments` without its UNIQUE(frame_id);
+  // every existing schedule keeps its row (and id), including v12's location columns.
+  `
+  CREATE TABLE assignments_new (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    frame_id INTEGER NOT NULL,
+    collection_id INTEGER NOT NULL,
+    order_mode TEXT NOT NULL DEFAULT 'random',
+    schedule TEXT NOT NULL DEFAULT '{"kind":"days","days":1,"at":"07:00"}',
+    next_change INTEGER,
+    active_from TEXT,
+    active_to TEXT,
+    fit TEXT NOT NULL DEFAULT 'cover',
+    bg TEXT NOT NULL DEFAULT '#ffffff',
+    show_date INTEGER NOT NULL DEFAULT 0,
+    enabled INTEGER NOT NULL DEFAULT 1,
+    last_change INTEGER,
+    show_location TEXT NOT NULL DEFAULT 'off',
+    hide_home_country INTEGER NOT NULL DEFAULT 0
+  );
+  INSERT INTO assignments_new (id, frame_id, collection_id, order_mode, schedule, next_change, active_from, active_to, fit, bg, show_date, enabled, last_change, show_location, hide_home_country)
+    SELECT id, frame_id, collection_id, order_mode, schedule, next_change, active_from, active_to, fit, bg, show_date, enabled, last_change, show_location, hide_home_country FROM assignments;
+  DROP TABLE assignments;
+  ALTER TABLE assignments_new RENAME TO assignments;
+  CREATE INDEX assignments_frame ON assignments(frame_id);
+  `,
 ];
 
 function migrate(sqlite: Database.Database) {

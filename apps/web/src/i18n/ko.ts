@@ -603,4 +603,12 @@ export const ko: Catalogue = {
   'ai.panel': '프레임 종류',
   'ai.panel_hint': '이미지는 이 화면 종류와 방향에 맞게 생성됩니다.',
   'ai.mismatch': '이 컬렉션은 {made}용 이미지를 만들지만, 이 프레임은 {frame}입니다. 이미지가 잘리거나 크기가 조정됩니다.',
+  'scheduleView.tab_plans': '일정',
+  'scheduleView.tab_week': '주간 보기',
+  'week.today': '오늘',
+  'week.tomorrow': '내일',
+  'week.empty_day': '변경 없음',
+  'week.none': '이 Canvas에는 활성 일정이 없습니다.',
+  'plan.add': '일정 추가',
+  'plan.warn_close': '주의: 이 Canvas의 다른 일정이 {time}에 바뀝니다. 불과 {minutes}분 차이입니다.',
 };

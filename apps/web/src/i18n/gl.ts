@@ -603,4 +603,12 @@ export const gl: Catalogue = {
   'ai.panel': 'Tipo de marco',
   'ai.panel_hint': 'As imaxes xéranse para este tipo de pantalla e esta orientación.',
   'ai.mismatch': 'Esta colección crea imaxes para {made}, pero este marco é {frame}. As imaxes recortaranse ou escalaranse.',
+  'scheduleView.tab_plans': 'Programacións',
+  'scheduleView.tab_week': 'Vista semanal',
+  'week.today': 'Hoxe',
+  'week.tomorrow': 'Mañá',
+  'week.empty_day': 'Sen cambios',
+  'week.none': 'Este Canvas non ten programacións activas.',
+  'plan.add': 'Engadir programación',
+  'plan.warn_close': 'Ollo: outra programación deste Canvas cambia ás {time}, a só {minutes} min.',
 };

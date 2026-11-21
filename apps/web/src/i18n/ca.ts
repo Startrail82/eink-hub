@@ -603,4 +603,12 @@ export const ca: Catalogue = {
   'ai.panel': 'Tipus de marc',
   'ai.panel_hint': 'Les imatges es generen per a aquest tipus de pantalla i aquesta orientació.',
   'ai.mismatch': 'Aquesta col·lecció crea imatges per a {made}, però aquest marc és {frame}. Les imatges es retallaran o s\'escalaran.',
+  'scheduleView.tab_plans': 'Programacions',
+  'scheduleView.tab_week': 'Vista setmanal',
+  'week.today': 'Avui',
+  'week.tomorrow': 'Demà',
+  'week.empty_day': 'Sense canvis',
+  'week.none': 'Aquest Canvas no té programacions actives.',
+  'plan.add': 'Afegeix programació',
+  'plan.warn_close': 'Atenció: una altra programació d\'aquest Canvas canvia a les {time}, a només {minutes} min.',
 };

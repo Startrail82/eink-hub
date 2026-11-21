@@ -619,4 +619,12 @@ export const cs: Catalogue = {
   'ai.panel': 'Typ rámečku',
   'ai.panel_hint': 'Obrázky se vytvářejí pro tento typ displeje a tuto orientaci.',
   'ai.mismatch': 'Tato kolekce vytváří obrázky pro {made}, ale tento rámeček je {frame}. Obrázky budou oříznuty nebo zmenšeny.',
+  'scheduleView.tab_plans': 'Plány',
+  'scheduleView.tab_week': 'Týdenní přehled',
+  'week.today': 'Dnes',
+  'week.tomorrow': 'Zítra',
+  'week.empty_day': 'Žádné změny',
+  'week.none': 'Tento Canvas nemá žádné aktivní plány.',
+  'plan.add': 'Přidat plán',
+  'plan.warn_close': 'Pozor: další plán tohoto Canvasu se mění v {time}, jen {minutes} min od tohoto.',
 };
