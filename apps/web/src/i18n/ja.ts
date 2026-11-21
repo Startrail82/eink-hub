@@ -613,4 +613,5 @@ export const ja: Catalogue = {
   'plan.warn_close': '注意：このCanvasの別のスケジュールが{time}に切り替わります（わずか{minutes}分差）。',
   'ai.negative': 'ネガティブプロンプト',
   'ai.negative_hint': '画像に含めたくないもの。ワークフローのこのテキストの位置に {{negative}} を置いてください。空の場合は何も追加されません。',
+  'ai.pick_hint': '画像ごとに選択肢の1つをランダムに選びます。例：{pick: 山 | 海岸 | 森}。クリックでコピー。',
 };

@@ -612,6 +612,7 @@ export const es = {
   'plan.warn_close': 'Ojo: otra programación de este Canvas cambia a las {time}, a solo {minutes} min.',
   'ai.negative': 'Prompt negativo',
   'ai.negative_hint': 'Qué no debe aparecer en la imagen. Pon {{negative}} en el workflow donde va este texto. Vacío no añade nada.',
+  'ai.pick_hint': 'Elige una opción al azar en cada imagen, por ejemplo {pick: montañas | costa | bosque}. Clic para copiar.',
 };
 
 export type Messages = Record<keyof typeof es, string>;

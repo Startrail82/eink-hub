@@ -613,4 +613,5 @@ export const de: Catalogue = {
   'plan.warn_close': 'Achtung: Ein anderer Zeitplan dieses Canvas wechselt um {time}, nur {minutes} Min. entfernt.',
   'ai.negative': 'Negativ-Prompt',
   'ai.negative_hint': 'Was das Bild nicht zeigen soll. Setze {{negative}} im Workflow an die Stelle dieses Textes. Leer fügt nichts hinzu.',
+  'ai.pick_hint': 'Wählt für jedes Bild zufällig eine Option, zum Beispiel {pick: Berge | Küste | Wald}. Zum Kopieren klicken.',
 };

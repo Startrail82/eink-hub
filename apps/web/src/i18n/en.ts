@@ -613,4 +613,5 @@ export const en: Messages = {
   'plan.warn_close': 'Note: another schedule of this Canvas changes at {time}, only {minutes} min apart.',
   'ai.negative': 'Negative prompt',
   'ai.negative_hint': 'What the picture should not look like. Put {{negative}} in the workflow where this text goes. Empty adds nothing.',
+  'ai.pick_hint': 'Picks one option at random for every picture, for example {pick: mountains | coast | forest}. Click to copy.',
 };

@@ -613,4 +613,5 @@ export const gl: Catalogue = {
   'plan.warn_close': 'Ollo: outra programación deste Canvas cambia ás {time}, a só {minutes} min.',
   'ai.negative': 'Prompt negativo',
   'ai.negative_hint': 'O que non debe aparecer na imaxe. Pon {{negative}} no workflow onde vai este texto. Baleiro non engade nada.',
+  'ai.pick_hint': 'Escolle unha opción ao chou en cada imaxe, por exemplo {pick: montañas | costa | bosque}. Preme para copiar.',
 };

@@ -613,4 +613,5 @@ export const it: Catalogue = {
   'plan.warn_close': 'Attenzione: un\'altra programmazione di questo Canvas cambia alle {time}, a soli {minutes} min.',
   'ai.negative': 'Prompt negativo',
   'ai.negative_hint': 'Cosa non deve apparire nell\'immagine. Metti {{negative}} nel workflow dove va questo testo. Vuoto non aggiunge nulla.',
+  'ai.pick_hint': 'Sceglie un\'opzione a caso per ogni immagine, per esempio {pick: montagne | costa | bosco}. Clic per copiare.',
 };

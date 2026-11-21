@@ -629,4 +629,5 @@ export const pl: Catalogue = {
   'plan.warn_close': 'Uwaga: inny harmonogram tego Canvasa zmienia się o {time}, zaledwie {minutes} min różnicy.',
   'ai.negative': 'Negatywny prompt',
   'ai.negative_hint': 'Czego nie powinno być na obrazie. Wstaw {{negative}} w workflow tam, gdzie ma trafić ten tekst. Puste nic nie dodaje.',
+  'ai.pick_hint': 'Losuje jedną opcję dla każdego obrazu, na przykład {pick: góry | wybrzeże | las}. Kliknij, aby skopiować.',
 };

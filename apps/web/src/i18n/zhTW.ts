@@ -613,4 +613,5 @@ export const zhTW: Catalogue = {
   'plan.warn_close': '注意：此 Canvas 的另一個排程在 {time} 切換，僅相差 {minutes} 分鐘。',
   'ai.negative': '反向提示詞',
   'ai.negative_hint': '畫面中不希望出現的內容。請在工作流程中此文字所在位置放入 {{negative}}。留空則不新增任何內容。',
+  'ai.pick_hint': '每張圖片隨機選取一個選項，例如 {pick: 山 | 海岸 | 森林}。點擊複製。',
 };

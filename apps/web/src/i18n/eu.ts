@@ -613,4 +613,5 @@ export const eu: Messages = {
   'plan.warn_close': 'Kontuz: Canvas honen beste programazio batek {time}etan aldatzen du, {minutes} min besterik gabe.',
   'ai.negative': 'Prompt negatiboa',
   'ai.negative_hint': 'Irudian agertu behar ez dena. Jarri {{negative}} workflow-an testu hau doan lekuan. Hutsik badago, ez da ezer gehitzen.',
+  'ai.pick_hint': 'Aukeretako bat ausaz hautatzen du irudi bakoitzeko, adibidez {pick: mendiak | kostaldea | basoa}. Egin klik kopiatzeko.',
 };

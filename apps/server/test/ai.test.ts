@@ -28,6 +28,19 @@ describe('prompt templates', () => {
   it('fills known variables and blanks unknown ones', () => {
     expect(fillTemplate('A {condition} day {nope}!', { condition: 'rainy' })).toBe('A rainy day !');
   });
+
+  it('picks one option of {pick: a | b | c} at random', () => {
+    const t = 'A {pick: mountain | coast | forest} at {pick: dawn | dusk}.';
+    expect(fillTemplate(t, {}, () => 0)).toBe('A mountain at dawn.');
+    expect(fillTemplate(t, {}, () => 0.5)).toBe('A coast at dusk.');
+    expect(fillTemplate(t, {}, () => 0.999)).toBe('A forest at dusk.');
+    // Options can hold tags, and an empty list leaves nothing behind.
+    expect(fillTemplate('{pick: a {season} view | b}', { season: 'autumn' }, () => 0)).toBe('a autumn view');
+    expect(fillTemplate('x{pick: | }y', {})).toBe('xy');
+    // Without a random source every option is possible.
+    const seen = new Set(Array.from({ length: 60 }, () => fillTemplate('{pick: a | b | c}', {})));
+    expect(seen).toEqual(new Set(['a', 'b', 'c']));
+  });
 });
 
 describe('feed parsing', () => {

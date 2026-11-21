@@ -629,4 +629,5 @@ export const cs: Catalogue = {
   'plan.warn_close': 'Pozor: další plán tohoto Canvasu se mění v {time}, jen {minutes} min od tohoto.',
   'ai.negative': 'Negativní prompt',
   'ai.negative_hint': 'Co se na obrázku nemá objevit. Vlož {{negative}} do workflow na místo tohoto textu. Prázdné nic nepřidá.',
+  'ai.pick_hint': 'Pro každý obrázek náhodně vybere jednu možnost, například {pick: hory | pobřeží | les}. Kliknutím zkopíruješ.',
 };

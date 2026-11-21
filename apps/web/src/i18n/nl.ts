@@ -613,4 +613,5 @@ export const nl: Catalogue = {
   'plan.warn_close': 'Let op: een andere planning van dit Canvas wisselt om {time}, slechts {minutes} min verschil.',
   'ai.negative': 'Negatieve prompt',
   'ai.negative_hint': 'Wat het beeld niet mag tonen. Zet {{negative}} in de workflow op de plek van deze tekst. Leeg voegt niets toe.',
+  'ai.pick_hint': 'Kiest voor elk beeld willekeurig één optie, bijvoorbeeld {pick: bergen | kust | bos}. Klik om te kopiëren.',
 };
