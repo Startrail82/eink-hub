@@ -594,4 +594,6 @@ export const en: Messages = {
   'ai.panel': 'Frame type',
   'ai.panel_hint': 'Pictures are generated for this screen type and orientation.',
   'ai.mismatch': 'This collection makes pictures for {made}, but this canvas is {frame}. The pictures will be cropped or scaled.',
+  'ai.weather_bar': 'Weather bar on the picture',
+  'ai.weather_bar_hint': 'Draws today\'s low, high and chance of rain at the bottom right, in a translucent label.',
 };

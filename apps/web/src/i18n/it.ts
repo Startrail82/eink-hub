@@ -594,4 +594,6 @@ export const it: Catalogue = {
   'ai.panel': 'Tipo di cornice',
   'ai.panel_hint': 'Le immagini vengono generate per questo tipo di schermo e questo orientamento.',
   'ai.mismatch': 'Questa raccolta crea immagini per {made}, ma questa cornice è {frame}. Le immagini verranno ritagliate o ridimensionate.',
+  'ai.weather_bar': 'Barra meteo sull\'immagine',
+  'ai.weather_bar_hint': 'Disegna in basso a destra la minima, la massima e la probabilità di pioggia di oggi, in un\'etichetta semitrasparente.',
 };

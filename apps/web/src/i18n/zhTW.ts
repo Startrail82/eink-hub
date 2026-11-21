@@ -594,4 +594,6 @@ export const zhTW: Catalogue = {
   'ai.panel': '相框類型',
   'ai.panel_hint': '圖片將依此螢幕類型與方向產生。',
   'ai.mismatch': '此圖集依 {made} 產生圖片,但此相框為 {frame}。圖片將被裁切或縮放。',
+  'ai.weather_bar': '在圖片上顯示天氣列',
+  'ai.weather_bar_hint': '在右下角以半透明標籤繪製今天的最低溫、最高溫和降雨機率。',
 };

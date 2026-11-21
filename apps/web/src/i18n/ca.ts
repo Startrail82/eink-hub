@@ -594,4 +594,6 @@ export const ca: Catalogue = {
   'ai.panel': 'Tipus de marc',
   'ai.panel_hint': 'Les imatges es generen per a aquest tipus de pantalla i aquesta orientació.',
   'ai.mismatch': 'Aquesta col·lecció crea imatges per a {made}, però aquest marc és {frame}. Les imatges es retallaran o s\'escalaran.',
+  'ai.weather_bar': 'Barra del temps a la imatge',
+  'ai.weather_bar_hint': 'Dibuixa a baix a la dreta la mínima, la màxima i la probabilitat de pluja d\'avui, en una etiqueta semitransparent.',
 };

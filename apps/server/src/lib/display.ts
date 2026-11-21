@@ -38,8 +38,10 @@ export function markOnline(db: DB, frameId: number, online: boolean, extra: Part
 
 export function assignmentOptions(db: DB, a?: Assignment): DisplayOptions {
   if (!a) return {};
-  const c = db.select({ type: schema.collections.type }).from(schema.collections).where(eq(schema.collections.id, a.collectionId)).get();
-  return { fit: a.fit, bg: a.bg, showDate: a.showDate, ...(c?.type === 'immich_memories' ? { memories: true } : {}) };
+  const c = db.select({ type: schema.collections.type, config: schema.collections.config }).from(schema.collections).where(eq(schema.collections.id, a.collectionId)).get();
+  const ai = c?.type === 'ai' ? (c.config as { source?: string; weatherBar?: boolean; latitude?: unknown; longitude?: unknown }) : null;
+  const place = ai?.source === 'weather' && ai.weatherBar && typeof ai.latitude === 'number' && typeof ai.longitude === 'number' ? { latitude: ai.latitude, longitude: ai.longitude } : null;
+  return { fit: a.fit, bg: a.bg, showDate: a.showDate, ...(c?.type === 'immich_memories' ? { memories: true } : {}), ...(place ? { weatherBar: place } : {}) };
 }
 
 /** Pick the next image of the frame's assigned collection, avoiding recent repeats. */

@@ -13,6 +13,8 @@ export interface DisplayOptions {
   showDate?: boolean;
   /** "On this day" memories: caption reads "X years ago today" instead of the date. */
   memories?: boolean;
+  /** AI weather collections: draw today's minimum, maximum and chance of rain for this place. */
+  weatherBar?: { latitude: number; longitude: number };
 }
 
 /** Per-kind settings that don't deserve a column. */

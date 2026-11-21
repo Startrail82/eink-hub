@@ -255,6 +255,8 @@ export type AiSource = 'prompt' | 'rss' | 'weather';
 export interface AiCollectionConfig {
   source: AiSource;
   prompt: string;
+  /** Weather source: draw today's low, high and chance of rain on the picture. */
+  weatherBar: boolean;
   feedUrl: string;
   latitude: number | null;
   longitude: number | null;

@@ -594,4 +594,6 @@ export const pt: Catalogue = {
   'ai.panel': 'Tipo de moldura',
   'ai.panel_hint': 'As imagens são geradas para este tipo de ecrã e esta orientação.',
   'ai.mismatch': 'Esta coleção cria imagens para {made}, mas esta moldura é {frame}. As imagens serão cortadas ou redimensionadas.',
+  'ai.weather_bar': 'Barra do tempo na imagem',
+  'ai.weather_bar_hint': 'Desenha em baixo à direita a mínima, a máxima e a probabilidade de chuva de hoje, numa etiqueta semitransparente.',
 };

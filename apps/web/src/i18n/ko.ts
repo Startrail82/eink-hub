@@ -594,4 +594,6 @@ export const ko: Catalogue = {
   'ai.panel': '프레임 종류',
   'ai.panel_hint': '이미지는 이 화면 종류와 방향에 맞게 생성됩니다.',
   'ai.mismatch': '이 컬렉션은 {made}용 이미지를 만들지만, 이 프레임은 {frame}입니다. 이미지가 잘리거나 크기가 조정됩니다.',
+  'ai.weather_bar': '이미지에 날씨 막대 표시',
+  'ai.weather_bar_hint': '오른쪽 아래에 오늘의 최저·최고 기온과 강수 확률을 반투명 라벨로 그립니다.',
 };

@@ -594,4 +594,6 @@ export const de: Catalogue = {
   'ai.panel': 'Rahmentyp',
   'ai.panel_hint': 'Bilder werden für diesen Bildschirmtyp und diese Ausrichtung erzeugt.',
   'ai.mismatch': 'Diese Sammlung erzeugt Bilder für {made}, dieser Rahmen ist jedoch {frame}. Die Bilder werden zugeschnitten oder skaliert.',
+  'ai.weather_bar': 'Wetterleiste im Bild',
+  'ai.weather_bar_hint': 'Zeichnet unten rechts das heutige Minimum, Maximum und die Regenwahrscheinlichkeit in einem halbtransparenten Label.',
 };

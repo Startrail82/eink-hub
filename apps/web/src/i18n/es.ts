@@ -593,6 +593,8 @@ export const es = {
   'ai.panel': 'Tipo de marco',
   'ai.panel_hint': 'Las imágenes se generan para este tipo de pantalla y esta orientación.',
   'ai.mismatch': 'Esta colección crea imágenes para {made}, pero este marco es {frame}. Las imágenes se recortarán o escalarán.',
+  'ai.weather_bar': 'Barra del tiempo en la imagen',
+  'ai.weather_bar_hint': 'Dibuja abajo a la derecha la mínima, la máxima y la probabilidad de lluvia de hoy, en una etiqueta semitransparente.',
 };
 
 export type Messages = Record<keyof typeof es, string>;

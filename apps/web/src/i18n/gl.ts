@@ -594,4 +594,6 @@ export const gl: Catalogue = {
   'ai.panel': 'Tipo de marco',
   'ai.panel_hint': 'As imaxes xéranse para este tipo de pantalla e esta orientación.',
   'ai.mismatch': 'Esta colección crea imaxes para {made}, pero este marco é {frame}. As imaxes recortaranse ou escalaranse.',
+  'ai.weather_bar': 'Barra do tempo na imaxe',
+  'ai.weather_bar_hint': 'Debuxa abaixo á dereita a mínima, a máxima e a probabilidade de choiva de hoxe, nunha etiqueta semitransparente.',
 };

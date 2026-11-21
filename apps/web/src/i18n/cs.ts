@@ -610,4 +610,6 @@ export const cs: Catalogue = {
   'ai.panel': 'Typ rámečku',
   'ai.panel_hint': 'Obrázky se vytvářejí pro tento typ displeje a tuto orientaci.',
   'ai.mismatch': 'Tato kolekce vytváří obrázky pro {made}, ale tento rámeček je {frame}. Obrázky budou oříznuty nebo zmenšeny.',
+  'ai.weather_bar': 'Pruh s počasím v obrázku',
+  'ai.weather_bar_hint': 'Vpravo dole nakreslí dnešní minimum, maximum a pravděpodobnost deště v průhledném štítku.',
 };

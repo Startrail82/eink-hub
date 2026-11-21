@@ -594,4 +594,6 @@ export const nl: Catalogue = {
   'ai.panel': 'Frametype',
   'ai.panel_hint': 'Beelden worden gegenereerd voor dit schermtype en deze oriëntatie.',
   'ai.mismatch': 'Deze collectie maakt beelden voor {made}, maar dit frame is {frame}. De beelden worden bijgesneden of geschaald.',
+  'ai.weather_bar': 'Weerbalk op het beeld',
+  'ai.weather_bar_hint': 'Tekent rechtsonder de minimum- en maximumtemperatuur van vandaag en de kans op regen in een half-transparant label.',
 };

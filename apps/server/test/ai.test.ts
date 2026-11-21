@@ -16,8 +16,10 @@ import { openDb, schema, setSetting } from '../src/db/index.js';
 import { aiState, buildPrompt, collectionConfig, generationDue, generateFor, LEAD_MS, prune, RETRY_MS, sizeFor, targetSize, validateCollectionConfig } from '../src/lib/ai/generate.js';
 import { AiError, fillWorkflow, generateImage, openaiSize, testConnection } from '../src/lib/ai/providers.js';
 import { aiConfigured, type AiConfig } from '../src/lib/ai/settings.js';
-import { commonVars, fillTemplate, nextFeedItem, parseFeed, weatherCondition, weatherLook, weatherVars } from '../src/lib/ai/sources.js';
+import { commonVars, fetchDayForecast, fillTemplate, nextFeedItem, parseDayForecast, parseFeed, weatherCondition, weatherLook, weatherVars } from '../src/lib/ai/sources.js';
 import { pickFresh } from '../src/lib/selection.js';
+import { assignmentOptions } from '../src/lib/display.js';
+import { renderForFrame } from '../src/imaging/pipeline.js';
 
 const cfg = (c: Partial<AiConfig>): AiConfig => ({ provider: '', url: '', apiKey: '', username: '', model: '', size: '', workflow: '', ...c });
 const jsonRes = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
@@ -368,5 +370,58 @@ describe('collections end to end', () => {
     expect(left).toEqual([ids[0], ids[3], ids[4]].sort());
     await prune(db, col.id, 0);
     expect(db.select().from(schema.collectionItems).all().filter((i) => i.collectionId === col.id)).toHaveLength(3);
+  });
+});
+
+describe('weather bar', () => {
+  it('reads the day forecast and rounds it', () => {
+    expect(parseDayForecast({ daily: { temperature_2m_max: [12.6], temperature_2m_min: [3.4], precipitation_probability_max: [64.4] } })).toEqual({ min: 3, max: 13, rain: 64 });
+    expect(parseDayForecast({ daily: { temperature_2m_max: [5], temperature_2m_min: [-2.6] } })).toEqual({ min: -3, max: 5, rain: null });
+    expect(() => parseDayForecast({})).toThrow(AiError);
+  });
+
+  it('asks Open-Meteo once per place for a while', async () => {
+    let calls = 0;
+    vi.stubGlobal('fetch', async () => {
+      calls++;
+      return jsonRes({ daily: { temperature_2m_max: [10], temperature_2m_min: [4], precipitation_probability_max: [30] } });
+    });
+    const t0 = Date.now();
+    expect(await fetchDayForecast(51.1, 4.4, t0)).toEqual({ min: 4, max: 10, rain: 30 });
+    await fetchDayForecast(51.1, 4.4, t0 + 60_000);
+    expect(calls).toBe(1);
+    await fetchDayForecast(51.1, 4.4, t0 + 20 * 60_000);
+    expect(calls).toBe(2);
+  });
+
+  it('draws a label at the bottom right without changing the picture size', async () => {
+    const src = await sharp({ create: { width: 600, height: 800, channels: 3, background: '#336699' } }).png().toBuffer();
+    const base = { width: 600, height: 800, landscape: false, rotate: 0, fit: 'cover' as const, bg: '#ffffff', format: { type: 'png' as const } };
+    const plain = await renderForFrame(src, base);
+    const withBar = await renderForFrame(src, { ...base, weather: { min: 3, max: 9, rain: 60 } });
+    const [a, b] = await Promise.all([sharp(plain).raw().toBuffer({ resolveWithObject: true }), sharp(withBar).raw().toBuffer({ resolveWithObject: true })]);
+    expect([b.info.width, b.info.height]).toEqual([600, 800]);
+    const px = (r: typeof a, x: number, y: number) => [...r.data.subarray((y * r.info.width + x) * r.info.channels, (y * r.info.width + x) * r.info.channels + 3)];
+    // Bottom-left stays as it was; bottom-right now has the translucent label (lighter than the picture).
+    expect(px(b, 40, 760)).toEqual(px(a, 40, 760));
+    const [r0, g0] = px(a, 560, 760);
+    const [r1, g1] = px(b, 560, 760);
+    expect(r1).toBeGreaterThan(r0);
+    expect(g1).toBeGreaterThan(g0);
+    // Translucent: still tinted by the picture, not pure white.
+    expect(r1).toBeLessThan(255);
+  });
+});
+
+describe('weather bar option', () => {
+  it('is only passed on for a weather collection that has it switched on', () => {
+    const db = openDb(path.join(os.tmpdir(), `eink-wbar-${process.pid}.db`));
+    const add = (config: Record<string, unknown>) => db.insert(schema.collections).values({ name: 'W', type: 'ai', config, createdAt: Date.now() }).returning().get().id;
+    const assign = (collectionId: number) => ({ collectionId, fit: 'cover', bg: '#ffffff', showDate: false }) as never;
+    const place = { latitude: 51.2, longitude: 4.4 };
+    expect(assignmentOptions(db, assign(add({ source: 'weather', weatherBar: true, ...place })))).toMatchObject({ weatherBar: place });
+    expect(assignmentOptions(db, assign(add({ source: 'weather', weatherBar: false, ...place }))).weatherBar).toBeUndefined();
+    expect(assignmentOptions(db, assign(add({ source: 'prompt', weatherBar: true, ...place }))).weatherBar).toBeUndefined();
+    expect(assignmentOptions(db, assign(add({ source: 'weather', weatherBar: true }))).weatherBar).toBeUndefined();
   });
 });

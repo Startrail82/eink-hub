@@ -594,4 +594,6 @@ export const eu: Messages = {
   'ai.panel': 'Markoaren mota',
   'ai.panel_hint': 'Irudiak pantaila mota eta norabide honetarako sortzen dira.',
   'ai.mismatch': 'Bilduma honek {made} motarako sortzen ditu irudiak, baina marko hau {frame} da. Irudiak moztu edo eskalatu egingo dira.',
+  'ai.weather_bar': 'Eguraldi-barra irudian',
+  'ai.weather_bar_hint': 'Beheko eskuinean gaurko minimoa, maximoa eta euri-probabilitatea marrazten ditu, etiketa erdi-gardenean.',
 };

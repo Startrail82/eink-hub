@@ -594,4 +594,6 @@ export const fr: Catalogue = {
   'ai.panel': 'Type de cadre',
   'ai.panel_hint': 'Les images sont générées pour ce type d\'écran et cette orientation.',
   'ai.mismatch': 'Cette collection crée des images pour {made}, mais ce cadre est {frame}. Les images seront recadrées ou mises à l\'échelle.',
+  'ai.weather_bar': 'Barre météo sur l\'image',
+  'ai.weather_bar_hint': 'Dessine en bas à droite le minimum, le maximum et le risque de pluie du jour, dans une étiquette translucide.',
 };
