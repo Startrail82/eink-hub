@@ -88,9 +88,9 @@ describe('collection config', () => {
 });
 
 describe('daypart', () => {
-  const at = (time: string) =>
+  const at = (time: string, code = 0) =>
     weatherVars({
-      current: { time: `2026-11-21T${time}`, temperature_2m: 5, weather_code: 0, is_day: 1, wind_speed_10m: 3 },
+      current: { time: `2026-11-21T${time}`, temperature_2m: 5, weather_code: code, is_day: 1, wind_speed_10m: 3 },
       daily: { sunrise: ['2026-11-21T07:58'], sunset: ['2026-11-21T16:38'] },
     });
   it('knows night, sunrise, daytime and sunset', () => {
@@ -100,6 +100,12 @@ describe('daypart', () => {
     expect(at('16:20').daypart).toBe('warm golden sunset glow'); // hour 16:00
     expect(at('17:10').daypart).toBe('warm golden sunset glow'); // hour 17:00
     expect(at('21:00').daypart).toBe('moonlit night');
+  });
+  it('drops sun and moon when the weather hides them', () => {
+    expect(at('12:20', 95).daypart).toBe('diffuse grey daylight'); // thunderstorm
+    expect(at('03:10', 3).daypart).toBe('dark night');
+    expect(at('16:20', 61).daypart).toBe('dim dusk light');
+    expect(at('12:20', 2).daypart).toBe('bright daylight'); // partly cloudy keeps the light
   });
   it('gives the sun times', () => {
     expect(at('12:00')).toMatchObject({ sunrise: '07:58', sunset: '16:38' });

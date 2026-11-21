@@ -133,7 +133,12 @@ interface OpenMeteo {
 const SUN_WINDOW_MIN = 45;
 
 /** Descriptions a picture model understands as lighting (not "night light", which it may draw as a lamp). */
-const DAYPARTS = { night: 'moonlit night', sunrise: 'soft golden sunrise light', daytime: 'bright daylight', sunset: 'warm golden sunset glow' };
+const DAYPARTS = {
+  // Sky mostly open (WMO codes 0 to 2): moon, golden sun, bright light.
+  clear: { night: 'moonlit night', sunrise: 'soft golden sunrise light', daytime: 'bright daylight', sunset: 'warm golden sunset glow' },
+  // Overcast, fog, rain, snow, thunder: the same moments without a sun or moon that the weather would hide.
+  dull: { night: 'dark night', sunrise: 'dim, grey dawn light', daytime: 'diffuse grey daylight', sunset: 'dim dusk light' },
+};
 
 /** Minutes after midnight and "HH:MM" of an Open-Meteo local time ("2026-11-21T07:58"). */
 function clock(iso: string | undefined) {
@@ -143,14 +148,15 @@ function clock(iso: string | undefined) {
 
 /** Night, sunrise, daytime or sunset for the full hour nearest to now, at the location. */
 function daypart(w: OpenMeteo): string {
+  const light = DAYPARTS[(w.current?.weather_code ?? 3) <= 2 ? 'clear' : 'dull'];
   const now = clock(w.current?.time);
   const rise = clock(w.daily?.sunrise?.[0]);
   const set = clock(w.daily?.sunset?.[0]);
-  if (!now || !rise || !set) return w.current?.is_day === 0 ? DAYPARTS.night : DAYPARTS.daytime;
+  if (!now || !rise || !set) return w.current?.is_day === 0 ? light.night : light.daytime;
   const hour = Math.round(now.minutes / 60) * 60;
-  if (Math.abs(hour - rise.minutes) <= SUN_WINDOW_MIN) return DAYPARTS.sunrise;
-  if (Math.abs(hour - set.minutes) <= SUN_WINDOW_MIN) return DAYPARTS.sunset;
-  return hour > rise.minutes && hour < set.minutes ? DAYPARTS.daytime : DAYPARTS.night;
+  if (Math.abs(hour - rise.minutes) <= SUN_WINDOW_MIN) return light.sunrise;
+  if (Math.abs(hour - set.minutes) <= SUN_WINDOW_MIN) return light.sunset;
+  return hour > rise.minutes && hour < set.minutes ? light.daytime : light.night;
 }
 
 /** Variables for a prompt: {condition}, {temperature}, {high}, {low}, {wind}, {daypart}, {sunrise}, {sunset}. */
