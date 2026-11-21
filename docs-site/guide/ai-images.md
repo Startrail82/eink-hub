@@ -43,6 +43,8 @@ In the **Library**, choose **New AI collection** and pick what to draw:
 - **An RSS feed.** Each picture is made from the newest feed item that has not been drawn yet. When all items were drawn, it starts again with the newest. Leave the prompt empty for a cartoon of the headline, or write your own with `{title}` and `{description}`. RSS 2.0 and Atom are supported.
 - **The weather.** Uses [Open-Meteo](https://open-meteo.com/) for a latitude and longitude (no account needed). Leave the prompt empty for a weather illustration, or write your own with `{condition}`, `{temperature}`, `{high}`, `{low}`, `{wind}`, `{daypart}` and `{season}`.
 
+Choose the **Frame type** (screen) and **orientation** the pictures are made for. They are generated at that screen's shape, so they fit without cropping. When you later use the collection on a Canvas with a different resolution or orientation, the Hub warns you that the pictures will be cropped or scaled.
+
 Use **Generate now** in the collection to make a first picture and check the result. Failures (an unreachable service, a refused key) show up on the collection.
 
 ## 3. Show it on a Canvas
