@@ -600,4 +600,7 @@ export const gl: Catalogue = {
   'library.empty_ai_hint': 'Créase unha imaxe pouco antes de que un marco cambie. Preme «Xerar agora» para crear a primeira.',
   'ai.edit': 'Configuración',
   'ai.auth_hint': 'Só se ComfyUI está detrás dun inicio de sesión (por exemplo Authentik): o Hub inicia sesión con HTTP Basic.',
+  'ai.panel': 'Tipo de marco',
+  'ai.panel_hint': 'As imaxes xéranse para este tipo de pantalla e esta orientación.',
+  'ai.mismatch': 'Esta colección crea imaxes para {made}, pero este marco é {frame}. As imaxes recortaranse ou escalaranse.',
 };

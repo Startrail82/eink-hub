@@ -616,4 +616,7 @@ export const pl: Catalogue = {
   'library.empty_ai_hint': 'Obraz powstaje tuż przed zmianą ramki. Naciśnij „Generuj teraz”, aby zrobić pierwszy.',
   'ai.edit': 'Ustawienia',
   'ai.auth_hint': 'Potrzebne tylko, gdy ComfyUI jest za logowaniem (np. Authentik): Hub loguje się przez HTTP Basic.',
+  'ai.panel': 'Typ ramki',
+  'ai.panel_hint': 'Obrazy są generowane dla tego typu ekranu i tej orientacji.',
+  'ai.mismatch': 'Ta kolekcja tworzy obrazy dla {made}, ale ta ramka to {frame}. Obrazy zostaną przycięte lub przeskalowane.',
 };

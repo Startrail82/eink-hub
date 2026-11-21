@@ -8,6 +8,7 @@ import { BgPicker } from './BgPicker';
 import { Button, Field, Segmented, Toggle, cx, inputClass, useConfirm } from './ui';
 import { Select } from './Select';
 import { TimeField } from './TimeField';
+import { panelKey, panelLabel } from '../lib/panels';
 
 /** Where the photo was taken (from Immich): off / city / city and country, plus "leave out the home country". */
 export function LocationOptions({
@@ -75,6 +76,13 @@ export function AssignmentEditor({ frame: fixed, choices, onSaved }: { frame?: F
   // A new schedule starts empty: everything else waits until a Canvas and a collection are picked.
   const ready = !!frame && !!collectionId;
 
+  // An AI collection is drawn for one screen type and orientation: warn when this canvas differs.
+  const aiPanel = collection?.type === 'ai' ? (collection.config.panel as string | undefined) : undefined;
+  const aiOrientation = collection?.config.orientation === 'landscape' ? 'landscape' : 'portrait';
+  const mismatch = !!frame && !!aiPanel && (panelKey(frame) !== aiPanel || frame.orientation !== aiOrientation);
+  const describe = (panel: string, o: 'portrait' | 'landscape', d?: number | null) =>
+    `${panelLabel(panel, d)}, ${t(o === 'portrait' ? 'canvasSettings.portrait' : 'canvasSettings.landscape').toLowerCase()}`;
+
   const pickCollection = (id: number) => {
     setCollectionId(id);
     if (collections.data?.find((c) => c.id === id)?.type === 'immich_memories') setShowDate(true);
@@ -129,6 +137,12 @@ export function AssignmentEditor({ frame: fixed, choices, onSaved }: { frame?: F
               options={(collections.data ?? []).map((c) => ({ value: c.id, label: c.type === 'immich_memories' ? c.name : `${c.name} (${c.itemCount})` }))}
             />
           </Field>
+
+          {mismatch && (
+            <p className="rounded-2xl bg-surface-2 px-4 py-3 text-sm text-ink-2">
+              {t('ai.mismatch', { made: describe(aiPanel!, aiOrientation), frame: describe(panelKey(frame!), frame!.orientation, frame!.diagonal) })}
+            </p>
+          )}
 
           {isMemories ? (
             <div className="flex gap-3 rounded-2xl bg-surface-2 p-4 text-sm text-ink-2">

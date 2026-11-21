@@ -600,4 +600,7 @@ export const ca: Catalogue = {
   'library.empty_ai_hint': 'Es crea una imatge poc abans que un marc canviï. Prem «Genera ara» per crear la primera.',
   'ai.edit': 'Configuració',
   'ai.auth_hint': 'Només cal si ComfyUI està darrere d\'un inici de sessió (per exemple Authentik): el Hub inicia sessió amb HTTP Basic.',
+  'ai.panel': 'Tipus de marc',
+  'ai.panel_hint': 'Les imatges es generen per a aquest tipus de pantalla i aquesta orientació.',
+  'ai.mismatch': 'Aquesta col·lecció crea imatges per a {made}, però aquest marc és {frame}. Les imatges es retallaran o s\'escalaran.',
 };

@@ -600,4 +600,7 @@ export const pt: Catalogue = {
   'library.empty_ai_hint': 'Uma imagem é criada pouco antes de uma moldura mudar. Carrega em «Gerar agora» para criar a primeira.',
   'ai.edit': 'Definições',
   'ai.auth_hint': 'Só se o ComfyUI estiver atrás de um início de sessão (por exemplo Authentik): o Hub inicia sessão com HTTP Basic.',
+  'ai.panel': 'Tipo de moldura',
+  'ai.panel_hint': 'As imagens são geradas para este tipo de ecrã e esta orientação.',
+  'ai.mismatch': 'Esta coleção cria imagens para {made}, mas esta moldura é {frame}. As imagens serão cortadas ou redimensionadas.',
 };

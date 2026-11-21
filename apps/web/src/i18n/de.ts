@@ -600,4 +600,7 @@ export const de: Catalogue = {
   'library.empty_ai_hint': 'Kurz bevor ein Rahmen wechselt, wird ein Bild erzeugt. Mit „Jetzt generieren“ entsteht das erste.',
   'ai.edit': 'Einstellungen',
   'ai.auth_hint': 'Nur nötig, wenn ComfyUI hinter einer Anmeldung liegt (z. B. Authentik): Der Hub meldet sich per HTTP Basic an.',
+  'ai.panel': 'Rahmentyp',
+  'ai.panel_hint': 'Bilder werden für diesen Bildschirmtyp und diese Ausrichtung erzeugt.',
+  'ai.mismatch': 'Diese Sammlung erzeugt Bilder für {made}, dieser Rahmen ist jedoch {frame}. Die Bilder werden zugeschnitten oder skaliert.',
 };

@@ -600,4 +600,7 @@ export const zh: Catalogue = {
   'library.empty_ai_hint': '相框切换前不久会生成一张图片。点击“立即生成”可先生成第一张。',
   'ai.edit': '设置',
   'ai.auth_hint': '仅当 ComfyUI 位于登录之后（例如 Authentik）时需要：Hub 通过 HTTP Basic 登录。',
+  'ai.panel': '相框类型',
+  'ai.panel_hint': '图片将按此屏幕类型和方向生成。',
+  'ai.mismatch': '此图集按 {made} 生成图片,但此相框为 {frame}。图片将被裁剪或缩放。',
 };
