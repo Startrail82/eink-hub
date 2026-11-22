@@ -49,9 +49,18 @@ export function getAssignmentById(db: DB, id: number): Assignment {
   return a;
 }
 
+/**
+ * Of the schedules that are due, the one that was due most recently. A frame that slept through
+ * the 07:00 change and wakes at 12:00 should show the 12:00 picture, not the stale 07:00 one.
+ */
+export function latestDue<T extends Assignment>(plans: T[], now: Date): T | undefined {
+  const due = plans.filter((a) => a.enabled && isDue(a.nextChange, now, a.schedule, a));
+  return due.reduce<T | undefined>((best, a) => (!best || (a.nextChange ?? now.getTime()) > (best.nextChange ?? now.getTime()) ? a : best), undefined);
+}
+
 /** The enabled schedule of a Canvas whose change is due now, if any. */
 export function dueAssignment(db: DB, frameId: number, now = new Date()): Assignment | undefined {
-  return getAssignments(db, frameId).find((a) => a.enabled && isDue(a.nextChange, now, a.schedule, a));
+  return latestDue(getAssignments(db, frameId), now);
 }
 
 export function markOnline(db: DB, frameId: number, online: boolean, extra: Partial<Frame> = {}) {

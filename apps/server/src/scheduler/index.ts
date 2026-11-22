@@ -7,9 +7,9 @@ import { purgeSessions } from '../auth/index.js';
 import { pregenerate } from '../lib/ai/generate.js';
 import { needsSync, prepareCollection, syncCollection } from '../lib/collections.js';
 import type { Ctx } from '../lib/context.js';
-import { assignmentOptions, chooseNextImage, deliverQueued, dueAssignment, markOnline, pushImage } from '../lib/display.js';
+import { assignmentOptions, chooseNextImage, deliverQueued, dueAssignment, getAssignments, markOnline, pushImage } from '../lib/display.js';
 import { getImage } from '../lib/images.js';
-import { nextRun } from '../lib/schedule.js';
+import { isDue, nextRun } from '../lib/schedule.js';
 import { pruneBatterySamples } from '../lib/stats.js';
 import { withWake } from '../lib/wake.js';
 import { refreshFrame } from '../routes/frames.js';
@@ -41,6 +41,11 @@ export async function tick(ctx: Ctx, now = new Date()) {
         .set({ lastChange: now.getTime(), nextChange: nextRun(a.schedule, now, a)?.getTime() ?? null })
         .where(eq(schema.assignments.id, a.id))
         .run();
+      // A schedule that was also due but older is skipped: its picture would only replace this one a minute later.
+      for (const o of getAssignments(ctx.db, frame.id)) {
+        if (o.id === a.id || !o.enabled || !isDue(o.nextChange, now, o.schedule, o)) continue;
+        ctx.db.update(schema.assignments).set({ nextChange: nextRun(o.schedule, now, o)?.getTime() ?? null }).where(eq(schema.assignments.id, o.id)).run();
+      }
     } catch (err) {
       if (err instanceof DeviceError && err.offline) markOnline(ctx.db, frame.id, false);
       else ctx.log.warn({ err, frame: frame.id }, 'push rotation failed');

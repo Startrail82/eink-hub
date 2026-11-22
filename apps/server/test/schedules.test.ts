@@ -14,7 +14,7 @@ const { openDb, schema, migrations } = await import('../src/db/index.js');
 const { buildApp } = await import('../src/app.js');
 const { checkSchedule, overview, projection } = await import('../src/lib/plan.js');
 const { saveLocalUpload } = await import('../src/lib/images.js');
-const { dueAssignment, getAssignment, getAssignments } = await import('../src/lib/display.js');
+const { dueAssignment, getAssignment, getAssignments, latestDue } = await import('../src/lib/display.js');
 
 ensureDirs();
 const db = openDb(config.dbPath);
@@ -141,6 +141,13 @@ describe('several schedules on one Canvas', () => {
     set(two.id, now.getTime() - 1000);
     expect(dueAssignment(db, frame, now)?.id).toBe(two.id);
     expect(getAssignment(db, frame)?.id).toBe(two.id); // earliest change
+    // Both overdue (the frame slept through 07:00): the one due most recently wins.
+    set(one.id, now.getTime() - 5 * 3600_000);
+    expect(dueAssignment(db, frame, now)?.id).toBe(two.id);
+    set(one.id, now.getTime() - 500);
+    set(two.id, now.getTime() - 5 * 3600_000);
+    expect(latestDue(getAssignments(db, frame), now)?.id).toBe(one.id);
+    set(one.id, now.getTime() + 3600_000);
     set(two.id, now.getTime() + 7200_000);
     expect(dueAssignment(db, frame, now)).toBeUndefined();
     expect(getAssignment(db, frame)?.id).toBe(one.id);
