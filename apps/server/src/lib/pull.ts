@@ -3,9 +3,9 @@ import { schema } from '../db/index.js';
 import type { DisplayOptions, Frame } from '../db/schema.js';
 import { prepareCollection } from './collections.js';
 import type { Ctx } from './context.js';
-import { assignmentOptions, chooseNextImage, getAssignments, nextAssignment, renderWelcomeFor } from './display.js';
+import { assignmentOptions, chooseNextImage, getAssignments, latestDue, nextAssignment, renderWelcomeFor } from './display.js';
 import { getImage, renderFor, type Rendered } from './images.js';
-import { firstRun, isDue, nextRun } from './schedule.js';
+import { firstRun, nextRun } from './schedule.js';
 import { inWindow } from './selection.js';
 import { recordBattery } from './stats.js';
 
@@ -48,7 +48,7 @@ export async function servePull(ctx: Ctx, frame: Frame, req: PullRequest): Promi
   const plans = getAssignments(ctx.db, frame.id).filter((p) => p.enabled);
   const welcome = !frame.pendingImageId && !frame.welcomeShown;
   // A wake before the scheduled change (button press, reboot) only delivers queued photos.
-  const dueOne = welcome ? undefined : plans.find((p) => isDue(p.nextChange, now, p.schedule, p));
+  const dueOne = welcome ? undefined : latestDue(plans, now);
   const active = dueOne ?? nextAssignment(plans);
   let imageId: number | null = null;
   let opts: DisplayOptions = assignmentOptions(ctx.db, active);
