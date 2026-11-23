@@ -1,4 +1,5 @@
 import sharp, { type Sharp } from 'sharp';
+import { DEFAULT_PILL, type PillStyle } from './pill.js';
 import type { FitMode } from '../db/schema.js';
 import type { ImageFormat } from '../device/drivers/types.js';
 import { PALETTES, ditherToPalette, encodeBmp, indicesToRgb } from './dither.js';
@@ -23,6 +24,8 @@ export interface RenderOptions {
   crop?: CropRect | null;
   /** Text drawn in a label at the bottom-left, e.g. the photo's date. */
   caption?: string | null;
+  /** Colours and opacity of the date label. */
+  pill?: PillStyle;
   quality?: number;
   /** Baseline JPEG unless the frame asks for something else. */
   format?: ImageFormat;
@@ -73,7 +76,7 @@ export async function renderForFrame(src: Buffer, o: RenderOptions): Promise<Buf
     composed = await sharp(oriented).resize(tw, th, { fit: 'cover', position: sharp.strategy.attention }).toBuffer();
   }
 
-  if (o.caption) composed = await addCaption(composed, o.caption, tw, th);
+  if (o.caption) composed = await addCaption(composed, o.caption, tw, th, o.pill ?? DEFAULT_PILL);
 
   let out = sharp(composed);
   if (o.landscape && o.rotate) out = out.rotate(o.rotate);
@@ -114,10 +117,10 @@ const escapeMarkup = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;
  * Solid white rounded label with dark text, bottom-left. Solid colours dither cleanly on
  * colour e-ink; translucent gradients would turn into noise.
  */
-async function addCaption(img: Buffer, caption: string, w: number, h: number): Promise<Buffer> {
+async function addCaption(img: Buffer, caption: string, w: number, h: number, style: PillStyle): Promise<Buffer> {
   const size = Math.max(14, Math.round(Math.min(w, h) * 0.032));
   const label = await sharp({
-    text: { text: `<span foreground="#1d1c1a">${escapeMarkup(caption)}</span>`, font: `Inter,Arial,DejaVu Sans,Sans Semi-Bold ${size}`, dpi: 72, rgba: true },
+    text: { text: `<span foreground="${style.text}">${escapeMarkup(caption)}</span>`, font: `Inter,Arial,DejaVu Sans,Sans Semi-Bold ${size}`, dpi: 72, rgba: true },
   })
     .png()
     .toBuffer({ resolveWithObject: true });
@@ -127,7 +130,7 @@ async function addCaption(img: Buffer, caption: string, w: number, h: number): P
   const pillW = Math.min(w - 2 * margin, label.info.width + 2 * padX);
   const pillH = label.info.height + 2 * padY;
   const pill = Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${pillW}" height="${pillH}"><rect width="${pillW}" height="${pillH}" rx="${pillH / 2}" fill="#ffffff"/></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${pillW}" height="${pillH}"><rect width="${pillW}" height="${pillH}" rx="${pillH / 2}" fill="${style.bg}" fill-opacity="${style.opacity / 100}"/></svg>`,
   );
   const top = h - margin - pillH;
   return sharp(img)

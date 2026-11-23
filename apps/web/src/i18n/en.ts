@@ -549,4 +549,11 @@ export const en: Messages = {
   'settings.passkey_never': 'never used',
   'settings.passkey_https_only': 'Passkeys only work when the Hub is opened over HTTPS (Tailscale, a reverse proxy) or on localhost.',
   'settings.passkey_guide': 'How to set it up',
+  'canvasSettings.pill_title': 'Date and weather labels',
+  'canvasSettings.pill_hint': 'Colours and opacity of the date and weather labels drawn on this Canvas\'s pictures. By default they are white and solid; a see-through label can look grainy on colour e-ink.',
+  'canvasSettings.pill_bg': 'Background',
+  'canvasSettings.pill_text': 'Text',
+  'canvasSettings.pill_opacity': 'Opacity',
+  'canvasSettings.pill_sample': '21 Nov 2026',
+  'canvasSettings.pill_reset': 'Reset',
 };

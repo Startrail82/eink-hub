@@ -549,4 +549,11 @@ export const ca: Catalogue = {
   'settings.passkey_never': 'sense ús',
   'settings.passkey_https_only': 'Les passkeys només funcionen si obres el Hub per HTTPS (Tailscale, un servidor intermediari invers) o a localhost.',
   'settings.passkey_guide': 'Com configurar-ho',
+  'canvasSettings.pill_title': 'Etiquetes de data i temps',
+  'canvasSettings.pill_hint': 'Colors i opacitat de les etiquetes de data i de temps que es dibuixen sobre les imatges d\'aquest Canvas. Per defecte són blanques i opaques; una etiqueta translúcida pot veure\'s granulada en e-ink en color.',
+  'canvasSettings.pill_bg': 'Fons',
+  'canvasSettings.pill_text': 'Text',
+  'canvasSettings.pill_opacity': 'Opacitat',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Restableix',
 };

@@ -549,4 +549,11 @@ export const it: Catalogue = {
   'settings.passkey_never': 'mai usata',
   'settings.passkey_https_only': 'Le passkey funzionano solo se apri l\'Hub in HTTPS (Tailscale, un reverse proxy) o su localhost.',
   'settings.passkey_guide': 'Come configurarlo',
+  'canvasSettings.pill_title': 'Etichette di data e meteo',
+  'canvasSettings.pill_hint': 'Colori e opacità delle etichette di data e meteo disegnate sulle immagini di questo Canvas. Di default sono bianche e opache; un\'etichetta traslucida può apparire granulosa su e-ink a colori.',
+  'canvasSettings.pill_bg': 'Sfondo',
+  'canvasSettings.pill_text': 'Testo',
+  'canvasSettings.pill_opacity': 'Opacità',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Ripristina',
 };

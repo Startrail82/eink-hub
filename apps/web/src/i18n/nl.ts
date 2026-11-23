@@ -549,4 +549,11 @@ export const nl: Catalogue = {
   'settings.passkey_never': 'nooit gebruikt',
   'settings.passkey_https_only': 'Passkeys werken alleen als de Hub via HTTPS (Tailscale, een reverse proxy) of op localhost wordt geopend.',
   'settings.passkey_guide': 'Zo stel je het in',
+  'canvasSettings.pill_title': 'Datum- en weerlabels',
+  'canvasSettings.pill_hint': 'Kleuren en doorzichtigheid van de datum- en weerpillen op de afbeeldingen van dit Canvas. Standaard zijn ze wit en ondoorzichtig; een doorzichtige pil kan er korrelig uitzien op kleuren-e-ink.',
+  'canvasSettings.pill_bg': 'Achtergrond',
+  'canvasSettings.pill_text': 'Tekst',
+  'canvasSettings.pill_opacity': 'Dekking',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Standaard',
 };

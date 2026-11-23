@@ -549,4 +549,11 @@ export const ko: Catalogue = {
   'settings.passkey_never': '사용 안 함',
   'settings.passkey_https_only': '패스키는 Hub를 HTTPS(Tailscale, 리버스 프록시) 또는 localhost로 열 때만 작동합니다.',
   'settings.passkey_guide': '설정 방법',
+  'canvasSettings.pill_title': '날짜 및 날씨 라벨',
+  'canvasSettings.pill_hint': '이 Canvas의 이미지에 그려지는 날짜와 날씨 라벨의 색과 불투명도입니다. 기본값은 흰색 불투명이며, 반투명 라벨은 컬러 e-ink에서 거칠게 보일 수 있습니다.',
+  'canvasSettings.pill_bg': '배경',
+  'canvasSettings.pill_text': '글자',
+  'canvasSettings.pill_opacity': '불투명도',
+  'canvasSettings.pill_sample': '2026년 11월 21일',
+  'canvasSettings.pill_reset': '초기화',
 };

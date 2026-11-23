@@ -565,4 +565,11 @@ export const ru: Catalogue = {
   'settings.passkey_never': 'не использовался',
   'settings.passkey_https_only': 'Ключи доступа работают, только если Hub открыт по HTTPS (Tailscale, обратный прокси) или на localhost.',
   'settings.passkey_guide': 'Как настроить',
+  'canvasSettings.pill_title': 'Плашки даты и погоды',
+  'canvasSettings.pill_hint': 'Цвета и непрозрачность плашек даты и погоды на картинках этого Canvas. По умолчанию они белые и непрозрачные; полупрозрачная плашка может выглядеть зернистой на цветном e-ink.',
+  'canvasSettings.pill_bg': 'Фон',
+  'canvasSettings.pill_text': 'Текст',
+  'canvasSettings.pill_opacity': 'Непрозрачность',
+  'canvasSettings.pill_sample': '21 нояб. 2026',
+  'canvasSettings.pill_reset': 'Сбросить',
 };

@@ -565,4 +565,11 @@ export const pl: Catalogue = {
   'settings.passkey_never': 'nieużywany',
   'settings.passkey_https_only': 'Klucze dostępu działają tylko wtedy, gdy Hub jest otwierany przez HTTPS (Tailscale, reverse proxy) lub na localhost.',
   'settings.passkey_guide': 'Jak to skonfigurować',
+  'canvasSettings.pill_title': 'Etykiety daty i pogody',
+  'canvasSettings.pill_hint': 'Kolory i krycie etykiet daty i pogody rysowanych na obrazach tego Canvasa. Domyślnie są białe i nieprzezroczyste; półprzezroczysta etykieta może wyglądać ziarniście na kolorowym e-ink.',
+  'canvasSettings.pill_bg': 'Tło',
+  'canvasSettings.pill_text': 'Tekst',
+  'canvasSettings.pill_opacity': 'Krycie',
+  'canvasSettings.pill_sample': '21 lis 2026',
+  'canvasSettings.pill_reset': 'Przywróć',
 };

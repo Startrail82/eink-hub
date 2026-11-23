@@ -8,6 +8,7 @@ import { basqueDate, hubLang, locales, yearsAgoText, type Lang } from '../i18n.j
 import { schema, type DB } from '../db/index.js';
 import type { DisplayOptions, Frame, Image } from '../db/schema.js';
 import { assetSize, type ImmichAsset } from '../immich/client.js';
+import { isDefaultPill, resolvePill } from '../imaging/pill.js';
 import { aspectKey, formatExt, probeImage, renderForFrame, thumbnail, type CropRect } from '../imaging/pipeline.js';
 import { renderTarget } from '../device/drivers/index.js';
 import { HttpError, immichFor, type Ctx } from './context.js';
@@ -190,6 +191,7 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
   const crop = opts.crop !== undefined ? opts.crop : getCrop(ctx.db, img.id, frameAspect(frame));
   const target = renderTarget(frame);
   const ext = formatExt(target.format);
+  const pill = resolvePill(frame.config?.pill);
   const params = {
     v: RENDER_VERSION,
     img: img.id,
@@ -201,6 +203,8 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
     bg: opts.bg ?? '#ffffff',
     crop,
     caption: opts.showDate ? (opts.memories ? yearsAgoCaption : photoDate)(img, hubLang(ctx.db)) : null,
+    // Only when not the default, so existing renders keep their hash.
+    ...(isDefaultPill(pill) ? {} : { pill }),
     // Only when not the default, so existing JPEG renders keep their hash.
     ...(ext === 'jpg' && !target.format.palette ? {} : { format: target.format }),
   } as const;
@@ -218,6 +222,7 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
     bg: params.bg,
     crop: params.crop,
     caption: params.caption,
+    pill,
     format: target.format,
   });
   await fs.writeFile(file, buf);

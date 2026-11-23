@@ -549,4 +549,11 @@ export const zh: Catalogue = {
   'settings.passkey_never': '从未使用',
   'settings.passkey_https_only': '只有通过 HTTPS（Tailscale、反向代理）或 localhost 打开 Hub 时，通行密钥才可用。',
   'settings.passkey_guide': '如何设置',
+  'canvasSettings.pill_title': '日期和天气标签',
+  'canvasSettings.pill_hint': '此 Canvas 图片上绘制的日期和天气标签的颜色与不透明度。默认是白色不透明；半透明标签在彩色墨水屏上可能显得有颗粒感。',
+  'canvasSettings.pill_bg': '背景',
+  'canvasSettings.pill_text': '文字',
+  'canvasSettings.pill_opacity': '不透明度',
+  'canvasSettings.pill_sample': '2026年11月21日',
+  'canvasSettings.pill_reset': '重置',
 };

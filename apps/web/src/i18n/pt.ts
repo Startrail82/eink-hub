@@ -549,4 +549,11 @@ export const pt: Catalogue = {
   'settings.passkey_never': 'nunca usada',
   'settings.passkey_https_only': 'As passkeys só funcionam se abrires o Hub por HTTPS (Tailscale, um proxy inverso) ou em localhost.',
   'settings.passkey_guide': 'Como configurar',
+  'canvasSettings.pill_title': 'Etiquetas de data e tempo',
+  'canvasSettings.pill_hint': 'Cores e opacidade das etiquetas de data e de tempo desenhadas nas imagens deste Canvas. Por defeito são brancas e opacas; uma etiqueta translúcida pode ficar granulada em e-ink a cores.',
+  'canvasSettings.pill_bg': 'Fundo',
+  'canvasSettings.pill_text': 'Texto',
+  'canvasSettings.pill_opacity': 'Opacidade',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Repor',
 };

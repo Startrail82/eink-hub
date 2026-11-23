@@ -549,4 +549,11 @@ export const eu: Messages = {
   'settings.passkey_never': 'erabili gabe',
   'settings.passkey_https_only': 'Passkey-ek Hub-a HTTPS bidez (Tailscale, alderantzizko proxy bat) edo localhost-en irekitzen baduzu bakarrik funtzionatzen dute.',
   'settings.passkey_guide': 'Nola konfiguratu',
+  'canvasSettings.pill_title': 'Data eta eguraldi etiketak',
+  'canvasSettings.pill_hint': 'Canvas honetako irudien gainean marrazten diren data eta eguraldi etiketen koloreak eta opakotasuna. Lehenespenez zuriak eta opakoak dira; etiketa gardena koloretako e-inkean ale-ale ager daiteke.',
+  'canvasSettings.pill_bg': 'Atzealdea',
+  'canvasSettings.pill_text': 'Testua',
+  'canvasSettings.pill_opacity': 'Opakotasuna',
+  'canvasSettings.pill_sample': '2026ko ira. 21',
+  'canvasSettings.pill_reset': 'Berrezarri',
 };

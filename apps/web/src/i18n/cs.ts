@@ -565,4 +565,11 @@ export const cs: Catalogue = {
   'settings.passkey_never': 'nepoužit',
   'settings.passkey_https_only': 'Přístupové klíče fungují jen tehdy, když Hub otevřete přes HTTPS (Tailscale, reverzní proxy) nebo na localhost.',
   'settings.passkey_guide': 'Jak to nastavit',
+  'canvasSettings.pill_title': 'Štítky s datem a počasím',
+  'canvasSettings.pill_hint': 'Barvy a krytí štítků s datem a počasím, které se kreslí na obrázky tohoto Canvasu. Výchozí jsou bílé a nepropustné; průhledný štítek může na barevném e-inku působit zrnitě.',
+  'canvasSettings.pill_bg': 'Pozadí',
+  'canvasSettings.pill_text': 'Text',
+  'canvasSettings.pill_opacity': 'Krytí',
+  'canvasSettings.pill_sample': '21. 11. 2026',
+  'canvasSettings.pill_reset': 'Obnovit',
 };
