@@ -20,6 +20,7 @@ import { commonVars, fetchDayForecast, fillTemplate, nextFeedItem, parseDayForec
 import { pickFresh } from '../src/lib/selection.js';
 import { assignmentOptions } from '../src/lib/display.js';
 import { renderForFrame } from '../src/imaging/pipeline.js';
+import { skyLabel, skyOf } from '../src/imaging/sky.js';
 
 const cfg = (c: Partial<AiConfig>): AiConfig => ({ provider: '', url: '', apiKey: '', username: '', model: '', size: '', workflow: '', ...c });
 const jsonRes = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
@@ -396,8 +397,12 @@ describe('collections end to end', () => {
 
 describe('weather bar', () => {
   it('reads the day forecast and rounds it', () => {
-    expect(parseDayForecast({ daily: { temperature_2m_max: [12.6], temperature_2m_min: [3.4], precipitation_probability_max: [64.4] } })).toEqual({ min: 3, max: 13, rain: 64 });
-    expect(parseDayForecast({ daily: { temperature_2m_max: [5], temperature_2m_min: [-2.6] } })).toEqual({ min: -3, max: 5, rain: null });
+    expect(parseDayForecast({ daily: { weather_code: [3], temperature_2m_max: [12.6], temperature_2m_min: [3.4], precipitation_probability_max: [64.4] } })).toEqual({ min: 3, max: 13, rain: 64, sky: 'cloudy' });
+    expect(parseDayForecast({ daily: { temperature_2m_max: [5], temperature_2m_min: [-2.6] } })).toEqual({ min: -3, max: 5, rain: null, sky: null });
+    expect(parseDayForecast({ daily: { temperature_2m_max: [5], temperature_2m_min: [-0.3] } }).min).toBe(0); // not -0
+    expect([0, 2, 45, 53, 63, 81, 73, 95, 7].map(skyOf)).toEqual(['clear', 'partly', 'fog', 'drizzle', 'rain', 'rain', 'snow', 'thunder', null]);
+    expect(skyLabel('cloudy', 'nl')).toBe('Bewolkt');
+    expect(skyLabel('cloudy', 'xx' as never)).toBe('Cloudy');
     expect(() => parseDayForecast({})).toThrow(AiError);
   });
 
@@ -408,7 +413,7 @@ describe('weather bar', () => {
       return jsonRes({ daily: { temperature_2m_max: [10], temperature_2m_min: [4], precipitation_probability_max: [30] } });
     });
     const t0 = Date.now();
-    expect(await fetchDayForecast(51.1, 4.4, t0)).toEqual({ min: 4, max: 10, rain: 30 });
+    expect(await fetchDayForecast(51.1, 4.4, t0)).toEqual({ min: 4, max: 10, rain: 30, sky: null });
     await fetchDayForecast(51.1, 4.4, t0 + 60_000);
     expect(calls).toBe(1);
     await fetchDayForecast(51.1, 4.4, t0 + 20 * 60_000);
@@ -431,6 +436,12 @@ describe('weather bar', () => {
     expect(g1).toBeGreaterThan(g0);
     // Translucent: still tinted by the picture, not pure white.
     expect(r1).toBeLessThan(255);
+    // With the sky the label gets a second line, so it is taller than without.
+    const sky = await renderForFrame(src, { ...base, weather: { min: 3, max: 9, rain: 60, sky: 'rain', label: 'Regen' } });
+    const c = await sharp(sky).raw().toBuffer({ resolveWithObject: true });
+    const lit = (r: typeof a, y: number) => px(r, 560, y)[0] > px(a, 560, y)[0];
+    expect(lit(c, 720)).toBe(true);
+    expect(lit(b, 720)).toBe(false);
   });
 });
 
