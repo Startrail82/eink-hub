@@ -500,6 +500,68 @@ function FrameLookSettings({ frame }: { frame: Frame }) {
   );
 }
 
+const PILL_DEFAULT = { bg: '#ffffff', text: '#1d1c1a', opacity: 100 };
+
+const withAlpha = (hex: string, percent: number) => {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${percent / 100})`;
+};
+
+/** Colours and see-through-ness of the date and weather labels drawn on this Canvas's pictures. */
+function PillSettings({ frame }: { frame: Frame }) {
+  const { t } = useI18n();
+  const saved = frame.config.pill;
+  const [bg, setBg] = useState(saved?.bg ?? PILL_DEFAULT.bg);
+  const [text, setText] = useState(saved?.text ?? PILL_DEFAULT.text);
+  const [opacity, setOpacity] = useState(saved?.opacity ?? PILL_DEFAULT.opacity);
+  const save = useAction(() => api.patch(`/api/frames/${frame.id}`, { config: { pill: { bg, text, opacity } } }), { success: t('common.saved') });
+  const reset = useAction(
+    async () => {
+      await api.patch(`/api/frames/${frame.id}`, { config: { pill: null } });
+      setBg(PILL_DEFAULT.bg);
+      setText(PILL_DEFAULT.text);
+      setOpacity(PILL_DEFAULT.opacity);
+    },
+    { success: t('common.saved') },
+  );
+  const swatch = 'h-10 w-16 cursor-pointer rounded-xl border border-line bg-transparent p-1';
+
+  return (
+    <div className="border-t border-line pt-6">
+      <h4 className="mb-1 font-bold">{t('canvasSettings.pill_title')}</h4>
+      <p className="mb-4 text-xs text-muted">{t('canvasSettings.pill_hint')}</p>
+      <div className="grid gap-6 sm:grid-cols-[1fr_220px]">
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-6">
+            <Field label={t('canvasSettings.pill_bg')}>
+              <input type="color" className={swatch} value={bg} onChange={(e) => setBg(e.target.value)} />
+            </Field>
+            <Field label={t('canvasSettings.pill_text')}>
+              <input type="color" className={swatch} value={text} onChange={(e) => setText(e.target.value)} />
+            </Field>
+          </div>
+          <Field label={`${t('canvasSettings.pill_opacity')}: ${opacity}%`}>
+            <input type="range" className="w-full max-w-xs accent-accent" min={10} max={100} step={1} value={opacity} onChange={(e) => setOpacity(Number(e.target.value))} />
+          </Field>
+        </div>
+        <div className="flex h-28 items-end rounded-2xl p-3" style={{ background: 'linear-gradient(135deg, #3f6fa3 0%, #7fb069 55%, #e8c170 100%)' }}>
+          <span className="rounded-full px-4 py-1.5 text-sm font-semibold" style={{ background: withAlpha(bg, opacity), color: text }}>
+            {t('canvasSettings.pill_sample')}
+          </span>
+        </div>
+      </div>
+      <div className="mt-4 flex gap-2">
+        <Button loading={save.isPending} onClick={() => save.mutate()}>
+          {t('common.save')}
+        </Button>
+        <Button variant="secondary" loading={reset.isPending} onClick={() => reset.mutate()}>
+          {t('canvasSettings.pill_reset')}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function BluetoothSettings({ frame }: { frame: Frame }) {
   const { t } = useI18n();
   const ble = useBleStatus();
@@ -618,6 +680,8 @@ function SettingsTab({ frame }: { frame: Frame }) {
       )}
 
       <FrameLookSettings frame={frame} />
+
+      <PillSettings frame={frame} />
 
       {caps.bleWake && <BluetoothSettings frame={frame} />}
 

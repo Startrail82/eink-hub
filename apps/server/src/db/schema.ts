@@ -33,6 +33,8 @@ export interface FrameConfig {
   notifyUrl?: string;
   /** DIY / TRMNL: longest sleep between polls, so manual photos don't wait for the next rotation. */
   maxPollMinutes?: number;
+  /** Colours and opacity of the date and weather labels drawn on pictures. Missing = the defaults. */
+  pill?: { bg?: string; text?: string; opacity?: number };
 }
 
 /** How the frame around the screen looks in the app's mockups. Empty = defaults. */

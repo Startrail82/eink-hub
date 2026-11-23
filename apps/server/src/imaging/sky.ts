@@ -39,33 +39,32 @@ const LABELS: Record<Lang, Record<Sky, string>> = {
 
 export const skyLabel = (sky: Sky, lang: Lang): string => LABELS[lang]?.[sky] ?? LABELS.en[sky];
 
-const INK = '#1d1c1a';
 const CLOUD = 'M7 19a4 4 0 0 1-.5-7.97A6 6 0 0 1 18 9.5 4.5 4.5 0 0 1 17.5 19Z';
-const SUN = (cx: number, cy: number, r: number) => {
+const SUN = (cx: number, cy: number, r: number, ink: string) => {
   const rays = Array.from({ length: 8 }, (_, i) => {
     const a = (i * Math.PI) / 4;
     const c = Math.cos(a);
     const s = Math.sin(a);
     return `<line x1="${cx + c * (r + 1.6)}" y1="${cy + s * (r + 1.6)}" x2="${cx + c * (r + 3.4)}" y2="${cy + s * (r + 3.4)}"/>`;
   }).join('');
-  return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${INK}" stroke="none"/>${rays}`;
+  return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${ink}" stroke="none"/>${rays}`;
 };
 
 /** A small flat icon on a 24x24 grid, drawn in the same ink as the text. */
-export function skyIcon(sky: Sky, px: number): Buffer {
-  const cloud = (dy = 0) => `<path d="${CLOUD}" fill="${INK}" stroke="none" transform="translate(0 ${dy})"/>`;
+export function skyIcon(sky: Sky, px: number, ink: string, halo: string): Buffer {
+  const cloud = (dy = 0) => `<path d="${CLOUD}" fill="${ink}" stroke="none" transform="translate(0 ${dy})"/>`;
   const drops = (n: number, dy = 0) => Array.from({ length: n }, (_, i) => `<line x1="${8 + i * 4}" y1="${21 + dy}" x2="${7 + i * 4}" y2="${24 + dy}"/>`).join('');
   const body: Record<Sky, string> = {
-    clear: SUN(12, 12, 4.6),
-    partly: `${SUN(8.5, 8.5, 3.4)}<path d="${CLOUD}" fill="#ffffff" stroke="#ffffff" stroke-width="2.4" transform="translate(2 1)"/><path d="${CLOUD}" fill="${INK}" stroke="none" transform="translate(2 1)"/>`,
+    clear: SUN(12, 12, 4.6, ink),
+    partly: `${SUN(8.5, 8.5, 3.4, ink)}<path d="${CLOUD}" fill="${halo}" stroke="${halo}" stroke-width="2.4" transform="translate(2 1)"/><path d="${CLOUD}" fill="${ink}" stroke="none" transform="translate(2 1)"/>`,
     cloudy: cloud(),
     fog: `${cloud(-3)}<line x1="4" y1="19" x2="20" y2="19"/><line x1="7" y1="22" x2="21" y2="22"/>`,
     drizzle: `${cloud(-4)}${drops(2, -1)}`,
     rain: `${cloud(-4)}${drops(3, -1)}`,
-    snow: `${cloud(-4)}${[8, 12, 16].map((x) => `<circle cx="${x}" cy="21.5" r="1.1" fill="${INK}" stroke="none"/>`).join('')}`,
-    thunder: `${cloud(-4)}<path d="M12.5 15l-3 5h3l-1 4 4-6h-3l1-3Z" fill="${INK}" stroke="none"/>`,
+    snow: `${cloud(-4)}${[8, 12, 16].map((x) => `<circle cx="${x}" cy="21.5" r="1.1" fill="${ink}" stroke="none"/>`).join('')}`,
+    thunder: `${cloud(-4)}<path d="M12.5 15l-3 5h3l-1 4 4-6h-3l1-3Z" fill="${ink}" stroke="none"/>`,
   };
   return Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${px}" height="${px}" viewBox="0 0 24 26"><g stroke="${INK}" stroke-width="1.7" stroke-linecap="round" fill="none">${body[sky]}</g></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${px}" height="${px}" viewBox="0 0 24 26"><g stroke="${ink}" stroke-width="1.7" stroke-linecap="round" fill="none">${body[sky]}</g></svg>`,
   );
 }

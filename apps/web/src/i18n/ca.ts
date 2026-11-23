@@ -618,4 +618,11 @@ export const ca: Catalogue = {
   'ai.weather_bar_hint': 'Dibuixa a baix a la dreta la mínima, la màxima i la probabilitat de pluja d\'avui, en una etiqueta semitransparent.',
   'ai.weather_offset': 'Temps d\'aquí a (hores)',
   'ai.weather_offset_hint': '0 = el temps d\'ara. Amb 4, a les 7:00 es mostra el temps de les 11:00. La barra fa servir el cel d\'aquella hora i els valors d\'aquell dia.',
+  'canvasSettings.pill_title': 'Etiquetes de data i temps',
+  'canvasSettings.pill_hint': 'Colors i opacitat de les etiquetes de data i de temps que es dibuixen sobre les imatges d\'aquest Canvas. Per defecte són blanques i opaques; una etiqueta translúcida pot veure\'s granulada en e-ink en color.',
+  'canvasSettings.pill_bg': 'Fons',
+  'canvasSettings.pill_text': 'Text',
+  'canvasSettings.pill_opacity': 'Opacitat',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Restableix',
 };

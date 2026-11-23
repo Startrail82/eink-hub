@@ -618,4 +618,11 @@ export const gl: Catalogue = {
   'ai.weather_bar_hint': 'Debuxa abaixo á dereita a mínima, a máxima e a probabilidade de choiva de hoxe, nunha etiqueta semitransparente.',
   'ai.weather_offset': 'Tempo dentro de (horas)',
   'ai.weather_offset_hint': '0 = o tempo de agora. Con 4, ás 7:00 móstrase o tempo das 11:00. A barra usa o ceo desa hora e os valores dese día.',
+  'canvasSettings.pill_title': 'Etiquetas de data e tempo',
+  'canvasSettings.pill_hint': 'Cores e opacidade das etiquetas de data e de tempo que se debuxan sobre as imaxes deste Canvas. Por defecto son brancas e opacas; unha etiqueta translúcida pode verse granulada en e-ink en cor.',
+  'canvasSettings.pill_bg': 'Fondo',
+  'canvasSettings.pill_text': 'Texto',
+  'canvasSettings.pill_opacity': 'Opacidade',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Restablecer',
 };

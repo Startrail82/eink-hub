@@ -618,4 +618,11 @@ export const zh: Catalogue = {
   'ai.weather_bar_hint': '在右下角用半透明标签绘制今天的最低温、最高温和降雨概率。',
   'ai.weather_offset': '几小时后的天气',
   'ai.weather_offset_hint': '0 = 当前天气。设为 4 时，7:00 显示 11:00 的天气。天气栏使用该时刻的天空和当天的数值。',
+  'canvasSettings.pill_title': '日期和天气标签',
+  'canvasSettings.pill_hint': '此 Canvas 图片上绘制的日期和天气标签的颜色与不透明度。默认是白色不透明；半透明标签在彩色墨水屏上可能显得有颗粒感。',
+  'canvasSettings.pill_bg': '背景',
+  'canvasSettings.pill_text': '文字',
+  'canvasSettings.pill_opacity': '不透明度',
+  'canvasSettings.pill_sample': '2026年11月21日',
+  'canvasSettings.pill_reset': '重置',
 };

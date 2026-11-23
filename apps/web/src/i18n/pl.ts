@@ -634,4 +634,11 @@ export const pl: Catalogue = {
   'ai.weather_bar_hint': 'Rysuje w prawym dolnym rogu dzisiejsze minimum, maksimum i szansę na deszcz w półprzezroczystej etykiecie.',
   'ai.weather_offset': 'Pogoda za (godziny)',
   'ai.weather_offset_hint': '0 = pogoda teraz. Przy 4 o 7:00 zobaczysz pogodę na 11:00. Pasek używa nieba z tej godziny i wartości z tego dnia.',
+  'canvasSettings.pill_title': 'Etykiety daty i pogody',
+  'canvasSettings.pill_hint': 'Kolory i krycie etykiet daty i pogody rysowanych na obrazach tego Canvasa. Domyślnie są białe i nieprzezroczyste; półprzezroczysta etykieta może wyglądać ziarniście na kolorowym e-ink.',
+  'canvasSettings.pill_bg': 'Tło',
+  'canvasSettings.pill_text': 'Tekst',
+  'canvasSettings.pill_opacity': 'Krycie',
+  'canvasSettings.pill_sample': '21 lis 2026',
+  'canvasSettings.pill_reset': 'Przywróć',
 };

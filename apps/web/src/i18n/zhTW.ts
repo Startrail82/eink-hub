@@ -618,4 +618,11 @@ export const zhTW: Catalogue = {
   'ai.weather_bar_hint': '在右下角以半透明標籤繪製今天的最低溫、最高溫和降雨機率。',
   'ai.weather_offset': '幾小時後的天氣',
   'ai.weather_offset_hint': '0 = 目前天氣。設為 4 時，7:00 顯示 11:00 的天氣。天氣列使用該時刻的天空和當天的數值。',
+  'canvasSettings.pill_title': '日期與天氣標籤',
+  'canvasSettings.pill_hint': '此 Canvas 圖片上繪製的日期與天氣標籤的顏色與不透明度。預設為白色不透明；半透明標籤在彩色電子紙上可能顯得有顆粒感。',
+  'canvasSettings.pill_bg': '背景',
+  'canvasSettings.pill_text': '文字',
+  'canvasSettings.pill_opacity': '不透明度',
+  'canvasSettings.pill_sample': '2026年11月21日',
+  'canvasSettings.pill_reset': '重設',
 };

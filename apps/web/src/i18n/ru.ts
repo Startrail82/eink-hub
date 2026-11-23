@@ -634,4 +634,11 @@ export const ru: Catalogue = {
   'ai.weather_bar_hint': 'Рисует справа внизу сегодняшний минимум, максимум и вероятность дождя в полупрозрачной плашке.',
   'ai.weather_offset': 'Погода через (часов)',
   'ai.weather_offset_hint': '0 = погода сейчас. При 4 в 7:00 показывается погода на 11:00. Полоса использует небо этого часа и значения этого дня.',
+  'canvasSettings.pill_title': 'Плашки даты и погоды',
+  'canvasSettings.pill_hint': 'Цвета и непрозрачность плашек даты и погоды на картинках этого Canvas. По умолчанию они белые и непрозрачные; полупрозрачная плашка может выглядеть зернистой на цветном e-ink.',
+  'canvasSettings.pill_bg': 'Фон',
+  'canvasSettings.pill_text': 'Текст',
+  'canvasSettings.pill_opacity': 'Непрозрачность',
+  'canvasSettings.pill_sample': '21 нояб. 2026',
+  'canvasSettings.pill_reset': 'Сбросить',
 };

@@ -16,6 +16,7 @@ import { assignmentOptions, chooseNextImage, deliverQueued, displayImage, getAss
 import { wakeFrame, withWake } from '../lib/wake.js';
 import { nextRun, parseSchedule } from '../lib/schedule.js';
 import { requestLang, tr } from '../i18n.js';
+import { isDefaultPill, resolvePill, type PillStyle } from '../imaging/pill.js';
 import { forgetTestCanvas, isSimulated, remember, startTestCanvas } from '../lib/simulators.js';
 
 export async function refreshFrame(ctx: Ctx, frame: Frame, timeoutMs = 5000) {
@@ -287,7 +288,7 @@ export function frameRoutes(app: FastifyInstance, ctx: Ctx) {
     Body: Partial<Pick<Frame, 'name' | 'host' | 'orientation' | 'rotate' | 'width' | 'height' | 'bleAutoWake'>> & {
       pullSchedule?: unknown;
       bleMac?: string | null;
-      config?: Partial<Pick<FrameConfig, 'maxPollMinutes' | 'notifyUrl' | 'format' | 'token' | 'secret'>>;
+      config?: Partial<Pick<FrameConfig, 'maxPollMinutes' | 'notifyUrl' | 'format' | 'token' | 'secret'>> & { pill?: unknown };
       /** Inches; null goes back to the inferred size. */
       diagonal?: number | null;
       appearance?: Partial<FrameAppearance>;
@@ -305,6 +306,11 @@ export function frameRoutes(app: FastifyInstance, ctx: Ctx) {
         if (c.maxPollMinutes !== undefined) next.maxPollMinutes = Math.max(1, Math.min(24 * 60, Math.round(Number(c.maxPollMinutes)) || 60));
         if (c.notifyUrl !== undefined) next.notifyUrl = c.notifyUrl || undefined;
         if (c.format !== undefined) next.format = parseFormat(c.format);
+        // Pill colours: only what differs from the defaults is kept; null or nothing goes back to them.
+        if (c.pill !== undefined) {
+          const p = resolvePill(c.pill as Partial<PillStyle> | null);
+          next.pill = isDefaultPill(p) ? undefined : p;
+        }
         // Secrets are write-only: empty means "keep the saved one".
         if (c.token) next.token = c.token.trim();
         if (c.secret) next.secret = c.secret.trim();

@@ -634,4 +634,11 @@ export const cs: Catalogue = {
   'ai.weather_bar_hint': 'Vpravo dole nakreslí dnešní minimum, maximum a pravděpodobnost deště v průhledném štítku.',
   'ai.weather_offset': 'Počasí za (hodiny)',
   'ai.weather_offset_hint': '0 = počasí teď. Se 4 se v 7:00 zobrazí počasí v 11:00. Pruh používá oblohu z té hodiny a hodnoty z toho dne.',
+  'canvasSettings.pill_title': 'Štítky s datem a počasím',
+  'canvasSettings.pill_hint': 'Barvy a krytí štítků s datem a počasím, které se kreslí na obrázky tohoto Canvasu. Výchozí jsou bílé a nepropustné; průhledný štítek může na barevném e-inku působit zrnitě.',
+  'canvasSettings.pill_bg': 'Pozadí',
+  'canvasSettings.pill_text': 'Text',
+  'canvasSettings.pill_opacity': 'Krytí',
+  'canvasSettings.pill_sample': '21. 11. 2026',
+  'canvasSettings.pill_reset': 'Obnovit',
 };

@@ -618,4 +618,11 @@ export const de: Catalogue = {
   'ai.weather_bar_hint': 'Zeichnet unten rechts das heutige Minimum, Maximum und die Regenwahrscheinlichkeit in einem halbtransparenten Label.',
   'ai.weather_offset': 'Wetter in (Stunden)',
   'ai.weather_offset_hint': '0 = das Wetter jetzt. Mit 4 gibt es um 7:00 Uhr das Wetter von 11:00 Uhr. Die Leiste nutzt den Himmel dieser Stunde und die Werte dieses Tages.',
+  'canvasSettings.pill_title': 'Datums- und Wetteretiketten',
+  'canvasSettings.pill_hint': 'Farben und Deckkraft der Datums- und Wetteretiketten auf den Bildern dieses Canvas. Standard ist weiß und deckend; ein durchscheinendes Etikett kann auf Farb-E-Ink körnig wirken.',
+  'canvasSettings.pill_bg': 'Hintergrund',
+  'canvasSettings.pill_text': 'Text',
+  'canvasSettings.pill_opacity': 'Deckkraft',
+  'canvasSettings.pill_sample': '21. Nov. 2026',
+  'canvasSettings.pill_reset': 'Zurücksetzen',
 };

@@ -618,4 +618,11 @@ export const ko: Catalogue = {
   'ai.weather_bar_hint': '오른쪽 아래에 오늘의 최저·최고 기온과 강수 확률을 반투명 라벨로 그립니다.',
   'ai.weather_offset': '몇 시간 뒤의 날씨',
   'ai.weather_offset_hint': '0 = 현재 날씨. 4로 하면 7:00에 11:00의 날씨를 보여 줍니다. 막대는 그 시각의 하늘과 그날의 수치를 사용합니다.',
+  'canvasSettings.pill_title': '날짜 및 날씨 라벨',
+  'canvasSettings.pill_hint': '이 Canvas의 이미지에 그려지는 날짜와 날씨 라벨의 색과 불투명도입니다. 기본값은 흰색 불투명이며, 반투명 라벨은 컬러 e-ink에서 거칠게 보일 수 있습니다.',
+  'canvasSettings.pill_bg': '배경',
+  'canvasSettings.pill_text': '글자',
+  'canvasSettings.pill_opacity': '불투명도',
+  'canvasSettings.pill_sample': '2026년 11월 21일',
+  'canvasSettings.pill_reset': '초기화',
 };

@@ -618,4 +618,11 @@ export const eu: Messages = {
   'ai.weather_bar_hint': 'Beheko eskuinean gaurko minimoa, maximoa eta euri-probabilitatea marrazten ditu, etiketa erdi-gardenean.',
   'ai.weather_offset': 'Eguraldia zenbat ordutara (orduak)',
   'ai.weather_offset_hint': '0 = oraingo eguraldia. 4rekin, 7:00etan 11:00etako eguraldia agertzen da. Barrak ordu horretako zerua eta egun horretako balioak erabiltzen ditu.',
+  'canvasSettings.pill_title': 'Data eta eguraldi etiketak',
+  'canvasSettings.pill_hint': 'Canvas honetako irudien gainean marrazten diren data eta eguraldi etiketen koloreak eta opakotasuna. Lehenespenez zuriak eta opakoak dira; etiketa gardena koloretako e-inkean ale-ale ager daiteke.',
+  'canvasSettings.pill_bg': 'Atzealdea',
+  'canvasSettings.pill_text': 'Testua',
+  'canvasSettings.pill_opacity': 'Opakotasuna',
+  'canvasSettings.pill_sample': '2026ko ira. 21',
+  'canvasSettings.pill_reset': 'Berrezarri',
 };

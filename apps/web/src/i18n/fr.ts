@@ -618,4 +618,11 @@ export const fr: Catalogue = {
   'ai.weather_bar_hint': 'Dessine en bas à droite le minimum, le maximum et le risque de pluie du jour, dans une étiquette translucide.',
   'ai.weather_offset': 'Météo dans (heures)',
   'ai.weather_offset_hint': '0 = la météo de maintenant. Avec 4, à 7 h on obtient la météo de 11 h. La barre utilise le ciel de cette heure et les valeurs de ce jour.',
+  'canvasSettings.pill_title': 'Étiquettes de date et de météo',
+  'canvasSettings.pill_hint': 'Couleurs et opacité des étiquettes de date et de météo dessinées sur les images de ce Canvas. Par défaut elles sont blanches et opaques ; une étiquette translucide peut paraître granuleuse sur e-ink couleur.',
+  'canvasSettings.pill_bg': 'Fond',
+  'canvasSettings.pill_text': 'Texte',
+  'canvasSettings.pill_opacity': 'Opacité',
+  'canvasSettings.pill_sample': '21 nov. 2026',
+  'canvasSettings.pill_reset': 'Réinitialiser',
 };

@@ -618,4 +618,11 @@ export const nl: Catalogue = {
   'ai.weather_bar_hint': 'Tekent rechtsonder de minimum- en maximumtemperatuur van vandaag en de kans op regen in een half-transparant label.',
   'ai.weather_offset': 'Weer over (uren)',
   'ai.weather_offset_hint': '0 = het weer van nu. Met 4 krijg je om 7u het weer van 11u. De balk gebruikt de lucht van dat uur en de cijfers van die dag.',
+  'canvasSettings.pill_title': 'Datum- en weerlabels',
+  'canvasSettings.pill_hint': 'Kleuren en doorzichtigheid van de datum- en weerpillen op de afbeeldingen van dit Canvas. Standaard zijn ze wit en ondoorzichtig; een doorzichtige pil kan er korrelig uitzien op kleuren-e-ink.',
+  'canvasSettings.pill_bg': 'Achtergrond',
+  'canvasSettings.pill_text': 'Tekst',
+  'canvasSettings.pill_opacity': 'Dekking',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Standaard',
 };
