@@ -16,7 +16,7 @@ import { openDb, schema, setSetting } from '../src/db/index.js';
 import { aiState, buildPrompt, collectionConfig, generationDue, generateFor, LEAD_MS, prune, RETRY_MS, sizeFor, targetSize, validateCollectionConfig } from '../src/lib/ai/generate.js';
 import { AiError, fillWorkflow, generateImage, openaiSize, testConnection } from '../src/lib/ai/providers.js';
 import { aiConfigured, type AiConfig } from '../src/lib/ai/settings.js';
-import { commonVars, fetchDayForecast, fillTemplate, nextFeedItem, parseDayForecast, parseFeed, weatherCondition, weatherLook, weatherVars } from '../src/lib/ai/sources.js';
+import { atOffset, cleanOffset, commonVars, fetchDayForecast, fetchWeather, targetHour, fillTemplate, nextFeedItem, parseDayForecast, parseFeed, weatherCondition, weatherLook, weatherVars } from '../src/lib/ai/sources.js';
 import { pickFresh } from '../src/lib/selection.js';
 import { assignmentOptions } from '../src/lib/display.js';
 import { renderForFrame } from '../src/imaging/pipeline.js';
@@ -434,5 +434,64 @@ describe('weather bar option', () => {
     expect(assignmentOptions(db, assign(add({ source: 'weather', weatherBar: false, ...place }))).weatherBar).toBeUndefined();
     expect(assignmentOptions(db, assign(add({ source: 'prompt', weatherBar: true, ...place }))).weatherBar).toBeUndefined();
     expect(assignmentOptions(db, assign(add({ source: 'weather', weatherBar: true }))).weatherBar).toBeUndefined();
+  });
+});
+
+describe('weather some hours ahead', () => {
+  const hours = (day: string) => Array.from({ length: 24 }, (_, h) => `${day}T${String(h).padStart(2, '0')}:00`);
+  const forecast = (now: string) => ({
+    current: { time: now, temperature_2m: 5, weather_code: 3, is_day: 0, wind_speed_10m: 10 },
+    hourly: {
+      time: [...hours('2026-11-23'), ...hours('2026-11-24')],
+      temperature_2m: Array.from({ length: 48 }, (_, i) => i),
+      weather_code: Array.from({ length: 48 }, (_, i) => (i === 11 ? 63 : i === 27 ? 71 : 0)),
+      is_day: Array.from({ length: 48 }, (_, i) => (i % 24 >= 8 && i % 24 < 17 ? 1 : 0)),
+      wind_speed_10m: Array.from({ length: 48 }, (_, i) => 100 + i),
+    },
+    daily: {
+      time: ['2026-11-23', '2026-11-24'],
+      temperature_2m_max: [9.6, 4.2],
+      temperature_2m_min: [2.1, -1.4],
+      sunrise: ['2026-11-23T08:00', '2026-11-24T08:02'],
+      sunset: ['2026-11-23T16:45', '2026-11-24T16:44'],
+      precipitation_probability_max: [80, 20],
+      weather_code: [3, 71],
+    },
+  });
+
+  it('keeps hours within 0 to 47', () => {
+    expect([undefined, 'x', -3, 0, 4, 4.4, 99].map(cleanOffset)).toEqual([0, 0, 0, 0, 4, 4, 47]);
+  });
+
+  it('finds the full hour nearest to then, also past midnight', () => {
+    expect(targetHour(forecast('2026-11-23T06:50'), 4)).toMatchObject({ time: '2026-11-23T11:00', hourIndex: 11, dayIndex: 0 });
+    expect(targetHour(forecast('2026-11-23T22:40'), 4)).toMatchObject({ time: '2026-11-24T03:00', hourIndex: 27, dayIndex: 1 });
+    expect(targetHour(forecast('2026-11-23T22:40'), 40)).toBeNull(); // beyond what was returned
+  });
+
+  it('turns the forecast into a reading of that hour, with that day\'s sun and extremes', () => {
+    const v = atOffset(forecast('2026-11-23T06:50'), 4);
+    expect(v.current).toMatchObject({ time: '2026-11-23T11:00', temperature_2m: 11, weather_code: 63, is_day: 1, wind_speed_10m: 111 });
+    expect(v.daily?.temperature_2m_max).toEqual([9.6]);
+    expect(atOffset(forecast('2026-11-23T06:50'), 0).current?.weather_code).toBe(3); // unchanged for 0
+    expect(atOffset(forecast('2026-11-23T22:40'), 4).daily?.sunrise).toEqual(['2026-11-24T08:02']);
+  });
+
+  it('gives a prompt for the later hour: its condition and light, not the one of now', async () => {
+    vi.stubGlobal('fetch', async (url: string) => {
+      expect(String(url)).toContain('hourly=');
+      expect(String(url)).toContain('forecast_days=2');
+      return jsonRes(forecast('2026-11-23T06:50'));
+    });
+    const now = await fetchWeather(51, 4.5, 4);
+    expect(now.temperature).toBe('11');
+    expect(now.condition).toContain('rain');
+    expect(now.daypart).toBe('day time'); // 07:00 is still dark, 11:00 is not
+  });
+
+  it('takes the weather bar\'s sky from that hour and its numbers from that day', () => {
+    const raw = forecast('2026-11-23T22:40');
+    expect(parseDayForecast(raw, 4)).toEqual({ min: -1, max: 4, rain: 20, sky: 'snow' });
+    expect(parseDayForecast(raw)).toEqual({ min: 2, max: 10, rain: 80, sky: 'cloudy' });
   });
 });

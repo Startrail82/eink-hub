@@ -596,4 +596,6 @@ export const it: Catalogue = {
   'ai.mismatch': 'Questa raccolta crea immagini per {made}, ma questa cornice è {frame}. Le immagini verranno ritagliate o ridimensionate.',
   'ai.weather_bar': 'Barra meteo sull\'immagine',
   'ai.weather_bar_hint': 'Disegna in basso a destra la minima, la massima e la probabilità di pioggia di oggi, in un\'etichetta semitrasparente.',
+  'ai.weather_offset': 'Meteo tra (ore)',
+  'ai.weather_offset_hint': '0 = il meteo di adesso. Con 4, alle 7:00 si mostra il meteo delle 11:00. La barra usa il cielo di quell\'ora e i valori di quel giorno.',
 };

@@ -596,4 +596,6 @@ export const zhTW: Catalogue = {
   'ai.mismatch': '此圖集依 {made} 產生圖片,但此相框為 {frame}。圖片將被裁切或縮放。',
   'ai.weather_bar': '在圖片上顯示天氣列',
   'ai.weather_bar_hint': '在右下角以半透明標籤繪製今天的最低溫、最高溫和降雨機率。',
+  'ai.weather_offset': '幾小時後的天氣',
+  'ai.weather_offset_hint': '0 = 目前天氣。設為 4 時，7:00 顯示 11:00 的天氣。天氣列使用該時刻的天空和當天的數值。',
 };

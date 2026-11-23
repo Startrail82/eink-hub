@@ -596,4 +596,6 @@ export const ca: Catalogue = {
   'ai.mismatch': 'Aquesta col·lecció crea imatges per a {made}, però aquest marc és {frame}. Les imatges es retallaran o s\'escalaran.',
   'ai.weather_bar': 'Barra del temps a la imatge',
   'ai.weather_bar_hint': 'Dibuixa a baix a la dreta la mínima, la màxima i la probabilitat de pluja d\'avui, en una etiqueta semitransparent.',
+  'ai.weather_offset': 'Temps d\'aquí a (hores)',
+  'ai.weather_offset_hint': '0 = el temps d\'ara. Amb 4, a les 7:00 es mostra el temps de les 11:00. La barra fa servir el cel d\'aquella hora i els valors d\'aquell dia.',
 };

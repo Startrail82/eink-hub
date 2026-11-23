@@ -596,4 +596,6 @@ export const gl: Catalogue = {
   'ai.mismatch': 'Esta colección crea imaxes para {made}, pero este marco é {frame}. As imaxes recortaranse ou escalaranse.',
   'ai.weather_bar': 'Barra do tempo na imaxe',
   'ai.weather_bar_hint': 'Debuxa abaixo á dereita a mínima, a máxima e a probabilidade de choiva de hoxe, nunha etiqueta semitransparente.',
+  'ai.weather_offset': 'Tempo dentro de (horas)',
+  'ai.weather_offset_hint': '0 = o tempo de agora. Con 4, ás 7:00 móstrase o tempo das 11:00. A barra usa o ceo desa hora e os valores dese día.',
 };

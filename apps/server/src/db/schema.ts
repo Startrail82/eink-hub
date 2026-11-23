@@ -14,7 +14,7 @@ export interface DisplayOptions {
   /** "On this day" memories: caption reads "X years ago today" instead of the date. */
   memories?: boolean;
   /** AI weather collections: draw today's minimum, maximum and chance of rain for this place. */
-  weatherBar?: { latitude: number; longitude: number };
+  weatherBar?: { latitude: number; longitude: number; /** Hours ahead the bar is for (0 = today). */ offset?: number };
 }
 
 /** Per-kind settings that don't deserve a column. */

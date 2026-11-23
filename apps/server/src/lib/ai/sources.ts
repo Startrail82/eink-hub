@@ -157,7 +157,51 @@ export function weatherLook(code: number, when: 'night' | 'sun' | 'day'): string
 
 interface OpenMeteo {
   current?: { time?: string; temperature_2m?: number; weather_code?: number; is_day?: number; wind_speed_10m?: number };
-  daily?: { temperature_2m_max?: number[]; temperature_2m_min?: number[]; sunrise?: string[]; sunset?: string[] };
+  daily?: { time?: string[]; temperature_2m_max?: number[]; temperature_2m_min?: number[]; sunrise?: string[]; sunset?: string[] };
+  hourly?: { time?: string[]; temperature_2m?: number[]; weather_code?: number[]; is_day?: number[]; wind_speed_10m?: number[] };
+}
+
+export const MAX_OFFSET_HOURS = 47;
+
+/** Whole hours ahead, 0 to 47; anything else counts as now. */
+export function cleanOffset(v: unknown): number {
+  const n = Math.round(Number(v));
+  return Number.isFinite(n) && n > 0 ? Math.min(n, MAX_OFFSET_HOURS) : 0;
+}
+
+/**
+ * Where the forecast for `hours` from now sits: the full hour nearest to then, in the place's own
+ * clock (Open-Meteo answers in local time), and which of the returned days that falls on.
+ */
+export function targetHour(w: OpenMeteo, hours: number): { hourIndex: number; dayIndex: number; time: string } | null {
+  const now = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})/.exec(w.current?.time ?? '')?.[1];
+  if (!now) return null;
+  // Calendar arithmetic on the local wall clock: treat it as UTC so no zone or DST gets involved.
+  const target = new Date(Date.parse(`${now}:00Z`) + hours * 3600_000);
+  target.setUTCMinutes(Math.round((target.getUTCMinutes() + target.getUTCSeconds() / 60) / 60) * 60, 0, 0);
+  const time = target.toISOString().slice(0, 16);
+  const hourIndex = w.hourly?.time?.indexOf(time) ?? -1;
+  const dayIndex = w.daily?.time?.indexOf(time.slice(0, 10)) ?? -1;
+  return hourIndex < 0 || dayIndex < 0 ? null : { hourIndex, dayIndex, time };
+}
+
+/** The forecast for `hours` from now, shaped like a reading of now so the same code can use it. */
+export function atOffset(w: OpenMeteo, hours: number): OpenMeteo {
+  if (hours <= 0) return w;
+  const t = targetHour(w, hours);
+  const h = w.hourly;
+  if (!t || !h) throw new AiError('Open-Meteo returned no forecast for that hour');
+  const day = <T>(a: T[] | undefined) => (a?.[t.dayIndex] === undefined ? undefined : [a[t.dayIndex]]);
+  return {
+    current: {
+      time: t.time,
+      temperature_2m: h.temperature_2m?.[t.hourIndex],
+      weather_code: h.weather_code?.[t.hourIndex],
+      is_day: h.is_day?.[t.hourIndex],
+      wind_speed_10m: h.wind_speed_10m?.[t.hourIndex],
+    },
+    daily: { temperature_2m_max: day(w.daily?.temperature_2m_max), temperature_2m_min: day(w.daily?.temperature_2m_min), sunrise: day(w.daily?.sunrise), sunset: day(w.daily?.sunset) },
+  };
 }
 
 /** Within this many minutes of sunrise or sunset the picture gets that light. */
@@ -207,16 +251,23 @@ export function weatherVars(w: OpenMeteo): PromptVars {
   };
 }
 
-export async function fetchWeather(latitude: number, longitude: number): Promise<PromptVars> {
+/** Days to ask for so the hour `hours` from now is in the answer (the current hour may be late in the day). */
+const daysFor = (hours: number) => Math.floor(hours / 24) + 2;
+
+/** The weather now, or `hours` from now (0 to 47) when set. */
+export async function fetchWeather(latitude: number, longitude: number, hours = 0): Promise<PromptVars> {
+  const offset = cleanOffset(hours);
   const q = new URLSearchParams({
     latitude: String(latitude),
     longitude: String(longitude),
     current: 'temperature_2m,weather_code,is_day,wind_speed_10m',
     daily: 'temperature_2m_max,temperature_2m_min,sunrise,sunset',
     timezone: 'auto',
-    forecast_days: '1',
+    forecast_days: String(offset ? daysFor(offset) : 1),
   });
-  return weatherVars(JSON.parse(await fetchText(`https://api.open-meteo.com/v1/forecast?${q}`, 'application/json', 200_000)) as OpenMeteo);
+  if (offset) q.set('hourly', 'temperature_2m,weather_code,is_day,wind_speed_10m');
+  const raw = JSON.parse(await fetchText(`https://api.open-meteo.com/v1/forecast?${q}`, 'application/json', 400_000)) as OpenMeteo;
+  return weatherVars(atOffset(raw, offset));
 }
 
 /** Today's minimum, maximum and chance of rain at a place, for the bar drawn on the picture. */
@@ -232,8 +283,13 @@ export interface DayForecast {
 const forecastCache = new Map<string, { at: number; value: DayForecast }>();
 const FORECAST_TTL_MS = 15 * 60_000;
 
-export async function fetchDayForecast(latitude: number, longitude: number, now = Date.now()): Promise<DayForecast> {
-  const key = `${latitude.toFixed(3)},${longitude.toFixed(3)}`;
+/**
+ * The bar's numbers: the whole day's low, high and chance of rain, and the sky at the hour asked
+ * for. With `hours` set that is the day and the hour that far ahead, not today.
+ */
+export async function fetchDayForecast(latitude: number, longitude: number, now = Date.now(), hours = 0): Promise<DayForecast> {
+  const offset = cleanOffset(hours);
+  const key = `${latitude.toFixed(3)},${longitude.toFixed(3)},${offset}`;
   const hit = forecastCache.get(key);
   if (hit && now - hit.at < FORECAST_TTL_MS) return hit.value;
   const q = new URLSearchParams({
@@ -241,19 +297,36 @@ export async function fetchDayForecast(latitude: number, longitude: number, now 
     longitude: String(longitude),
     daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max',
     timezone: 'auto',
-    forecast_days: '1',
+    forecast_days: String(offset ? daysFor(offset) : 1),
   });
-  const value = parseDayForecast(JSON.parse(await fetchText(`https://api.open-meteo.com/v1/forecast?${q}`, 'application/json', 200_000)));
+  if (offset) {
+    q.set('current', 'weather_code');
+    q.set('hourly', 'weather_code');
+  }
+  const raw = JSON.parse(await fetchText(`https://api.open-meteo.com/v1/forecast?${q}`, 'application/json', 400_000)) as DayRaw;
+  const value = parseDayForecast(raw, offset);
   forecastCache.set(key, { at: now, value });
   return value;
 }
 
-export function parseDayForecast(raw: { daily?: { weather_code?: number[]; temperature_2m_max?: number[]; temperature_2m_min?: number[]; precipitation_probability_max?: (number | null)[] } }): DayForecast {
+type DayRaw = Pick<OpenMeteo, 'current' | 'hourly'> & {
+  daily?: { time?: string[]; weather_code?: number[]; temperature_2m_max?: number[]; temperature_2m_min?: number[]; precipitation_probability_max?: (number | null)[] };
+};
+
+export function parseDayForecast(raw: DayRaw, hours = 0): DayForecast {
   const d = raw.daily;
-  const max = d?.temperature_2m_max?.[0];
-  const min = d?.temperature_2m_min?.[0];
+  let day = 0;
+  let code = d?.weather_code?.[0];
+  if (hours > 0) {
+    const t = targetHour({ current: raw.current, hourly: raw.hourly, daily: { time: d?.time } }, hours);
+    if (!t) throw new AiError('Open-Meteo returned no forecast for that hour');
+    day = t.dayIndex;
+    code = raw.hourly?.weather_code?.[t.hourIndex];
+  }
+  const max = d?.temperature_2m_max?.[day];
+  const min = d?.temperature_2m_min?.[day];
   if (typeof max !== 'number' || typeof min !== 'number') throw new AiError('Open-Meteo returned no forecast');
-  const rain = d?.precipitation_probability_max?.[0];
+  const rain = d?.precipitation_probability_max?.[day];
   // `|| 0` turns a rounded -0 into 0.
-  return { min: Math.round(min) || 0, max: Math.round(max) || 0, rain: typeof rain === 'number' ? Math.round(rain) : null, sky: skyOf(d?.weather_code?.[0]) };
+  return { min: Math.round(min) || 0, max: Math.round(max) || 0, rain: typeof rain === 'number' ? Math.round(rain) : null, sky: skyOf(code) };
 }

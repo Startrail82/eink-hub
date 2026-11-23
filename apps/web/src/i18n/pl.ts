@@ -612,4 +612,6 @@ export const pl: Catalogue = {
   'ai.mismatch': 'Ta kolekcja tworzy obrazy dla {made}, ale ta ramka to {frame}. Obrazy zostaną przycięte lub przeskalowane.',
   'ai.weather_bar': 'Pasek pogody na obrazie',
   'ai.weather_bar_hint': 'Rysuje w prawym dolnym rogu dzisiejsze minimum, maksimum i szansę na deszcz w półprzezroczystej etykiecie.',
+  'ai.weather_offset': 'Pogoda za (godziny)',
+  'ai.weather_offset_hint': '0 = pogoda teraz. Przy 4 o 7:00 zobaczysz pogodę na 11:00. Pasek używa nieba z tej godziny i wartości z tego dnia.',
 };

@@ -1,6 +1,7 @@
 import { desc, eq } from 'drizzle-orm';
 import { schema, type DB } from '../db/index.js';
 import type { Assignment, DisplayOptions, Frame, Image } from '../db/schema.js';
+import { cleanOffset } from './ai/sources.js';
 import { DeviceError } from '../device/client.js';
 import { driverFor, renderTarget } from '../device/drivers/index.js';
 import { HttpError, qrUrl, type Ctx } from './context.js';
@@ -39,8 +40,8 @@ export function markOnline(db: DB, frameId: number, online: boolean, extra: Part
 export function assignmentOptions(db: DB, a?: Assignment): DisplayOptions {
   if (!a) return {};
   const c = db.select({ type: schema.collections.type, config: schema.collections.config }).from(schema.collections).where(eq(schema.collections.id, a.collectionId)).get();
-  const ai = c?.type === 'ai' ? (c.config as { source?: string; weatherBar?: boolean; latitude?: unknown; longitude?: unknown }) : null;
-  const place = ai?.source === 'weather' && ai.weatherBar && typeof ai.latitude === 'number' && typeof ai.longitude === 'number' ? { latitude: ai.latitude, longitude: ai.longitude } : null;
+  const ai = c?.type === 'ai' ? (c.config as { source?: string; weatherBar?: boolean; weatherOffset?: unknown; latitude?: unknown; longitude?: unknown }) : null;
+  const place = ai?.source === 'weather' && ai.weatherBar && typeof ai.latitude === 'number' && typeof ai.longitude === 'number' ? { latitude: ai.latitude, longitude: ai.longitude, offset: cleanOffset(ai.weatherOffset) } : null;
   return { fit: a.fit, bg: a.bg, showDate: a.showDate, ...(c?.type === 'immich_memories' ? { memories: true } : {}), ...(place ? { weatherBar: place } : {}) };
 }
 

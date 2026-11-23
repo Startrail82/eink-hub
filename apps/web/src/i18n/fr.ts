@@ -596,4 +596,6 @@ export const fr: Catalogue = {
   'ai.mismatch': 'Cette collection crée des images pour {made}, mais ce cadre est {frame}. Les images seront recadrées ou mises à l\'échelle.',
   'ai.weather_bar': 'Barre météo sur l\'image',
   'ai.weather_bar_hint': 'Dessine en bas à droite le minimum, le maximum et le risque de pluie du jour, dans une étiquette translucide.',
+  'ai.weather_offset': 'Météo dans (heures)',
+  'ai.weather_offset_hint': '0 = la météo de maintenant. Avec 4, à 7 h on obtient la météo de 11 h. La barre utilise le ciel de cette heure et les valeurs de ce jour.',
 };
