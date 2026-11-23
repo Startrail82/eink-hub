@@ -79,9 +79,9 @@ function FrameCard({ frame }: { frame: Frame }) {
       <div className="mt-4 flex items-start justify-between gap-3 px-1">
         <div className="min-w-0">
           <h3 className="truncate text-[17px] font-bold">{frame.name}</h3>
-          <p className="truncate text-[13px] text-muted">
-            {col ? col.name : t('canvas.no_schedule')}
-            {frame.mode === 'pull' && frame.nextWake ? ` · ${t('canvas.next_wake_short', { when: relativeTime(frame.nextWake) })}` : ''}
+          <p className="text-[13px] text-muted">
+            <span className="break-words">{col ? col.name : t('canvas.no_schedule')}</span>
+            {frame.mode === 'pull' && frame.nextWake ? <span className="whitespace-nowrap">{` · ${t('canvas.next_wake_short', { when: relativeTime(frame.nextWake) })}`}</span> : null}
           </p>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1.5">
