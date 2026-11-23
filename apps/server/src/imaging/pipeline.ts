@@ -1,3 +1,4 @@
+import { DEFAULT_PILL, type PillStyle } from './pill.js';
 import { skyIcon, type Sky } from './sky.js';
 import sharp, { type OverlayOptions, type Sharp } from 'sharp';
 import type { FitMode } from '../db/schema.js';
@@ -26,6 +27,8 @@ export interface RenderOptions {
   caption?: string | null;
   /** Today's weather, drawn in a translucent label at the bottom-right. */
   weather?: WeatherBar | null;
+  /** Colours and opacity of the date and weather labels. */
+  pill?: PillStyle;
   quality?: number;
   /** Baseline JPEG unless the frame asks for something else. */
   format?: ImageFormat;
@@ -77,8 +80,8 @@ export async function renderForFrame(src: Buffer, o: RenderOptions): Promise<Buf
   }
 
   let captionBox: Box | null = null;
-  if (o.caption) ({ img: composed, box: captionBox } = await addCaption(composed, o.caption, tw, th));
-  if (o.weather) composed = await addWeatherBar(composed, o.weather, tw, th, captionBox);
+  if (o.caption) ({ img: composed, box: captionBox } = await addCaption(composed, o.caption, tw, th, o.pill ?? DEFAULT_PILL));
+  if (o.weather) composed = await addWeatherBar(composed, o.weather, tw, th, captionBox, o.pill ?? DEFAULT_PILL);
 
   let out = sharp(composed);
   if (o.landscape && o.rotate) out = out.rotate(o.rotate);
@@ -126,10 +129,10 @@ interface Box {
   height: number;
 }
 
-async function addCaption(img: Buffer, caption: string, w: number, h: number): Promise<{ img: Buffer; box: Box }> {
+async function addCaption(img: Buffer, caption: string, w: number, h: number, style: PillStyle): Promise<{ img: Buffer; box: Box }> {
   const size = Math.max(14, Math.round(Math.min(w, h) * 0.032));
   const label = await sharp({
-    text: { text: `<span foreground="#1d1c1a">${escapeMarkup(caption)}</span>`, font: `Inter,Arial,DejaVu Sans,Sans Semi-Bold ${size}`, dpi: 72, rgba: true },
+    text: { text: `<span foreground="${style.text}">${escapeMarkup(caption)}</span>`, font: `Inter,Arial,DejaVu Sans,Sans Semi-Bold ${size}`, dpi: 72, rgba: true },
   })
     .png()
     .toBuffer({ resolveWithObject: true });
@@ -139,7 +142,7 @@ async function addCaption(img: Buffer, caption: string, w: number, h: number): P
   const pillW = Math.min(w - 2 * margin, label.info.width + 2 * padX);
   const pillH = label.info.height + 2 * padY;
   const pill = Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${pillW}" height="${pillH}"><rect width="${pillW}" height="${pillH}" rx="${pillH / 2}" fill="#ffffff"/></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${pillW}" height="${pillH}"><rect width="${pillW}" height="${pillH}" rx="${pillH / 2}" fill="${style.bg}" fill-opacity="${style.opacity / 100}"/></svg>`,
   );
   const top = h - margin - pillH;
   const out = await sharp(img)
@@ -151,8 +154,8 @@ async function addCaption(img: Buffer, caption: string, w: number, h: number): P
   return { img: out, box: { left: margin, top, width: pillW, height: pillH } };
 }
 
-const textLabel = (text: string, size: number) =>
-  sharp({ text: { text: `<span foreground="#1d1c1a">${escapeMarkup(text)}</span>`, font: `Inter,Arial,DejaVu Sans,Sans Semi-Bold ${size}`, dpi: 72, rgba: true } })
+const textLabel = (text: string, size: number, ink: string) =>
+  sharp({ text: { text: `<span foreground="${ink}">${escapeMarkup(text)}</span>`, font: `Inter,Arial,DejaVu Sans,Sans Semi-Bold ${size}`, dpi: 72, rgba: true } })
     .png()
     .toBuffer({ resolveWithObject: true });
 
@@ -171,11 +174,11 @@ export interface WeatherBar {
  * The drop and the icon are drawn, not font symbols: most fonts lack them. When the caption is in
  * the way, the label goes above it.
  */
-async function addWeatherBar(img: Buffer, wx: WeatherBar, w: number, h: number, caption: Box | null): Promise<Buffer> {
+async function addWeatherBar(img: Buffer, wx: WeatherBar, w: number, h: number, caption: Box | null, style: PillStyle): Promise<Buffer> {
   const size = Math.max(14, Math.round(Math.min(w, h) * 0.032));
-  const temps = await textLabel(`\u2193 ${wx.min}\u00b0   \u2191 ${wx.max}\u00b0`, size);
-  const rain = wx.rain === null ? null : await textLabel(`${wx.rain}%`, size);
-  const word = wx.sky && wx.label ? await textLabel(wx.label, size) : null;
+  const temps = await textLabel(`\u2193 ${wx.min}\u00b0   \u2191 ${wx.max}\u00b0`, size, style.text);
+  const rain = wx.rain === null ? null : await textLabel(`${wx.rain}%`, size, style.text);
+  const word = wx.sky && wx.label ? await textLabel(wx.label, size, style.text) : null;
   const padX = Math.round(size * 0.75);
   const padY = Math.round(size * 0.45);
   const margin = Math.round(Math.min(w, h) * 0.04);
@@ -197,7 +200,7 @@ async function addWeatherBar(img: Buffer, wx: WeatherBar, w: number, h: number, 
   const top = clash ? caption.top - gapAbove - pillH : h - margin - pillH;
   const rx = Math.min(pillH / 2, Math.round(size * 1.1));
   const pill = Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${pillW}" height="${pillH}"><rect width="${pillW}" height="${pillH}" rx="${rx}" fill="#ffffff" fill-opacity="0.72"/></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${pillW}" height="${pillH}"><rect width="${pillW}" height="${pillH}" rx="${rx}" fill="${style.bg}" fill-opacity="${style.opacity / 100}"/></svg>`,
   );
   const x0 = left + padX;
   const y1 = top + padY;
@@ -208,14 +211,14 @@ async function addWeatherBar(img: Buffer, wx: WeatherBar, w: number, h: number, 
   if (rain) {
     const dropLeft = x0 + temps.info.width + gap;
     const drop = Buffer.from(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="${dropW}" height="${dropH}" viewBox="0 0 10 14"><path d="M5 0C5 0 0 6 0 9a5 5 0 0 0 10 0C10 6 5 0 5 0Z" fill="#1d1c1a"/></svg>`,
+      `<svg xmlns="http://www.w3.org/2000/svg" width="${dropW}" height="${dropH}" viewBox="0 0 10 14"><path d="M5 0C5 0 0 6 0 9a5 5 0 0 0 10 0C10 6 5 0 5 0Z" fill="${style.text}"/></svg>`,
     );
     layers.push({ input: drop, left: dropLeft, top: y1 + Math.round((row1H - dropH) / 2) });
     layers.push({ input: rain.data, left: dropLeft + dropW + gapSmall, top: y1 + Math.round((row1H - rain.info.height) / 2) });
   }
   if (word && wx.sky) {
     const y2 = y1 + row1H + lineGap;
-    layers.push({ input: skyIcon(wx.sky, iconPx), left: x0, top: y2 + Math.round((row2H - iconPx) / 2) });
+    layers.push({ input: skyIcon(wx.sky, iconPx, style.text, style.bg), left: x0, top: y2 + Math.round((row2H - iconPx) / 2) });
     layers.push({ input: word.data, left: x0 + iconPx + gapSmall, top: y2 + Math.round((row2H - word.info.height) / 2) });
   }
   return sharp(img).composite(layers).toBuffer();

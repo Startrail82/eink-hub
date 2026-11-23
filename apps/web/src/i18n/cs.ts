@@ -612,4 +612,11 @@ export const cs: Catalogue = {
   'ai.mismatch': 'Tato kolekce vytváří obrázky pro {made}, ale tento rámeček je {frame}. Obrázky budou oříznuty nebo zmenšeny.',
   'ai.weather_bar': 'Pruh s počasím v obrázku',
   'ai.weather_bar_hint': 'Vpravo dole nakreslí dnešní minimum, maximum a pravděpodobnost deště v průhledném štítku.',
+  'canvasSettings.pill_title': 'Štítky s datem a počasím',
+  'canvasSettings.pill_hint': 'Barvy a krytí štítků s datem a počasím, které se kreslí na obrázky tohoto Canvasu. Výchozí jsou bílé a nepropustné; průhledný štítek může na barevném e-inku působit zrnitě.',
+  'canvasSettings.pill_bg': 'Pozadí',
+  'canvasSettings.pill_text': 'Text',
+  'canvasSettings.pill_opacity': 'Krytí',
+  'canvasSettings.pill_sample': '21. 11. 2026',
+  'canvasSettings.pill_reset': 'Obnovit',
 };

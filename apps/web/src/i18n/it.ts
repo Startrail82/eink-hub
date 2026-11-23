@@ -596,4 +596,11 @@ export const it: Catalogue = {
   'ai.mismatch': 'Questa raccolta crea immagini per {made}, ma questa cornice è {frame}. Le immagini verranno ritagliate o ridimensionate.',
   'ai.weather_bar': 'Barra meteo sull\'immagine',
   'ai.weather_bar_hint': 'Disegna in basso a destra la minima, la massima e la probabilità di pioggia di oggi, in un\'etichetta semitrasparente.',
+  'canvasSettings.pill_title': 'Etichette di data e meteo',
+  'canvasSettings.pill_hint': 'Colori e opacità delle etichette di data e meteo disegnate sulle immagini di questo Canvas. Di default sono bianche e opache; un\'etichetta traslucida può apparire granulosa su e-ink a colori.',
+  'canvasSettings.pill_bg': 'Sfondo',
+  'canvasSettings.pill_text': 'Testo',
+  'canvasSettings.pill_opacity': 'Opacità',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Ripristina',
 };

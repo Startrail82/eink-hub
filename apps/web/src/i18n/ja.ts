@@ -596,4 +596,11 @@ export const ja: Catalogue = {
   'ai.mismatch': 'このコレクションは {made} 向けの画像を作成しますが、このフレームは {frame} です。画像はトリミングまたは拡大縮小されます。',
   'ai.weather_bar': '画像に天気バーを表示',
   'ai.weather_bar_hint': '右下に今日の最低気温・最高気温・降水確率を半透明のラベルで表示します。',
+  'canvasSettings.pill_title': '日付と天気のラベル',
+  'canvasSettings.pill_hint': 'この Canvas の画像に描かれる日付と天気ラベルの色と不透明度。初期設定は白の不透明です。半透明にするとカラー e-ink ではざらついて見えることがあります。',
+  'canvasSettings.pill_bg': '背景',
+  'canvasSettings.pill_text': '文字',
+  'canvasSettings.pill_opacity': '不透明度',
+  'canvasSettings.pill_sample': '2026年11月21日',
+  'canvasSettings.pill_reset': 'リセット',
 };

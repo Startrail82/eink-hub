@@ -596,4 +596,11 @@ export const ko: Catalogue = {
   'ai.mismatch': '이 컬렉션은 {made}용 이미지를 만들지만, 이 프레임은 {frame}입니다. 이미지가 잘리거나 크기가 조정됩니다.',
   'ai.weather_bar': '이미지에 날씨 막대 표시',
   'ai.weather_bar_hint': '오른쪽 아래에 오늘의 최저·최고 기온과 강수 확률을 반투명 라벨로 그립니다.',
+  'canvasSettings.pill_title': '날짜 및 날씨 라벨',
+  'canvasSettings.pill_hint': '이 Canvas의 이미지에 그려지는 날짜와 날씨 라벨의 색과 불투명도입니다. 기본값은 흰색 불투명이며, 반투명 라벨은 컬러 e-ink에서 거칠게 보일 수 있습니다.',
+  'canvasSettings.pill_bg': '배경',
+  'canvasSettings.pill_text': '글자',
+  'canvasSettings.pill_opacity': '불투명도',
+  'canvasSettings.pill_sample': '2026년 11월 21일',
+  'canvasSettings.pill_reset': '초기화',
 };

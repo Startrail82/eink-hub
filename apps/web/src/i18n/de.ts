@@ -596,4 +596,11 @@ export const de: Catalogue = {
   'ai.mismatch': 'Diese Sammlung erzeugt Bilder für {made}, dieser Rahmen ist jedoch {frame}. Die Bilder werden zugeschnitten oder skaliert.',
   'ai.weather_bar': 'Wetterleiste im Bild',
   'ai.weather_bar_hint': 'Zeichnet unten rechts das heutige Minimum, Maximum und die Regenwahrscheinlichkeit in einem halbtransparenten Label.',
+  'canvasSettings.pill_title': 'Datums- und Wetteretiketten',
+  'canvasSettings.pill_hint': 'Farben und Deckkraft der Datums- und Wetteretiketten auf den Bildern dieses Canvas. Standard ist weiß und deckend; ein durchscheinendes Etikett kann auf Farb-E-Ink körnig wirken.',
+  'canvasSettings.pill_bg': 'Hintergrund',
+  'canvasSettings.pill_text': 'Text',
+  'canvasSettings.pill_opacity': 'Deckkraft',
+  'canvasSettings.pill_sample': '21. Nov. 2026',
+  'canvasSettings.pill_reset': 'Zurücksetzen',
 };

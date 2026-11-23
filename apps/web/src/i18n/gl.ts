@@ -596,4 +596,11 @@ export const gl: Catalogue = {
   'ai.mismatch': 'Esta colección crea imaxes para {made}, pero este marco é {frame}. As imaxes recortaranse ou escalaranse.',
   'ai.weather_bar': 'Barra do tempo na imaxe',
   'ai.weather_bar_hint': 'Debuxa abaixo á dereita a mínima, a máxima e a probabilidade de choiva de hoxe, nunha etiqueta semitransparente.',
+  'canvasSettings.pill_title': 'Etiquetas de data e tempo',
+  'canvasSettings.pill_hint': 'Cores e opacidade das etiquetas de data e de tempo que se debuxan sobre as imaxes deste Canvas. Por defecto son brancas e opacas; unha etiqueta translúcida pode verse granulada en e-ink en cor.',
+  'canvasSettings.pill_bg': 'Fondo',
+  'canvasSettings.pill_text': 'Texto',
+  'canvasSettings.pill_opacity': 'Opacidade',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Restablecer',
 };

@@ -595,6 +595,13 @@ export const es = {
   'ai.mismatch': 'Esta colección crea imágenes para {made}, pero este marco es {frame}. Las imágenes se recortarán o escalarán.',
   'ai.weather_bar': 'Barra del tiempo en la imagen',
   'ai.weather_bar_hint': 'Dibuja abajo a la derecha la mínima, la máxima y la probabilidad de lluvia de hoy, en una etiqueta semitransparente.',
+  'canvasSettings.pill_title': 'Etiquetas de fecha y tiempo',
+  'canvasSettings.pill_hint': 'Colores y opacidad de las etiquetas de fecha y de tiempo que se dibujan sobre las imágenes de este Canvas. Por defecto son blancas y opacas; una etiqueta translúcida puede verse granulada en e-ink en color.',
+  'canvasSettings.pill_bg': 'Fondo',
+  'canvasSettings.pill_text': 'Texto',
+  'canvasSettings.pill_opacity': 'Opacidad',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Restablecer',
 };
 
 export type Messages = Record<keyof typeof es, string>;

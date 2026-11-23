@@ -403,7 +403,7 @@ describe('weather bar', () => {
     const src = await sharp({ create: { width: 600, height: 800, channels: 3, background: '#336699' } }).png().toBuffer();
     const base = { width: 600, height: 800, landscape: false, rotate: 0, fit: 'cover' as const, bg: '#ffffff', format: { type: 'png' as const } };
     const plain = await renderForFrame(src, base);
-    const withBar = await renderForFrame(src, { ...base, weather: { min: 3, max: 9, rain: 60 } });
+    const withBar = await renderForFrame(src, { ...base, weather: { min: 3, max: 9, rain: 60 }, pill: { bg: '#ffffff', text: '#1d1c1a', opacity: 72 } });
     const [a, b] = await Promise.all([sharp(plain).raw().toBuffer({ resolveWithObject: true }), sharp(withBar).raw().toBuffer({ resolveWithObject: true })]);
     expect([b.info.width, b.info.height]).toEqual([600, 800]);
     const px = (r: typeof a, x: number, y: number) => [...r.data.subarray((y * r.info.width + x) * r.info.channels, (y * r.info.width + x) * r.info.channels + 3)];

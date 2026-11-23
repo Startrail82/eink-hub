@@ -11,6 +11,7 @@ import { assetSize, type ImmichAsset } from '../immich/client.js';
 import { aspectKey, formatExt, probeImage, renderForFrame, thumbnail, type CropRect } from '../imaging/pipeline.js';
 import { renderTarget } from '../device/drivers/index.js';
 import { fetchDayForecast } from './ai/sources.js';
+import { isDefaultPill, resolvePill } from '../imaging/pill.js';
 import { skyLabel } from '../imaging/sky.js';
 import { HttpError, immichFor, type Ctx } from './context.js';
 
@@ -192,6 +193,7 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
   const forecast = opts.weatherBar ? await fetchDayForecast(opts.weatherBar.latitude, opts.weatherBar.longitude).catch((err) => (ctx.log.warn({ err }, 'weather bar: no forecast, picture shown without it'), null)) : null;
   // The word is in the hub's language, so it is part of the render's identity.
   const weather = forecast ? { ...forecast, label: forecast.sky ? skyLabel(forecast.sky, hubLang(ctx.db)) : null } : null;
+  const pill = resolvePill(frame.config?.pill);
   const crop = opts.crop !== undefined ? opts.crop : getCrop(ctx.db, img.id, frameAspect(frame));
   const target = renderTarget(frame);
   const ext = formatExt(target.format);
@@ -208,6 +210,7 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
     caption: opts.showDate ? (opts.memories ? yearsAgoCaption : photoDate)(img, hubLang(ctx.db)) : null,
     // Only when present, so existing renders keep their hash.
     ...(weather ? { weather } : {}),
+    ...(isDefaultPill(pill) ? {} : { pill }),
     // Only when not the default, so existing JPEG renders keep their hash.
     ...(ext === 'jpg' && !target.format.palette ? {} : { format: target.format }),
   } as const;
@@ -226,6 +229,7 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
     crop: params.crop,
     caption: params.caption,
     weather,
+    pill,
     format: target.format,
   });
   await fs.writeFile(file, buf);

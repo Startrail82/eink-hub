@@ -596,4 +596,11 @@ export const nl: Catalogue = {
   'ai.mismatch': 'Deze collectie maakt beelden voor {made}, maar dit frame is {frame}. De beelden worden bijgesneden of geschaald.',
   'ai.weather_bar': 'Weerbalk op het beeld',
   'ai.weather_bar_hint': 'Tekent rechtsonder de minimum- en maximumtemperatuur van vandaag en de kans op regen in een half-transparant label.',
+  'canvasSettings.pill_title': 'Datum- en weerlabels',
+  'canvasSettings.pill_hint': 'Kleuren en doorzichtigheid van de datum- en weerpillen op de afbeeldingen van dit Canvas. Standaard zijn ze wit en ondoorzichtig; een doorzichtige pil kan er korrelig uitzien op kleuren-e-ink.',
+  'canvasSettings.pill_bg': 'Achtergrond',
+  'canvasSettings.pill_text': 'Tekst',
+  'canvasSettings.pill_opacity': 'Dekking',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Standaard',
 };

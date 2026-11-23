@@ -596,4 +596,11 @@ export const fr: Catalogue = {
   'ai.mismatch': 'Cette collection crée des images pour {made}, mais ce cadre est {frame}. Les images seront recadrées ou mises à l\'échelle.',
   'ai.weather_bar': 'Barre météo sur l\'image',
   'ai.weather_bar_hint': 'Dessine en bas à droite le minimum, le maximum et le risque de pluie du jour, dans une étiquette translucide.',
+  'canvasSettings.pill_title': 'Étiquettes de date et de météo',
+  'canvasSettings.pill_hint': 'Couleurs et opacité des étiquettes de date et de météo dessinées sur les images de ce Canvas. Par défaut elles sont blanches et opaques ; une étiquette translucide peut paraître granuleuse sur e-ink couleur.',
+  'canvasSettings.pill_bg': 'Fond',
+  'canvasSettings.pill_text': 'Texte',
+  'canvasSettings.pill_opacity': 'Opacité',
+  'canvasSettings.pill_sample': '21 nov. 2026',
+  'canvasSettings.pill_reset': 'Réinitialiser',
 };

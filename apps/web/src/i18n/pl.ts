@@ -612,4 +612,11 @@ export const pl: Catalogue = {
   'ai.mismatch': 'Ta kolekcja tworzy obrazy dla {made}, ale ta ramka to {frame}. Obrazy zostaną przycięte lub przeskalowane.',
   'ai.weather_bar': 'Pasek pogody na obrazie',
   'ai.weather_bar_hint': 'Rysuje w prawym dolnym rogu dzisiejsze minimum, maksimum i szansę na deszcz w półprzezroczystej etykiecie.',
+  'canvasSettings.pill_title': 'Etykiety daty i pogody',
+  'canvasSettings.pill_hint': 'Kolory i krycie etykiet daty i pogody rysowanych na obrazach tego Canvasa. Domyślnie są białe i nieprzezroczyste; półprzezroczysta etykieta może wyglądać ziarniście na kolorowym e-ink.',
+  'canvasSettings.pill_bg': 'Tło',
+  'canvasSettings.pill_text': 'Tekst',
+  'canvasSettings.pill_opacity': 'Krycie',
+  'canvasSettings.pill_sample': '21 lis 2026',
+  'canvasSettings.pill_reset': 'Przywróć',
 };

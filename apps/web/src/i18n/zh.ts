@@ -596,4 +596,11 @@ export const zh: Catalogue = {
   'ai.mismatch': '此图集按 {made} 生成图片,但此相框为 {frame}。图片将被裁剪或缩放。',
   'ai.weather_bar': '在图片上显示天气栏',
   'ai.weather_bar_hint': '在右下角用半透明标签绘制今天的最低温、最高温和降雨概率。',
+  'canvasSettings.pill_title': '日期和天气标签',
+  'canvasSettings.pill_hint': '此 Canvas 图片上绘制的日期和天气标签的颜色与不透明度。默认是白色不透明；半透明标签在彩色墨水屏上可能显得有颗粒感。',
+  'canvasSettings.pill_bg': '背景',
+  'canvasSettings.pill_text': '文字',
+  'canvasSettings.pill_opacity': '不透明度',
+  'canvasSettings.pill_sample': '2026年11月21日',
+  'canvasSettings.pill_reset': '重置',
 };
