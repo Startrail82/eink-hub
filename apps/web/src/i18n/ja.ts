@@ -616,4 +616,6 @@ export const ja: Catalogue = {
   'ai.pick_hint': '画像ごとに選択肢の1つをランダムに選びます。例：{pick: 山 | 海岸 | 森}。クリックでコピー。',
   'ai.weather_bar': '画像に天気バーを表示',
   'ai.weather_bar_hint': '右下に今日の最低気温・最高気温・降水確率を半透明のラベルで表示します。',
+  'ai.weather_offset': '何時間後の天気',
+  'ai.weather_offset_hint': '0 = 現在の天気。4 にすると、7:00 に 11:00 の天気を表示します。バーはその時刻の空模様とその日の数値を使います。',
 };

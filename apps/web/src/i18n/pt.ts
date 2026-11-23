@@ -616,4 +616,6 @@ export const pt: Catalogue = {
   'ai.pick_hint': 'Escolhe uma opção ao acaso para cada imagem, por exemplo {pick: montanhas | costa | floresta}. Clica para copiar.',
   'ai.weather_bar': 'Barra do tempo na imagem',
   'ai.weather_bar_hint': 'Desenha em baixo à direita a mínima, a máxima e a probabilidade de chuva de hoje, numa etiqueta semitransparente.',
+  'ai.weather_offset': 'Tempo daqui a (horas)',
+  'ai.weather_offset_hint': '0 = o tempo de agora. Com 4, às 7:00 mostra-se o tempo das 11:00. A barra usa o céu dessa hora e os valores desse dia.',
 };

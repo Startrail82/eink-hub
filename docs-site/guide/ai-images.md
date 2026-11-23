@@ -51,6 +51,11 @@ Use **Generate now** in the collection to make a first picture and check the res
 ### Random choices in a prompt
 
 Write `{pick: one | two | three}` to let the Hub choose one of the options at random for every picture, for example `a vast landscape of {pick: mountains | a rocky coast | a pine forest | rolling hills}`. You can use it several times in one prompt and put other tags inside an option. In the dialog, click the `{pick: … | …}` chip to copy an example. `{pick}` works in every kind of collection.
+
+### Weather for later
+
+With **Weather in (hours)** you can have a weather collection show the weather of a later moment instead of right now: with `4`, a picture made at 06:50 and shown at 07:00 is about the weather at 11:00. This applies to `{condition}`, `{temperature}`, `{wind}` and `{daypart}` (the light of that hour, so a morning picture for the afternoon is not dark). The weather bar then uses the sky of that hour, while the low, high and chance of rain stay those of that day. You can look up to 47 hours ahead; `0` is the weather now.
+
 ### Weather bar
 
 For a weather collection you can switch on **Weather bar**. The picture then gets a small translucent label at the bottom right with today's lowest and highest temperature and the chance of rain on the first line (for example `↓ 8°  ↑ 13°  💧 60%`) and the weather type below it, as a small icon and a word in the hub's language (sunny, partly cloudy, cloudy, fog, drizzle, rain, snow or thunderstorm). The numbers and the weather type come from Open-Meteo for the coordinates you entered. If the date is shown too and the two would overlap, the weather label moves just above it. When the forecast can't be fetched, the picture is shown without the bar. The label is translucent on purpose; on a colour e-ink panel the see-through edge can look slightly grainy.

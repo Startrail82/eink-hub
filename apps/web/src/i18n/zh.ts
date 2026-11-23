@@ -616,4 +616,6 @@ export const zh: Catalogue = {
   'ai.pick_hint': '每张图片随机选取一个选项，例如 {pick: 山 | 海岸 | 森林}。点击复制。',
   'ai.weather_bar': '在图片上显示天气栏',
   'ai.weather_bar_hint': '在右下角用半透明标签绘制今天的最低温、最高温和降雨概率。',
+  'ai.weather_offset': '几小时后的天气',
+  'ai.weather_offset_hint': '0 = 当前天气。设为 4 时，7:00 显示 11:00 的天气。天气栏使用该时刻的天空和当天的数值。',
 };

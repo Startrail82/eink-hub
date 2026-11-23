@@ -616,4 +616,6 @@ export const de: Catalogue = {
   'ai.pick_hint': 'Wählt für jedes Bild zufällig eine Option, zum Beispiel {pick: Berge | Küste | Wald}. Zum Kopieren klicken.',
   'ai.weather_bar': 'Wetterleiste im Bild',
   'ai.weather_bar_hint': 'Zeichnet unten rechts das heutige Minimum, Maximum und die Regenwahrscheinlichkeit in einem halbtransparenten Label.',
+  'ai.weather_offset': 'Wetter in (Stunden)',
+  'ai.weather_offset_hint': '0 = das Wetter jetzt. Mit 4 gibt es um 7:00 Uhr das Wetter von 11:00 Uhr. Die Leiste nutzt den Himmel dieser Stunde und die Werte dieses Tages.',
 };

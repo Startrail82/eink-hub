@@ -632,4 +632,6 @@ export const cs: Catalogue = {
   'ai.pick_hint': 'Pro každý obrázek náhodně vybere jednu možnost, například {pick: hory | pobřeží | les}. Kliknutím zkopíruješ.',
   'ai.weather_bar': 'Pruh s počasím v obrázku',
   'ai.weather_bar_hint': 'Vpravo dole nakreslí dnešní minimum, maximum a pravděpodobnost deště v průhledném štítku.',
+  'ai.weather_offset': 'Počasí za (hodiny)',
+  'ai.weather_offset_hint': '0 = počasí teď. Se 4 se v 7:00 zobrazí počasí v 11:00. Pruh používá oblohu z té hodiny a hodnoty z toho dne.',
 };

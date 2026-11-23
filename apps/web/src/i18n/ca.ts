@@ -616,4 +616,6 @@ export const ca: Catalogue = {
   'ai.pick_hint': 'Tria una opció a l\'atzar a cada imatge, per exemple {pick: muntanyes | costa | bosc}. Clic per copiar.',
   'ai.weather_bar': 'Barra del temps a la imatge',
   'ai.weather_bar_hint': 'Dibuixa a baix a la dreta la mínima, la màxima i la probabilitat de pluja d\'avui, en una etiqueta semitransparent.',
+  'ai.weather_offset': 'Temps d\'aquí a (hores)',
+  'ai.weather_offset_hint': '0 = el temps d\'ara. Amb 4, a les 7:00 es mostra el temps de les 11:00. La barra fa servir el cel d\'aquella hora i els valors d\'aquell dia.',
 };

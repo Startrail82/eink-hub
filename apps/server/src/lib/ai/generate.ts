@@ -6,7 +6,7 @@ import type { Ctx } from '../context.js';
 import { deleteImage, saveLocalUpload } from '../images.js';
 import { AiError, generateImage } from './providers.js';
 import { aiConfig, aiConfigured } from './settings.js';
-import { commonVars, fetchFeed, fetchWeather, fillTemplate, nextFeedItem, type PromptVars } from './sources.js';
+import { cleanOffset, commonVars, fetchFeed, fetchWeather, fillTemplate, nextFeedItem, type PromptVars } from './sources.js';
 
 export const aiSources = ['prompt', 'rss', 'weather'] as const;
 export type AiSource = (typeof aiSources)[number];
@@ -21,6 +21,8 @@ export interface AiCollectionConfig {
   feedUrl: string;
   latitude: number | null;
   longitude: number | null;
+  /** Weather source: hours ahead the weather is for (0 = now, up to 47). */
+  weatherOffset: number;
   /** How many generated pictures to keep; 0 = keep them all. */
   keep: number;
   /** Panel resolution to generate for, "shortxlong" (e.g. "1200x1600"). Null = follow the first frame showing the collection. */
@@ -46,6 +48,7 @@ export function collectionConfig(c: Collection): AiCollectionConfig {
     feedUrl: typeof raw.feedUrl === 'string' ? raw.feedUrl.trim() : '',
     latitude: num(raw.latitude),
     longitude: num(raw.longitude),
+    weatherOffset: cleanOffset(raw.weatherOffset),
     keep: Number.isInteger(keep) && keep >= 0 ? keep : DEFAULT_KEEP,
     panel: typeof raw.panel === 'string' && /^\d{2,5}x\d{2,5}$/.test(raw.panel) ? raw.panel : null,
     orientation: raw.orientation === 'landscape' ? 'landscape' : 'portrait',
@@ -101,7 +104,7 @@ export async function buildPrompt(cfg: AiCollectionConfig, seen: string[]): Prom
   const vars: PromptVars = commonVars();
   if (cfg.source === 'prompt') return { prompt: fillTemplate(cfg.prompt, vars) };
   const template = cfg.prompt.trim() || DEFAULT_PROMPTS[cfg.source];
-  if (cfg.source === 'weather') return { prompt: fillTemplate(template, { ...vars, ...(await fetchWeather(cfg.latitude!, cfg.longitude!)) }) };
+  if (cfg.source === 'weather') return { prompt: fillTemplate(template, { ...vars, ...(await fetchWeather(cfg.latitude!, cfg.longitude!, cfg.weatherOffset)) }) };
   const items = await fetchFeed(cfg.feedUrl);
   // Everything illustrated already? Start over with the newest rather than showing nothing new.
   const item = nextFeedItem(items, seen) ?? items[0];

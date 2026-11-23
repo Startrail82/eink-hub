@@ -64,6 +64,7 @@ function configOf(c?: Collection): AiCollectionConfig {
     prompt: raw.prompt ?? '',
     negative: raw.negative ?? '',
     weatherBar: raw.weatherBar === true,
+    weatherOffset: Math.min(47, Math.max(0, Math.floor(Number(raw.weatherOffset) || 0))),
     feedUrl: raw.feedUrl ?? '',
     latitude: raw.latitude ?? null,
     longitude: raw.longitude ?? null,
@@ -150,6 +151,20 @@ export function AiCollectionDialog({ open, onClose, collection, onCreated }: { o
             <div className="mt-3 rounded-2xl bg-surface-2 p-4">
               <Toggle label={t('ai.weather_bar')} hint={t('ai.weather_bar_hint')} checked={cfg.weatherBar} onChange={(v) => set('weatherBar', v)} />
             </div>
+          </Field>
+        )}
+        {cfg.source === 'weather' && (
+          <Field label={t('ai.weather_offset')} hint={t('ai.weather_offset_hint')}>
+            <input
+              className={inputClass}
+              type="number"
+              inputMode="numeric"
+              min={0}
+              max={47}
+              step={1}
+              value={cfg.weatherOffset}
+              onChange={(e) => set('weatherOffset', Math.min(47, Math.max(0, Math.floor(Number(e.target.value) || 0))))}
+            />
           </Field>
         )}
         <Field label={t('ai.prompt')} hint={t(hint[cfg.source])}>

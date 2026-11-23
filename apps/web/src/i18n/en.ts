@@ -616,4 +616,6 @@ export const en: Messages = {
   'ai.pick_hint': 'Picks one option at random for every picture, for example {pick: mountains | coast | forest}. Click to copy.',
   'ai.weather_bar': 'Weather bar on the picture',
   'ai.weather_bar_hint': 'Draws today\'s low, high and chance of rain at the bottom right, in a translucent label.',
+  'ai.weather_offset': 'Weather in (hours)',
+  'ai.weather_offset_hint': '0 = the weather now. With 4, at 7:00 you get the weather of 11:00. The bar uses the sky of that hour and the numbers of that day.',
 };
