@@ -15,6 +15,7 @@ A frame can have one or more schedules. Each one has its own collection and timi
 - **Every N hours** (1, 3, 6 or 12), optionally only between active hours (e.g. 08:00 to 22:00).
 - **Every N days / weeks** at a time, **monthly** on a day, or a **cron** expression.
 - **Order**: random (avoiding recent repeats), sequential or newest first.
+- **Only pictures that suit the Canvas** (optional): on a portrait Canvas only upright pictures are chosen, on a landscape Canvas only wide ones. Square pictures suit both, and pictures of unknown size are kept. If none fit, all pictures are used, so the Canvas never stops changing. It works for every kind of collection and is set per schedule, so the same library can be filtered on one Canvas and not on another.
 
 More than one change a day costs battery on battery-powered frames; the UI warns you.
 

@@ -625,4 +625,6 @@ export const de: Catalogue = {
   'canvasSettings.pill_opacity': 'Deckkraft',
   'canvasSettings.pill_sample': '21. Nov. 2026',
   'canvasSettings.pill_reset': 'Zurücksetzen',
+  'assign.match_orientation': 'Nur Bilder, die zum Canvas passen',
+  'assign.match_orientation_hint': 'Bei einem Hochformat-Canvas werden nur Hochformat-Bilder gewählt, bei einem Querformat-Canvas nur Querformat-Bilder. Quadratische passen zu beiden. Passt keines, werden alle verwendet.',
 };

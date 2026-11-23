@@ -625,4 +625,6 @@ export const it: Catalogue = {
   'canvasSettings.pill_opacity': 'Opacità',
   'canvasSettings.pill_sample': '21 nov 2026',
   'canvasSettings.pill_reset': 'Ripristina',
+  'assign.match_orientation': 'Solo foto adatte al Canvas',
+  'assign.match_orientation_hint': 'Su un Canvas verticale si scelgono solo foto verticali, su uno orizzontale solo foto orizzontali. Quelle quadrate vanno bene per entrambi. Se nessuna è adatta, si usano tutte.',
 };

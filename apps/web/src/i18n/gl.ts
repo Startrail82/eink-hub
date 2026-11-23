@@ -625,4 +625,6 @@ export const gl: Catalogue = {
   'canvasSettings.pill_opacity': 'Opacidade',
   'canvasSettings.pill_sample': '21 nov 2026',
   'canvasSettings.pill_reset': 'Restablecer',
+  'assign.match_orientation': 'Só fotos que encaixen co Canvas',
+  'assign.match_orientation_hint': 'Nun Canvas vertical só se escollen fotos verticais, e nun horizontal só fotos horizontais. As cadradas serven para ambos. Se ningunha encaixa, úsanse todas.',
 };

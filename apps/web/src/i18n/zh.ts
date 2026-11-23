@@ -625,4 +625,6 @@ export const zh: Catalogue = {
   'canvasSettings.pill_opacity': '不透明度',
   'canvasSettings.pill_sample': '2026年11月21日',
   'canvasSettings.pill_reset': '重置',
+  'assign.match_orientation': '仅使用适合 Canvas 的照片',
+  'assign.match_orientation_hint': '竖向 Canvas 只选竖向照片，横向 Canvas 只选横向照片。方形照片两者都适用。如果没有合适的，则使用全部照片。',
 };

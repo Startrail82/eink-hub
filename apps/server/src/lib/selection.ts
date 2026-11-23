@@ -4,6 +4,18 @@ export interface Candidate {
   id: number;
   position: number;
   takenAt: number | null;
+  width?: number | null;
+  height?: number | null;
+}
+
+/**
+ * Pictures whose shape suits the way the frame hangs: upright ones for a portrait frame, wide ones
+ * for a landscape frame. Square ones suit both; ones of unknown size are kept. When nothing fits,
+ * every picture is kept, so a frame never stops changing because of the filter.
+ */
+export function matchOrientation<T extends Candidate>(cands: T[], orientation: 'portrait' | 'landscape'): T[] {
+  const fits = cands.filter((c) => !c.width || !c.height || (orientation === 'portrait' ? c.height >= c.width : c.width >= c.height));
+  return fits.length ? fits : cands;
 }
 
 /**

@@ -625,4 +625,6 @@ export const ca: Catalogue = {
   'canvasSettings.pill_opacity': 'Opacitat',
   'canvasSettings.pill_sample': '21 nov 2026',
   'canvasSettings.pill_reset': 'Restableix',
+  'assign.match_orientation': 'Només fotos que s\'adaptin al Canvas',
+  'assign.match_orientation_hint': 'En un Canvas vertical només es trien fotos verticals, i en un d\'horitzontal només fotos horitzontals. Les quadrades valen per als dos. Si no n\'hi ha cap que encaixi, s\'usen totes.',
 };

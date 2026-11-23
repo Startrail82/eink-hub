@@ -625,4 +625,6 @@ export const ko: Catalogue = {
   'canvasSettings.pill_opacity': '불투명도',
   'canvasSettings.pill_sample': '2026년 11월 21일',
   'canvasSettings.pill_reset': '초기화',
+  'assign.match_orientation': 'Canvas에 맞는 사진만 사용',
+  'assign.match_orientation_hint': '세로형 Canvas에서는 세로 사진만, 가로형 Canvas에서는 가로 사진만 고릅니다. 정사각형은 둘 다에 맞습니다. 맞는 사진이 없으면 모두 사용합니다.',
 };

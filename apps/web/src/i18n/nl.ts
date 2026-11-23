@@ -625,4 +625,6 @@ export const nl: Catalogue = {
   'canvasSettings.pill_opacity': 'Dekking',
   'canvasSettings.pill_sample': '21 nov 2026',
   'canvasSettings.pill_reset': 'Standaard',
+  'assign.match_orientation': 'Alleen foto\'s die bij het Canvas passen',
+  'assign.match_orientation_hint': 'Op een staand Canvas worden alleen staande foto\'s gekozen, op een liggend Canvas alleen liggende. Vierkante passen bij beide. Past er geen enkele, dan worden ze allemaal gebruikt.',
 };

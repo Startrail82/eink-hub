@@ -625,4 +625,6 @@ export const pt: Catalogue = {
   'canvasSettings.pill_opacity': 'Opacidade',
   'canvasSettings.pill_sample': '21 nov 2026',
   'canvasSettings.pill_reset': 'Repor',
+  'assign.match_orientation': 'Só fotos que combinem com o Canvas',
+  'assign.match_orientation_hint': 'Num Canvas vertical só se escolhem fotos verticais, e num horizontal só fotos horizontais. As quadradas servem para ambos. Se nenhuma servir, usam-se todas.',
 };

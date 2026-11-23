@@ -641,4 +641,6 @@ export const cs: Catalogue = {
   'canvasSettings.pill_opacity': 'Krytí',
   'canvasSettings.pill_sample': '21. 11. 2026',
   'canvasSettings.pill_reset': 'Obnovit',
+  'assign.match_orientation': 'Jen fotky vhodné pro Canvas',
+  'assign.match_orientation_hint': 'Na Canvasu na výšku se vybírají jen fotky na výšku, na Canvasu na šířku jen fotky na šířku. Čtvercové se hodí pro oba. Pokud žádná nevyhovuje, použijí se všechny.',
 };

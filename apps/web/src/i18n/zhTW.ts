@@ -625,4 +625,6 @@ export const zhTW: Catalogue = {
   'canvasSettings.pill_opacity': '不透明度',
   'canvasSettings.pill_sample': '2026年11月21日',
   'canvasSettings.pill_reset': '重設',
+  'assign.match_orientation': '僅使用適合 Canvas 的照片',
+  'assign.match_orientation_hint': '直式 Canvas 只選直式照片，橫式 Canvas 只選橫式照片。方形照片兩者皆適用。如果沒有合適的，則使用全部照片。',
 };

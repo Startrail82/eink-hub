@@ -625,4 +625,6 @@ export const en: Messages = {
   'canvasSettings.pill_opacity': 'Opacity',
   'canvasSettings.pill_sample': '21 Nov 2026',
   'canvasSettings.pill_reset': 'Reset',
+  'assign.match_orientation': 'Only pictures that suit the Canvas',
+  'assign.match_orientation_hint': 'On a portrait Canvas only upright pictures are chosen, on a landscape Canvas only wide ones. Square ones suit both. If none fit, all pictures are used.',
 };

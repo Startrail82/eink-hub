@@ -625,4 +625,6 @@ export const eu: Messages = {
   'canvasSettings.pill_opacity': 'Opakotasuna',
   'canvasSettings.pill_sample': '2026ko ira. 21',
   'canvasSettings.pill_reset': 'Berrezarri',
+  'assign.match_orientation': 'Canvasari egokitzen zaizkion argazkiak soilik',
+  'assign.match_orientation_hint': 'Canvas bertikal batean argazki bertikalak bakarrik hautatzen dira, eta horizontal batean horizontalak. Karratuak biei egokitzen zaizkie. Bat ere egokitzen ez bada, guztiak erabiltzen dira.',
 };

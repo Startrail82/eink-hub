@@ -14,7 +14,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { isDue } from './schedule.js';
-import { pickFresh, pickNext } from './selection.js';
+import { matchOrientation, pickFresh, pickNext } from './selection.js';
 import { recordBattery } from './stats.js';
 import { withWake } from './wake.js';
 
@@ -91,7 +91,7 @@ export function assignmentOptions(db: DB, a?: Assignment): DisplayOptions {
 /** Pick the next image of the frame's assigned collection, avoiding recent repeats. */
 export function chooseNextImage(db: DB, frame: Frame, a: Assignment): number | null {
   const cands = db
-    .select({ id: schema.images.id, position: schema.collectionItems.position, takenAt: schema.images.takenAt })
+    .select({ id: schema.images.id, position: schema.collectionItems.position, takenAt: schema.images.takenAt, width: schema.images.width, height: schema.images.height })
     .from(schema.collectionItems)
     .innerJoin(schema.images, eq(schema.images.id, schema.collectionItems.imageId))
     .where(eq(schema.collectionItems.collectionId, a.collectionId))
@@ -105,7 +105,8 @@ export function chooseNextImage(db: DB, frame: Frame, a: Assignment): number | n
     .all()
     .map((r) => r.imageId);
   const ai = db.select({ type: schema.collections.type }).from(schema.collections).where(eq(schema.collections.id, a.collectionId)).get()?.type === 'ai';
-  return ai ? pickFresh(cands, recent) : pickNext(cands, recent, a.orderMode);
+  const pool = a.matchOrientation ? matchOrientation(cands, frame.orientation) : cands;
+  return ai ? pickFresh(pool, recent) : pickNext(pool, recent, a.orderMode);
 }
 
 /** Put a picture on screen now (frame must be awake, or behind a cloud that queues it). */

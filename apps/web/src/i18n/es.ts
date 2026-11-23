@@ -624,6 +624,8 @@ export const es = {
   'canvasSettings.pill_opacity': 'Opacidad',
   'canvasSettings.pill_sample': '21 nov 2026',
   'canvasSettings.pill_reset': 'Restablecer',
+  'assign.match_orientation': 'Solo fotos que encajen con el Canvas',
+  'assign.match_orientation_hint': 'Con un Canvas vertical solo se eligen fotos verticales, y con uno horizontal solo fotos horizontales. Las cuadradas valen para ambos. Si no hay ninguna que encaje, se usan todas.',
 };
 
 export type Messages = Record<keyof typeof es, string>;

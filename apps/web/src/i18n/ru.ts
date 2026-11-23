@@ -641,4 +641,6 @@ export const ru: Catalogue = {
   'canvasSettings.pill_opacity': 'Непрозрачность',
   'canvasSettings.pill_sample': '21 нояб. 2026',
   'canvasSettings.pill_reset': 'Сбросить',
+  'assign.match_orientation': 'Только подходящие по формату фото',
+  'assign.match_orientation_hint': 'На вертикальном Canvas выбираются только вертикальные фото, на горизонтальном только горизонтальные. Квадратные подходят для обоих. Если ни одно не подходит, используются все.',
 };

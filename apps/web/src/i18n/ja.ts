@@ -625,4 +625,6 @@ export const ja: Catalogue = {
   'canvasSettings.pill_opacity': '不透明度',
   'canvasSettings.pill_sample': '2026年11月21日',
   'canvasSettings.pill_reset': 'リセット',
+  'assign.match_orientation': 'Canvas に合う写真だけを使う',
+  'assign.match_orientation_hint': '縦向きの Canvas では縦向きの写真だけ、横向きの Canvas では横向きの写真だけを選びます。正方形はどちらにも使えます。合う写真がなければすべてを使います。',
 };
