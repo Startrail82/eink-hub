@@ -175,6 +175,7 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
     showDate?: boolean;
     showLocation?: (typeof locationModes)[number];
     hideHomeCountry?: boolean;
+    matchOrientation?: boolean;
     enabled?: boolean;
   }
 
@@ -221,6 +222,7 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
       // Clients that predate the location options leave them out: keep what was set.
       showLocation: locationModes.includes(b.showLocation!) ? b.showLocation! : (prev?.showLocation ?? 'off'),
       hideHomeCountry: typeof b.hideHomeCountry === 'boolean' ? b.hideHomeCountry : (prev?.hideHomeCountry ?? false),
+      matchOrientation: b.matchOrientation === true,
       enabled,
     };
     const assignment = prev

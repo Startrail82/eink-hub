@@ -566,6 +566,8 @@ export const es = {
   'week.none': 'Este Canvas no tiene programaciones activas.',
   'plan.add': 'Añadir programación',
   'plan.warn_close': 'Ojo: otra programación de este Canvas cambia a las {time}, a solo {minutes} min.',
+  'assign.match_orientation': 'Solo fotos que encajen con el Canvas',
+  'assign.match_orientation_hint': 'Con un Canvas vertical solo se eligen fotos verticales, y con uno horizontal solo fotos horizontales. Las cuadradas valen para ambos. Si no hay ninguna que encaje, se usan todas.',
 };
 
 export type Messages = Record<keyof typeof es, string>;

@@ -567,4 +567,6 @@ export const pt: Catalogue = {
   'week.none': 'Este Canvas não tem programações ativas.',
   'plan.add': 'Adicionar programação',
   'plan.warn_close': 'Atenção: outra programação deste Canvas muda às {time}, a apenas {minutes} min.',
+  'assign.match_orientation': 'Só fotos que combinem com o Canvas',
+  'assign.match_orientation_hint': 'Num Canvas vertical só se escolhem fotos verticais, e num horizontal só fotos horizontais. As quadradas servem para ambos. Se nenhuma servir, usam-se todas.',
 };

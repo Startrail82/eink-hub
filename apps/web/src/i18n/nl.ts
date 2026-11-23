@@ -567,4 +567,6 @@ export const nl: Catalogue = {
   'week.none': 'Dit Canvas heeft geen actieve planningen.',
   'plan.add': 'Planning toevoegen',
   'plan.warn_close': 'Let op: een andere planning van dit Canvas wisselt om {time}, slechts {minutes} min verschil.',
+  'assign.match_orientation': 'Alleen foto\'s die bij het Canvas passen',
+  'assign.match_orientation_hint': 'Op een staand Canvas worden alleen staande foto\'s gekozen, op een liggend Canvas alleen liggende. Vierkante passen bij beide. Past er geen enkele, dan worden ze allemaal gebruikt.',
 };

@@ -567,4 +567,6 @@ export const ca: Catalogue = {
   'week.none': 'Aquest Canvas no té programacions actives.',
   'plan.add': 'Afegeix programació',
   'plan.warn_close': 'Atenció: una altra programació d\'aquest Canvas canvia a les {time}, a només {minutes} min.',
+  'assign.match_orientation': 'Només fotos que s\'adaptin al Canvas',
+  'assign.match_orientation_hint': 'En un Canvas vertical només es trien fotos verticals, i en un d\'horitzontal només fotos horitzontals. Les quadrades valen per als dos. Si no n\'hi ha cap que encaixi, s\'usen totes.',
 };

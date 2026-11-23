@@ -34,6 +34,8 @@ export interface Assignment {
   showDate: boolean;
   showLocation: LocationMode;
   hideHomeCountry: boolean;
+  /** Only pick pictures that suit the way the Canvas hangs. */
+  matchOrientation: boolean;
   enabled: boolean;
   lastChange: number | null;
 }

@@ -567,4 +567,6 @@ export const zhTW: Catalogue = {
   'week.none': '此 Canvas 沒有啟用的排程。',
   'plan.add': '新增排程',
   'plan.warn_close': '注意：此 Canvas 的另一個排程在 {time} 切換，僅相差 {minutes} 分鐘。',
+  'assign.match_orientation': '僅使用適合 Canvas 的照片',
+  'assign.match_orientation_hint': '直式 Canvas 只選直式照片，橫式 Canvas 只選橫式照片。方形照片兩者皆適用。如果沒有合適的，則使用全部照片。',
 };

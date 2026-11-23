@@ -567,4 +567,6 @@ export const gl: Catalogue = {
   'week.none': 'Este Canvas non ten programacións activas.',
   'plan.add': 'Engadir programación',
   'plan.warn_close': 'Ollo: outra programación deste Canvas cambia ás {time}, a só {minutes} min.',
+  'assign.match_orientation': 'Só fotos que encaixen co Canvas',
+  'assign.match_orientation_hint': 'Nun Canvas vertical só se escollen fotos verticais, e nun horizontal só fotos horizontais. As cadradas serven para ambos. Se ningunha encaixa, úsanse todas.',
 };

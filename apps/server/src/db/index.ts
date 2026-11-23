@@ -239,6 +239,10 @@ export const migrations: string[] = [
   ALTER TABLE assignments_new RENAME TO assignments;
   CREATE INDEX assignments_frame ON assignments(frame_id);
   `,
+  // v14: a schedule can be limited to pictures that suit the way the Canvas hangs.
+  `
+  ALTER TABLE assignments ADD COLUMN match_orientation INTEGER NOT NULL DEFAULT 0;
+  `,
 ];
 
 function migrate(sqlite: Database.Database) {

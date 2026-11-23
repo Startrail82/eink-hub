@@ -78,6 +78,7 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
   const [showDate, setShowDate] = useState(a?.showDate ?? false);
   const [showLocation, setShowLocation] = useState<LocationMode>(a?.showLocation ?? 'off');
   const [hideHome, setHideHome] = useState(a?.hideHomeCountry ?? false);
+  const [matchOrientation, setMatchOrientation] = useState(a?.matchOrientation ?? false);
   const [enabled, setEnabled] = useState(a?.enabled ?? true);
 
   const collection = collections.data?.find((c) => c.id === collectionId);
@@ -105,6 +106,7 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
         showDate,
         showLocation,
         hideHomeCountry: hideHome,
+        matchOrientation,
         enabled,
       };
       return a
@@ -215,6 +217,7 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
           />
 
           <div className="space-y-4 rounded-2xl bg-surface-2 p-4">
+            <Toggle label={t('assign.match_orientation')} hint={t('assign.match_orientation_hint')} checked={matchOrientation} onChange={setMatchOrientation} />
             {hourly && (
               <div>
                 <Toggle label={t('assign.window')} hint={t('assign.window_hint')} checked={windowOn} onChange={setWindowOn} />

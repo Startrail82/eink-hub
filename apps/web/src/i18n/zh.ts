@@ -567,4 +567,6 @@ export const zh: Catalogue = {
   'week.none': '此 Canvas 没有启用的计划。',
   'plan.add': '添加计划',
   'plan.warn_close': '注意：此 Canvas 的另一个计划在 {time} 切换，仅相差 {minutes} 分钟。',
+  'assign.match_orientation': '仅使用适合 Canvas 的照片',
+  'assign.match_orientation_hint': '竖向 Canvas 只选竖向照片，横向 Canvas 只选横向照片。方形照片两者都适用。如果没有合适的，则使用全部照片。',
 };

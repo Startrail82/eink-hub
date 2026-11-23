@@ -567,4 +567,6 @@ export const eu: Messages = {
   'week.none': 'Canvas honek ez du programazio aktiborik.',
   'plan.add': 'Gehitu programazioa',
   'plan.warn_close': 'Kontuz: Canvas honen beste programazio batek {time}etan aldatzen du, {minutes} min besterik gabe.',
+  'assign.match_orientation': 'Canvasari egokitzen zaizkion argazkiak soilik',
+  'assign.match_orientation_hint': 'Canvas bertikal batean argazki bertikalak bakarrik hautatzen dira, eta horizontal batean horizontalak. Karratuak biei egokitzen zaizkie. Bat ere egokitzen ez bada, guztiak erabiltzen dira.',
 };
