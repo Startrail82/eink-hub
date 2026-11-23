@@ -49,7 +49,7 @@ Use **Generate now** in the collection to make a first picture and check the res
 
 ### Weather bar
 
-For a weather collection you can switch on **Weather bar**. The picture then gets a small translucent label at the bottom right with today's lowest and highest temperature and the chance of rain (for example `↓ 8°  ↑ 13°  💧 60%`), taken from Open-Meteo for the coordinates you entered. If the date is shown too and the two would overlap, the weather label moves just above it. When the forecast can't be fetched, the picture is shown without the bar. The label is translucent on purpose; on a colour e-ink panel the see-through edge can look slightly grainy.
+For a weather collection you can switch on **Weather bar**. The picture then gets a small translucent label at the bottom right with today's lowest and highest temperature and the chance of rain on the first line (for example `↓ 8°  ↑ 13°  💧 60%`) and the weather type below it, as a small icon and a word in the hub's language (sunny, partly cloudy, cloudy, fog, drizzle, rain, snow or thunderstorm). The numbers and the weather type come from Open-Meteo for the coordinates you entered. If the date is shown too and the two would overlap, the weather label moves just above it. When the forecast can't be fetched, the picture is shown without the bar. The label is translucent on purpose; on a colour e-ink panel the see-through edge can look slightly grainy.
 
 ## 3. Show it on a Canvas
 

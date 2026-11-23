@@ -1,3 +1,4 @@
+import { skyIcon, type Sky } from './sky.js';
 import sharp, { type OverlayOptions, type Sharp } from 'sharp';
 import type { FitMode } from '../db/schema.js';
 import type { ImageFormat } from '../device/drivers/types.js';
@@ -24,7 +25,7 @@ export interface RenderOptions {
   /** Text drawn in a label at the bottom-left, e.g. the photo's date. */
   caption?: string | null;
   /** Today's weather, drawn in a translucent label at the bottom-right. */
-  weather?: { min: number; max: number; rain: number | null } | null;
+  weather?: WeatherBar | null;
   quality?: number;
   /** Baseline JPEG unless the frame asks for something else. */
   format?: ImageFormat;
@@ -155,43 +156,67 @@ const textLabel = (text: string, size: number) =>
     .png()
     .toBuffer({ resolveWithObject: true });
 
+/** What the weather bar shows: the numbers, and optionally the sky with its word in the hub's language. */
+export interface WeatherBar {
+  min: number;
+  max: number;
+  rain: number | null;
+  sky?: Sky | null;
+  label?: string | null;
+}
+
 /**
- * Today's low, high and chance of rain in a label at the bottom-right, like the caption but
- * translucent so the picture shows through. The drop is drawn, not a font symbol: the umbrella
- * is missing from most fonts. When the caption is in the way, the label goes above it.
+ * Today's weather in a label at the bottom-right, like the caption but translucent so the picture
+ * shows through: low, high and chance of rain on the first line, the sky (icon and word) below it.
+ * The drop and the icon are drawn, not font symbols: most fonts lack them. When the caption is in
+ * the way, the label goes above it.
  */
-async function addWeatherBar(img: Buffer, wx: { min: number; max: number; rain: number | null }, w: number, h: number, caption: Box | null): Promise<Buffer> {
+async function addWeatherBar(img: Buffer, wx: WeatherBar, w: number, h: number, caption: Box | null): Promise<Buffer> {
   const size = Math.max(14, Math.round(Math.min(w, h) * 0.032));
   const temps = await textLabel(`\u2193 ${wx.min}\u00b0   \u2191 ${wx.max}\u00b0`, size);
   const rain = wx.rain === null ? null : await textLabel(`${wx.rain}%`, size);
+  const word = wx.sky && wx.label ? await textLabel(wx.label, size) : null;
   const padX = Math.round(size * 0.75);
   const padY = Math.round(size * 0.45);
   const margin = Math.round(Math.min(w, h) * 0.04);
   const dropH = Math.round(size * 0.95);
   const dropW = Math.round(dropH * 0.72);
+  const iconPx = Math.round(size * 1.35);
   const gap = Math.round(size * 0.9);
   const gapSmall = Math.round(size * 0.3);
-  const inner = temps.info.width + (rain ? gap + dropW + gapSmall + rain.info.width : 0);
-  const pillW = Math.min(w - 2 * margin, inner + 2 * padX);
-  const pillH = Math.max(temps.info.height, rain?.info.height ?? 0) + 2 * padY;
+  const lineGap = Math.round(size * 0.25);
+  const row1 = temps.info.width + (rain ? gap + dropW + gapSmall + rain.info.width : 0);
+  const row1H = Math.max(temps.info.height, rain?.info.height ?? 0);
+  const row2 = word ? iconPx + gapSmall + word.info.width : 0;
+  const row2H = word ? Math.max(iconPx, word.info.height) : 0;
+  const pillW = Math.min(w - 2 * margin, Math.max(row1, row2) + 2 * padX);
+  const pillH = row1H + (word ? lineGap + row2H : 0) + 2 * padY;
   const left = w - margin - pillW;
   const gapAbove = Math.round(margin / 2);
   const clash = caption && caption.left + caption.width + gapAbove > left;
   const top = clash ? caption.top - gapAbove - pillH : h - margin - pillH;
+  const rx = Math.min(pillH / 2, Math.round(size * 1.1));
   const pill = Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${pillW}" height="${pillH}"><rect width="${pillW}" height="${pillH}" rx="${pillH / 2}" fill="#ffffff" fill-opacity="0.72"/></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${pillW}" height="${pillH}"><rect width="${pillW}" height="${pillH}" rx="${rx}" fill="#ffffff" fill-opacity="0.72"/></svg>`,
   );
+  const x0 = left + padX;
+  const y1 = top + padY;
   const layers: OverlayOptions[] = [
     { input: pill, left, top },
-    { input: temps.data, left: left + padX, top: top + Math.round((pillH - temps.info.height) / 2) },
+    { input: temps.data, left: x0, top: y1 + Math.round((row1H - temps.info.height) / 2) },
   ];
   if (rain) {
-    const dropLeft = left + padX + temps.info.width + gap;
+    const dropLeft = x0 + temps.info.width + gap;
     const drop = Buffer.from(
       `<svg xmlns="http://www.w3.org/2000/svg" width="${dropW}" height="${dropH}" viewBox="0 0 10 14"><path d="M5 0C5 0 0 6 0 9a5 5 0 0 0 10 0C10 6 5 0 5 0Z" fill="#1d1c1a"/></svg>`,
     );
-    layers.push({ input: drop, left: dropLeft, top: top + Math.round((pillH - dropH) / 2) });
-    layers.push({ input: rain.data, left: dropLeft + dropW + gapSmall, top: top + Math.round((pillH - rain.info.height) / 2) });
+    layers.push({ input: drop, left: dropLeft, top: y1 + Math.round((row1H - dropH) / 2) });
+    layers.push({ input: rain.data, left: dropLeft + dropW + gapSmall, top: y1 + Math.round((row1H - rain.info.height) / 2) });
+  }
+  if (word && wx.sky) {
+    const y2 = y1 + row1H + lineGap;
+    layers.push({ input: skyIcon(wx.sky, iconPx), left: x0, top: y2 + Math.round((row2H - iconPx) / 2) });
+    layers.push({ input: word.data, left: x0 + iconPx + gapSmall, top: y2 + Math.round((row2H - word.info.height) / 2) });
   }
   return sharp(img).composite(layers).toBuffer();
 }

@@ -1,3 +1,4 @@
+import { skyOf, type Sky } from '../../imaging/sky.js';
 import { AiError } from './providers.js';
 
 export type PromptVars = Record<string, string>;
@@ -224,6 +225,8 @@ export interface DayForecast {
   max: number;
   /** Percent; null when the service has no probability for this place. */
   rain: number | null;
+  /** Today's sky, for the icon and word in the bar; null when the code is unknown. */
+  sky: Sky | null;
 }
 
 const forecastCache = new Map<string, { at: number; value: DayForecast }>();
@@ -236,7 +239,7 @@ export async function fetchDayForecast(latitude: number, longitude: number, now 
   const q = new URLSearchParams({
     latitude: String(latitude),
     longitude: String(longitude),
-    daily: 'temperature_2m_max,temperature_2m_min,precipitation_probability_max',
+    daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max',
     timezone: 'auto',
     forecast_days: '1',
   });
@@ -245,11 +248,12 @@ export async function fetchDayForecast(latitude: number, longitude: number, now 
   return value;
 }
 
-export function parseDayForecast(raw: { daily?: { temperature_2m_max?: number[]; temperature_2m_min?: number[]; precipitation_probability_max?: (number | null)[] } }): DayForecast {
+export function parseDayForecast(raw: { daily?: { weather_code?: number[]; temperature_2m_max?: number[]; temperature_2m_min?: number[]; precipitation_probability_max?: (number | null)[] } }): DayForecast {
   const d = raw.daily;
   const max = d?.temperature_2m_max?.[0];
   const min = d?.temperature_2m_min?.[0];
   if (typeof max !== 'number' || typeof min !== 'number') throw new AiError('Open-Meteo returned no forecast');
   const rain = d?.precipitation_probability_max?.[0];
-  return { min: Math.round(min), max: Math.round(max), rain: typeof rain === 'number' ? Math.round(rain) : null };
+  // `|| 0` turns a rounded -0 into 0.
+  return { min: Math.round(min) || 0, max: Math.round(max) || 0, rain: typeof rain === 'number' ? Math.round(rain) : null, sky: skyOf(d?.weather_code?.[0]) };
 }
