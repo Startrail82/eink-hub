@@ -598,6 +598,7 @@ export const ru: Catalogue = {
   'schedule.close_warning': '«{name}» меняет фото этого Canvas в {time}, всего через {gap}.',
   'canvasSettings.pill_title': 'Плашка с датой',
   'canvasSettings.pill_hint': 'Цвета и непрозрачность плашки с датой (и местом) на картинках этого Canvas. По умолчанию она белая и непрозрачная; полупрозрачная плашка может выглядеть зернистой на цветном e-ink.',
+  'canvasSettings.pill_weather': 'Панель погоды на погодных изображениях ИИ использует те же цвета.',
   'canvasSettings.pill_bg': 'Фон',
   'canvasSettings.pill_text': 'Текст',
   'canvasSettings.pill_opacity': 'Непрозрачность',
@@ -654,4 +655,6 @@ export const ru: Catalogue = {
   'ai.panel': 'Тип рамки',
   'ai.panel_hint': 'Изображения создаются для этого типа экрана и этой ориентации.',
   'ai.mismatch': 'Эта коллекция создаёт изображения для {made}, но эта рамка — {frame}. Изображения будут обрезаны или масштабированы.',
+  'ai.weather_bar': 'Полоса погоды на картинке',
+  'ai.weather_bar_hint': 'Рисует справа внизу сегодняшний минимум, максимум и вероятность дождя в тех же цветах, что и плашка с датой.',
 };

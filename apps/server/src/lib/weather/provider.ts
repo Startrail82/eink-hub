@@ -13,6 +13,10 @@ export interface WeatherSnapshot {
   low: number | null;
   /** Wind speed in km/h, when the provider has it. */
   wind: number | null;
+  /** Chance of rain today in percent, or null when the provider has none. */
+  rain: number | null;
+  /** WMO code that stands for today as a whole (the sky in the weather bar), or null when unknown. */
+  dayCode: number | null;
   /** Whether it is day at the location right now. */
   isDay: boolean;
   /** Local time at the location, "YYYY-MM-DDTHH:MM" (no time zone suffix). */

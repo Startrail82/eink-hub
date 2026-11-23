@@ -582,6 +582,7 @@ export const gl: Catalogue = {
   'schedule.close_warning': '«{name}» cambia a foto deste Canvas ás {time}, a só {gap}.',
   'canvasSettings.pill_title': 'Etiqueta de data',
   'canvasSettings.pill_hint': 'Cores e opacidade da etiqueta coa data (e o lugar) que se debuxa sobre as imaxes deste Canvas. Por defecto é branca e opaca; unha etiqueta translúcida pode verse granulada en e-ink en cor.',
+  'canvasSettings.pill_weather': 'A barra do tempo das imaxes de IA usa as mesmas cores.',
   'canvasSettings.pill_bg': 'Fondo',
   'canvasSettings.pill_text': 'Texto',
   'canvasSettings.pill_opacity': 'Opacidade',
@@ -638,4 +639,6 @@ export const gl: Catalogue = {
   'ai.panel': 'Tipo de marco',
   'ai.panel_hint': 'As imaxes xéranse para este tipo de pantalla e esta orientación.',
   'ai.mismatch': 'Esta colección crea imaxes para {made}, pero este marco é {frame}. As imaxes recortaranse ou escalaranse.',
+  'ai.weather_bar': 'Barra do tempo na imaxe',
+  'ai.weather_bar_hint': 'Debuxa abaixo á dereita a mínima, a máxima e a probabilidade de choiva de hoxe, coas mesmas cores que a etiqueta da data.',
 };

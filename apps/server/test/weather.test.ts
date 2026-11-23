@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import sharp from 'sharp';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 // The data directory is read when config loads, so it has to be set before the imports run.
@@ -9,10 +10,14 @@ const dataDir = vi.hoisted(() => {
 });
 
 import { ensureDirs } from '../src/config.js';
-import { openDb } from '../src/db/index.js';
+import { openDb, schema } from '../src/db/index.js';
+import { renderForFrame } from '../src/imaging/pipeline.js';
+import { skyLabel, skyOf } from '../src/imaging/sky.js';
+import { assignmentOptions } from '../src/lib/display.js';
 import { buildPrompt, collectionConfig, validateCollectionConfig } from '../src/lib/ai/generate.js';
 import { AiError } from '../src/lib/ai/providers.js';
 import { weatherCondition, weatherLook, weatherVars } from '../src/lib/weather/describe.js';
+import { dayForecast, fetchDayForecast } from '../src/lib/weather/forecast.js';
 import { fetchWeatherVars, saveWeatherConfig, weatherConfig, weatherProviders, type WeatherProvider, type WeatherSnapshot } from '../src/lib/weather/index.js';
 import { snapshotFromOpenMeteo } from '../src/lib/weather/openmeteo.js';
 
@@ -24,6 +29,8 @@ const snap = (time: string, code = 0, over: Partial<WeatherSnapshot> = {}): Weat
   high: 7,
   low: 1,
   wind: 3,
+  rain: 20,
+  dayCode: code,
   isDay: true,
   time: `2026-11-21T${time}`,
   sunrise: '2026-11-21T07:58',
@@ -87,12 +94,12 @@ describe('Open-Meteo', () => {
     expect(
       snapshotFromOpenMeteo({
         current: { time: '2026-11-21T12:00', temperature_2m: 12.4, weather_code: 3, is_day: 0, wind_speed_10m: 20.2 },
-        daily: { temperature_2m_max: [15.6], temperature_2m_min: [8], sunrise: ['2026-11-21T07:58'], sunset: ['2026-11-21T16:38'] },
+        daily: { weather_code: [61], precipitation_probability_max: [40], temperature_2m_max: [15.6], temperature_2m_min: [8], sunrise: ['2026-11-21T07:58'], sunset: ['2026-11-21T16:38'] },
       }),
-    ).toEqual({ code: 3, temperature: 12.4, high: 15.6, low: 8, wind: 20.2, isDay: false, time: '2026-11-21T12:00', sunrise: '2026-11-21T07:58', sunset: '2026-11-21T16:38' });
+    ).toEqual({ code: 3, temperature: 12.4, high: 15.6, low: 8, wind: 20.2, rain: 40, dayCode: 61, isDay: false, time: '2026-11-21T12:00', sunrise: '2026-11-21T07:58', sunset: '2026-11-21T16:38' });
   });
   it('copes with a missing daily part', () => {
-    expect(snapshotFromOpenMeteo({ current: { temperature_2m: 1, weather_code: 0 } })).toMatchObject({ high: null, low: null, wind: null, sunrise: null, isDay: true });
+    expect(snapshotFromOpenMeteo({ current: { temperature_2m: 1, weather_code: 0 } })).toMatchObject({ high: null, low: null, wind: null, rain: null, dayCode: null, sunrise: null, isDay: true });
   });
   it('refuses an answer without current weather', () => {
     expect(() => snapshotFromOpenMeteo({})).toThrow(AiError);
@@ -179,5 +186,97 @@ describe('weather collections', () => {
     expect(() => validateCollectionConfig({ ...base, source: 'weather' })).toThrow(AiError);
     expect(() => validateCollectionConfig({ ...base, source: 'weather', latitude: 51, longitude: 4 })).not.toThrow();
     expect(() => validateCollectionConfig({ ...base, source: 'weather', latitude: 95, longitude: 4 })).toThrow(AiError);
+  });
+});
+
+describe('weather bar', () => {
+  it('reads the day forecast from a snapshot and rounds it', () => {
+    expect(dayForecast(snap('12:00', 63, { high: 12.6, low: 3.4, rain: 64.4, dayCode: 3 }))).toEqual({ min: 3, max: 13, rain: 64, sky: 'cloudy' });
+    expect(dayForecast(snap('12:00', 63, { low: -2.6, high: 5, rain: null, dayCode: null }))).toEqual({ min: -3, max: 5, rain: null, sky: 'rain' });
+    expect(dayForecast(snap('12:00', 0, { low: -0.3 })).min).toBe(0); // not -0
+    expect(dayForecast(snap('12:00', 0, { low: null, high: null, temperature: 6.4 }))).toMatchObject({ min: 6, max: 6 });
+    expect([0, 2, 45, 53, 63, 81, 73, 95, 7].map(skyOf)).toEqual(['clear', 'partly', 'fog', 'drizzle', 'rain', 'rain', 'snow', 'thunder', null]);
+    expect(skyLabel('cloudy', 'nl')).toBe('Bewolkt');
+    expect(skyLabel('cloudy', 'xx' as never)).toBe('Cloudy');
+  });
+
+  it('asks the provider once per place for a while', async () => {
+    let calls = 0;
+    vi.stubGlobal('fetch', async () => {
+      calls++;
+      return new Response(
+        JSON.stringify({
+          current: { temperature_2m: 7, weather_code: 3 },
+          daily: { weather_code: [3], temperature_2m_max: [10], temperature_2m_min: [4], precipitation_probability_max: [30] },
+        }),
+      );
+    });
+    const cfg = { provider: 'open-meteo', apiKey: '' };
+    const t0 = Date.now();
+    expect(await fetchDayForecast(51.1, 4.4, cfg, t0)).toEqual({ min: 4, max: 10, rain: 30, sky: 'cloudy' });
+    await fetchDayForecast(51.1, 4.4, cfg, t0 + 60_000);
+    expect(calls).toBe(1);
+    await fetchDayForecast(51.1, 4.4, cfg, t0 + 20 * 60_000);
+    expect(calls).toBe(2);
+  });
+
+  const pixels = async (buf: Buffer) => {
+    const r = await sharp(buf).raw().toBuffer({ resolveWithObject: true });
+    return { info: r.info, px: (x: number, y: number) => [...r.data.subarray((y * r.info.width + x) * r.info.channels, (y * r.info.width + x) * r.info.channels + 3)] };
+  };
+  const base = { width: 600, height: 800, landscape: false, rotate: 0, fit: 'cover' as const, bg: '#ffffff', format: { type: 'png' as const } };
+  const picture = (colour: string) => sharp({ create: { width: 600, height: 800, channels: 3, background: colour } }).png().toBuffer();
+
+  it('draws a label at the bottom right without changing the picture size', async () => {
+    const src = await picture('#336699');
+    const a = await pixels(await renderForFrame(src, base));
+    const b = await pixels(await renderForFrame(src, { ...base, weather: { min: 3, max: 9, rain: 60 } }));
+    expect([b.info.width, b.info.height]).toEqual([600, 800]);
+    // Bottom-left stays as it was; bottom-right now has the label (white by default).
+    expect(b.px(40, 760)).toEqual(a.px(40, 760));
+    expect(b.px(568, 760)).toEqual([255, 255, 255]);
+    // With the sky the label gets a second line, so it is taller than without.
+    const c = await pixels(await renderForFrame(src, { ...base, weather: { min: 3, max: 9, rain: 60, sky: 'rain', label: 'Regen' } }));
+    expect(c.px(568, 720)).toEqual([255, 255, 255]);
+    expect(b.px(568, 720)).toEqual(a.px(568, 720));
+  });
+
+  it('uses the colours of the date label', async () => {
+    const src = await picture('#336699');
+    const weather = { min: 3, max: 9, rain: 60 };
+    const dark = await pixels(await renderForFrame(src, { ...base, weather, pill: { bg: '#000000', text: '#ffffff', opacity: 100 } }));
+    expect(dark.px(568, 760)).toEqual([0, 0, 0]);
+    const half = (await pixels(await renderForFrame(src, { ...base, weather, pill: { bg: '#000000', text: '#ffffff', opacity: 50 } }))).px(568, 760);
+    expect(half[2]).toBeGreaterThan(40); // the blue of the picture shows through
+    expect(half[2]).toBeLessThan(100);
+  });
+
+  it('picks automatic colours from the picture under the label', async () => {
+    const weather = { min: 3, max: 9, rain: 60 };
+    const auto = { bg: 'auto', text: '#1d1c1a', opacity: 100 };
+    const over = async (colour: string) => (await pixels(await renderForFrame(await picture(colour), { ...base, weather, pill: auto }))).px(568, 760);
+    expect((await over('#101010'))[0]).toBeGreaterThan(200); // a light label over a dark area
+    expect((await over('#f0f0f0'))[0]).toBeLessThan(60); // a dark one over a light area
+  });
+
+  it('moves above the date label when the two would meet', async () => {
+    const src = await picture('#336699');
+    const r = await pixels(await renderForFrame(src, { ...base, caption: '23 november 2026 · Antwerpen, België', weather: { min: 3, max: 9, rain: 60 } }));
+    expect(r.px(568, 760)).toEqual([51, 102, 153]); // the bottom-right corner is free, the label sits higher
+    expect(r.px(568, 722)).not.toEqual([51, 102, 153]);
+  });
+});
+
+describe('weather bar option', () => {
+  it('is only passed on for a weather collection that has it switched on', () => {
+    fs.mkdirSync(dataDir, { recursive: true });
+    const db = openDb(`${dataDir}/wbar.db`);
+    const add = (config: Record<string, unknown>) => db.insert(schema.collections).values({ name: 'W', type: 'ai', config, createdAt: Date.now() }).returning().get().id;
+    const assign = (collectionId: number) => ({ collectionId, fit: 'cover', bg: '#ffffff', showDate: false }) as never;
+    const place = { latitude: 51.2, longitude: 4.4 };
+    expect(assignmentOptions(db, assign(add({ source: 'weather', weatherBar: true, ...place })))).toMatchObject({ weatherBar: place });
+    expect(assignmentOptions(db, assign(add({ source: 'weather', weatherBar: false, ...place }))).weatherBar).toBeUndefined();
+    expect(assignmentOptions(db, assign(add({ source: 'prompt', weatherBar: true, ...place }))).weatherBar).toBeUndefined();
+    expect(assignmentOptions(db, assign(add({ source: 'weather', weatherBar: true }))).weatherBar).toBeUndefined();
   });
 });

@@ -582,6 +582,7 @@ export const zhTW: Catalogue = {
   'schedule.close_warning': '「{name}」在 {time} 切換此 Canvas 的照片，僅相差 {gap}。',
   'canvasSettings.pill_title': '日期標籤',
   'canvasSettings.pill_hint': '此 Canvas 圖片上繪製的日期（與地點）標籤的顏色與不透明度。預設為白色不透明；半透明標籤在彩色電子紙上可能顯得有顆粒感。',
+  'canvasSettings.pill_weather': 'AI 天氣圖片上的天氣欄使用相同的顏色。',
   'canvasSettings.pill_bg': '背景',
   'canvasSettings.pill_text': '文字',
   'canvasSettings.pill_opacity': '不透明度',
@@ -638,4 +639,6 @@ export const zhTW: Catalogue = {
   'ai.panel': '相框類型',
   'ai.panel_hint': '圖片將依此螢幕類型與方向產生。',
   'ai.mismatch': '此圖集依 {made} 產生圖片,但此相框為 {frame}。圖片將被裁切或縮放。',
+  'ai.weather_bar': '在圖片上顯示天氣列',
+  'ai.weather_bar_hint': '在右下角以與日期標籤相同的顏色繪製今天的最低溫、最高溫和降雨機率。',
 };

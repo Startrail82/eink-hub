@@ -582,6 +582,7 @@ export const ko: Catalogue = {
   'schedule.close_warning': '「{name}」이(가) 이 Canvas의 사진을 {time}에 바꿉니다. 불과 {gap} 차이입니다.',
   'canvasSettings.pill_title': '날짜 라벨',
   'canvasSettings.pill_hint': '이 Canvas의 이미지에 그려지는 날짜(및 장소) 라벨의 색과 불투명도입니다. 기본값은 흰색 불투명이며, 반투명 라벨은 컬러 e-ink에서 거칠게 보일 수 있습니다.',
+  'canvasSettings.pill_weather': 'AI 날씨 이미지의 날씨 바에도 같은 색이 사용됩니다.',
   'canvasSettings.pill_bg': '배경',
   'canvasSettings.pill_text': '글자',
   'canvasSettings.pill_opacity': '불투명도',
@@ -638,4 +639,6 @@ export const ko: Catalogue = {
   'ai.panel': '프레임 종류',
   'ai.panel_hint': '이미지는 이 화면 종류와 방향에 맞게 생성됩니다.',
   'ai.mismatch': '이 컬렉션은 {made}용 이미지를 만들지만, 이 프레임은 {frame}입니다. 이미지가 잘리거나 크기가 조정됩니다.',
+  'ai.weather_bar': '이미지에 날씨 막대 표시',
+  'ai.weather_bar_hint': '오른쪽 아래에 오늘의 최저·최고 기온과 강수 확률을 날짜 라벨과 같은 색으로 그립니다.',
 };

@@ -598,6 +598,7 @@ export const cs: Catalogue = {
   'schedule.close_warning': '„{name}“ mění obrázek tohoto Canvasu v {time}, jen {gap} od tohoto.',
   'canvasSettings.pill_title': 'Štítek s datem',
   'canvasSettings.pill_hint': 'Barvy a krytí štítku s datem (a místem), který se kreslí na obrázky tohoto Canvasu. Výchozí je bílý a nepropustný; průhledný štítek může na barevném e-inku působit zrnitě.',
+  'canvasSettings.pill_weather': 'Pruh s počasím na obrázcích počasí od AI používá stejné barvy.',
   'canvasSettings.pill_bg': 'Pozadí',
   'canvasSettings.pill_text': 'Text',
   'canvasSettings.pill_opacity': 'Krytí',
@@ -654,4 +655,6 @@ export const cs: Catalogue = {
   'ai.panel': 'Typ rámečku',
   'ai.panel_hint': 'Obrázky se vytvářejí pro tento typ displeje a tuto orientaci.',
   'ai.mismatch': 'Tato kolekce vytváří obrázky pro {made}, ale tento rámeček je {frame}. Obrázky budou oříznuty nebo zmenšeny.',
+  'ai.weather_bar': 'Pruh s počasím v obrázku',
+  'ai.weather_bar_hint': 'Vpravo dole nakreslí dnešní minimum, maximum a pravděpodobnost deště ve stejných barvách jako štítek s datem.',
 };

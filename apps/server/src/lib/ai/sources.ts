@@ -1,3 +1,4 @@
+import { skyOf, type Sky } from '../../imaging/sky.js';
 import { AiError } from './providers.js';
 
 export type PromptVars = Record<string, string>;

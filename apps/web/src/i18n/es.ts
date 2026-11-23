@@ -581,6 +581,7 @@ export const es = {
   'schedule.close_warning': '«{name}» cambia la foto de este Canvas a las {time}, a solo {gap}.',
   'canvasSettings.pill_title': 'Etiqueta de fecha',
   'canvasSettings.pill_hint': 'Colores y opacidad de la etiqueta con la fecha (y el lugar) que se dibuja sobre las imágenes de este Canvas. Por defecto es blanca y opaca; una etiqueta translúcida puede verse granulada en e-ink en color.',
+  'canvasSettings.pill_weather': 'La barra del tiempo de las imágenes de IA usa los mismos colores.',
   'canvasSettings.pill_bg': 'Fondo',
   'canvasSettings.pill_text': 'Texto',
   'canvasSettings.pill_opacity': 'Opacidad',
@@ -637,6 +638,8 @@ export const es = {
   'ai.panel': 'Tipo de marco',
   'ai.panel_hint': 'Las imágenes se generan para este tipo de pantalla y esta orientación.',
   'ai.mismatch': 'Esta colección crea imágenes para {made}, pero este marco es {frame}. Las imágenes se recortarán o escalarán.',
+  'ai.weather_bar': 'Barra del tiempo en la imagen',
+  'ai.weather_bar_hint': 'Dibuja abajo a la derecha la mínima, la máxima y la probabilidad de lluvia de hoy, con los mismos colores que la etiqueta de fecha.',
 };
 
 export type Messages = Record<keyof typeof es, string>;

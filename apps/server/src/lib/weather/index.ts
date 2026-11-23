@@ -3,7 +3,7 @@ import { AiError } from '../ai/providers.js';
 import type { PromptVars } from '../ai/sources.js';
 import { weatherVars } from './describe.js';
 import { openMeteo } from './openmeteo.js';
-import type { WeatherProvider } from './provider.js';
+import type { WeatherProvider, WeatherSnapshot } from './provider.js';
 
 export type { WeatherProvider, WeatherRequest, WeatherSnapshot } from './provider.js';
 
@@ -35,9 +35,14 @@ export function saveWeatherConfig(db: DB, c: Partial<WeatherConfig>) {
   if (c.apiKey !== undefined) setSetting(db, 'weather.apiKey', c.apiKey.trim());
 }
 
-/** The chosen provider's snapshot at a place, as prompt variables. */
-export async function fetchWeatherVars(latitude: number, longitude: number, cfg: WeatherConfig): Promise<PromptVars> {
+/** The chosen provider's snapshot at a place. */
+export async function fetchSnapshot(latitude: number, longitude: number, cfg: WeatherConfig): Promise<WeatherSnapshot> {
   const provider = weatherProviders.find((p) => p.id === cfg.provider) ?? openMeteo;
   if (provider.key === 'required' && !cfg.apiKey) throw new AiError(`${provider.name} needs an API key (Settings > Weather)`);
-  return weatherVars(await provider.fetch({ latitude, longitude, apiKey: cfg.apiKey }));
+  return provider.fetch({ latitude, longitude, apiKey: cfg.apiKey });
+}
+
+/** The chosen provider's snapshot at a place, as prompt variables. */
+export async function fetchWeatherVars(latitude: number, longitude: number, cfg: WeatherConfig): Promise<PromptVars> {
+  return weatherVars(await fetchSnapshot(latitude, longitude, cfg));
 }

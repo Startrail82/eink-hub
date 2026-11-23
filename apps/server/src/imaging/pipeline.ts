@@ -1,6 +1,7 @@
-import sharp, { type Sharp } from 'sharp';
+import sharp, { type OverlayOptions, type Sharp } from 'sharp';
 import exifReader from 'exif-reader';
 import { AUTO, DEFAULT_PILL, autoPill, type PillStyle } from './pill.js';
+import { skyIcon, type Sky } from './sky.js';
 import type { FitMode } from '../db/schema.js';
 import type { ImageFormat } from '../device/drivers/types.js';
 import { PALETTES, ditherToPalette, encodeBmp, indicesToRgb } from './dither.js';
@@ -25,7 +26,9 @@ export interface RenderOptions {
   crop?: CropRect | null;
   /** Text drawn in a label at the bottom-left, e.g. the photo's date. */
   caption?: string | null;
-  /** Colours and opacity of the date label. */
+  /** Today's weather, drawn in a label at the bottom-right. */
+  weather?: WeatherBar | null;
+  /** Colours and opacity of the date and weather labels. */
   pill?: PillStyle;
   quality?: number;
   /** Baseline JPEG unless the frame asks for something else. */
@@ -77,7 +80,10 @@ export async function renderForFrame(src: Buffer, o: RenderOptions): Promise<Buf
     composed = await sharp(oriented).resize(tw, th, { fit: 'cover', position: sharp.strategy.attention }).toBuffer();
   }
 
-  if (o.caption) composed = await addCaption(composed, o.caption, tw, th, o.pill ?? DEFAULT_PILL, !!o.format?.palette);
+  const plain = !!o.format?.palette;
+  let captionBox: Box | null = null;
+  if (o.caption) ({ img: composed, box: captionBox } = await addCaption(composed, o.caption, tw, th, o.pill ?? DEFAULT_PILL, plain));
+  if (o.weather) composed = await addWeatherBar(composed, o.weather, tw, th, captionBox, o.pill ?? DEFAULT_PILL, plain);
 
   let out = sharp(composed);
   if (o.landscape && o.rotate) out = out.rotate(o.rotate);
@@ -120,7 +126,14 @@ const escapeMarkup = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;
  * translucent ones turn into some noise. `plain`: the hub dithers to a palette, so an automatic
  * label stays white or black instead of a tint.
  */
-async function addCaption(img: Buffer, caption: string, w: number, h: number, style: PillStyle, plain = false): Promise<Buffer> {
+interface Box {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
+async function addCaption(img: Buffer, caption: string, w: number, h: number, style: PillStyle, plain = false): Promise<{ img: Buffer; box: Box }> {
   const textLabel = (size: number, colour: string) =>
     sharp({
       text: { text: `<span foreground="${colour}">${escapeMarkup(caption)}</span>`, font: `Inter,Arial,DejaVu Sans,Sans Semi-Bold ${size}`, dpi: 72, rgba: true },
@@ -161,12 +174,93 @@ async function addCaption(img: Buffer, caption: string, w: number, h: number, st
   const pill = Buffer.from(
     `<svg xmlns="http://www.w3.org/2000/svg" width="${pillW}" height="${pillH}"><rect width="${pillW}" height="${pillH}" rx="${pillH / 2}" fill="${bg}" fill-opacity="${style.opacity / 100}"/></svg>`,
   );
-  return sharp(img)
+  const out = await sharp(img)
     .composite([
       { input: pill, left: margin, top },
       { input: label.data, left: margin + padX, top: top + padY },
     ])
     .toBuffer();
+  return { img: out, box: { left: margin, top, width: pillW, height: pillH } };
+}
+
+const textLabel = (text: string, size: number, ink: string) =>
+  sharp({ text: { text: `<span foreground="${ink}">${escapeMarkup(text)}</span>`, font: `Inter,Arial,DejaVu Sans,Sans Semi-Bold ${size}`, dpi: 72, rgba: true } })
+    .png()
+    .toBuffer({ resolveWithObject: true });
+
+/** What the weather bar shows: the numbers, and optionally the sky with its word in the hub's language. */
+export interface WeatherBar {
+  min: number;
+  max: number;
+  rain: number | null;
+  sky?: Sky | null;
+  label?: string | null;
+}
+
+/**
+ * Today's weather in a label at the bottom-right, in the colours of the date label: low, high
+ * and chance of rain on the first line, the sky (icon and word) below it. The drop and the icon
+ * are drawn, not font symbols: most fonts lack them. When the caption is in the way, the label
+ * goes above it. With "auto" colours they come from the picture under this label.
+ */
+async function addWeatherBar(img: Buffer, wx: WeatherBar, w: number, h: number, caption: Box | null, style: PillStyle, plain = false): Promise<Buffer> {
+  const size = Math.max(14, Math.round(Math.min(w, h) * 0.032));
+  // The same text in another colour has the same size, so the layout is measured once.
+  const labels = async (ink: string) => ({
+    temps: await textLabel(`\u2193 ${wx.min}\u00b0   \u2191 ${wx.max}\u00b0`, size, ink),
+    rain: wx.rain === null ? null : await textLabel(`${wx.rain}%`, size, ink),
+    word: wx.sky && wx.label ? await textLabel(wx.label, size, ink) : null,
+  });
+  let { temps, rain, word } = await labels(style.bg === AUTO ? DEFAULT_PILL.text : style.text);
+  const padX = Math.round(size * 0.75);
+  const padY = Math.round(size * 0.45);
+  const margin = Math.round(Math.min(w, h) * 0.04);
+  const dropH = Math.round(size * 0.95);
+  const dropW = Math.round(dropH * 0.72);
+  const iconPx = Math.round(size * 1.35);
+  const gap = Math.round(size * 0.9);
+  const gapSmall = Math.round(size * 0.3);
+  const lineGap = Math.round(size * 0.25);
+  const row1 = temps.info.width + (rain ? gap + dropW + gapSmall + rain.info.width : 0);
+  const row1H = Math.max(temps.info.height, rain?.info.height ?? 0);
+  const row2 = word ? iconPx + gapSmall + word.info.width : 0;
+  const row2H = word ? Math.max(iconPx, word.info.height) : 0;
+  const pillW = Math.min(w - 2 * margin, Math.max(row1, row2) + 2 * padX);
+  const pillH = row1H + (word ? lineGap + row2H : 0) + 2 * padY;
+  const left = w - margin - pillW;
+  const gapAbove = Math.round(margin / 2);
+  const clash = caption && caption.left + caption.width + gapAbove > left;
+  const top = clash ? caption.top - gapAbove - pillH : h - margin - pillH;
+  let { bg, text } = style;
+  if (bg === AUTO) {
+    const { channels } = await sharp(img).extract({ left, top, width: pillW, height: pillH }).removeAlpha().stats();
+    ({ bg, text } = autoPill([channels[0].mean, channels[1].mean, channels[2].mean], plain));
+    ({ temps, rain, word } = await labels(text));
+  }
+  const rx = Math.min(pillH / 2, Math.round(size * 1.1));
+  const pill = Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${pillW}" height="${pillH}"><rect width="${pillW}" height="${pillH}" rx="${rx}" fill="${bg}" fill-opacity="${style.opacity / 100}"/></svg>`,
+  );
+  const x0 = left + padX;
+  const y1 = top + padY;
+  const layers: OverlayOptions[] = [
+    { input: pill, left, top },
+    { input: temps.data, left: x0, top: y1 + Math.round((row1H - temps.info.height) / 2) },
+  ];
+  if (rain) {
+    const dropLeft = x0 + temps.info.width + gap;
+    const drop = Buffer.from(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="${dropW}" height="${dropH}" viewBox="0 0 10 14"><path d="M5 0C5 0 0 6 0 9a5 5 0 0 0 10 0C10 6 5 0 5 0Z" fill="${text}"/></svg>`,
+    );
+    layers.push({ input: drop, left: dropLeft, top: y1 + Math.round((row1H - dropH) / 2) });
+    layers.push({ input: rain.data, left: dropLeft + dropW + gapSmall, top: y1 + Math.round((row1H - rain.info.height) / 2) });
+  }
+  if (word && wx.sky) {
+    const y2 = y1 + row1H + lineGap;
+    layers.push({ input: skyIcon(wx.sky, iconPx, text, bg), left: x0, top: y2 + Math.round((row2H - iconPx) / 2) });
+    layers.push({ input: word.data, left: x0 + iconPx + gapSmall, top: y2 + Math.round((row2H - word.info.height) / 2) });
+  }
+  return sharp(img).composite(layers).toBuffer();
 }
 
 /** Small JPEG thumbnail for the web UI. */

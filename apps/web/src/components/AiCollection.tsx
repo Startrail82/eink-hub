@@ -4,7 +4,7 @@ import { api, type AiCollectionConfig, type AiSource, type Collection } from '..
 import { useAction, useFrames } from '../lib/hooks';
 import { DEFAULT_PANEL, panelKey, panelOptions } from '../lib/panels';
 import { useI18n, type MsgKey } from '../i18n';
-import { Button, Field, Modal, Segmented, inputClass } from './ui';
+import { Button, Field, Modal, Segmented, Toggle, inputClass } from './ui';
 import { Select } from './Select';
 import { useAiSettings } from './AiSettings';
 
@@ -62,6 +62,7 @@ function configOf(c?: Collection): AiCollectionConfig {
   return {
     source: raw.source ?? 'prompt',
     prompt: raw.prompt ?? '',
+    weatherBar: raw.weatherBar === true,
     feedUrl: raw.feedUrl ?? '',
     latitude: raw.latitude ?? null,
     longitude: raw.longitude ?? null,
@@ -144,6 +145,9 @@ export function AiCollectionDialog({ open, onClose, collection, onCreated }: { o
             <div className="grid grid-cols-2 gap-3">
               <input className={inputClass} inputMode="decimal" aria-label={t('ai.latitude')} placeholder={t('ai.latitude')} value={lat} onChange={(e) => setLat(e.target.value)} />
               <input className={inputClass} inputMode="decimal" aria-label={t('ai.longitude')} placeholder={t('ai.longitude')} value={lon} onChange={(e) => setLon(e.target.value)} />
+            </div>
+            <div className="mt-3 rounded-2xl bg-surface-2 p-4">
+              <Toggle label={t('ai.weather_bar')} hint={t('ai.weather_bar_hint')} checked={cfg.weatherBar} onChange={(v) => set('weatherBar', v)} />
             </div>
           </Field>
         )}

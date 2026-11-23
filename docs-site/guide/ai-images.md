@@ -47,6 +47,10 @@ Choose the **Frame type** (screen) and **orientation** the pictures are made for
 
 Use **Generate now** in the collection to make a first picture and check the result. Failures (an unreachable service, a refused key) show up on the collection.
 
+### Weather bar
+
+For a weather collection you can switch on **Weather bar**. The picture then gets a small label at the bottom right with today's lowest and highest temperature and the chance of rain on the first line (for example `↓ 8°  ↑ 13°  💧 60%`) and the weather type below it, as a small icon and a word in the hub's language (sunny, partly cloudy, cloudy, fog, drizzle, rain, snow or thunderstorm). The numbers and the weather type come from the weather source in **Settings > Weather** (Open-Meteo by default) for the coordinates you entered. If the date is shown too and the two would overlap, the weather label moves just above it. When the forecast can't be fetched, the picture is shown without the bar. The label has the colours and opacity of the date label, set per Canvas on its page, including the automatic colours.
+
 ## 3. Show it on a Canvas
 
 Use the collection in a schedule like any other. Frames show the newest picture they have not displayed yet.

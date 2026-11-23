@@ -582,6 +582,7 @@ export const fr: Catalogue = {
   'schedule.close_warning': '« {name} » change l’image de ce Canvas à {time}, à seulement {gap}.',
   'canvasSettings.pill_title': 'Étiquette de date',
   'canvasSettings.pill_hint': 'Couleurs et opacité de l\'étiquette de date (et de lieu) dessinée sur les images de ce Canvas. Par défaut elle est blanche et opaque ; une étiquette translucide peut paraître granuleuse sur e-ink couleur.',
+  'canvasSettings.pill_weather': 'La barre météo des images météo IA utilise les mêmes couleurs.',
   'canvasSettings.pill_bg': 'Fond',
   'canvasSettings.pill_text': 'Texte',
   'canvasSettings.pill_opacity': 'Opacité',
@@ -638,4 +639,6 @@ export const fr: Catalogue = {
   'ai.panel': 'Type de cadre',
   'ai.panel_hint': 'Les images sont générées pour ce type d\'écran et cette orientation.',
   'ai.mismatch': 'Cette collection crée des images pour {made}, mais ce cadre est {frame}. Les images seront recadrées ou mises à l\'échelle.',
+  'ai.weather_bar': 'Barre météo sur l\'image',
+  'ai.weather_bar_hint': 'Dessine en bas à droite le minimum, le maximum et le risque de pluie du jour, dans les mêmes couleurs que l\'étiquette de date.',
 };

@@ -4,7 +4,14 @@ import type { WeatherProvider, WeatherSnapshot } from './provider.js';
 
 interface OpenMeteo {
   current?: { time?: string; temperature_2m?: number; weather_code?: number; is_day?: number; wind_speed_10m?: number };
-  daily?: { temperature_2m_max?: number[]; temperature_2m_min?: number[]; sunrise?: string[]; sunset?: string[] };
+  daily?: {
+    weather_code?: number[];
+    temperature_2m_max?: number[];
+    temperature_2m_min?: number[];
+    precipitation_probability_max?: (number | null)[];
+    sunrise?: string[];
+    sunset?: string[];
+  };
 }
 
 /** Open-Meteo's answer as a neutral snapshot. Its weather codes already are WMO codes. */
@@ -17,6 +24,8 @@ export function snapshotFromOpenMeteo(w: OpenMeteo): WeatherSnapshot {
     high: w.daily?.temperature_2m_max?.[0] ?? null,
     low: w.daily?.temperature_2m_min?.[0] ?? null,
     wind: c.wind_speed_10m ?? null,
+    rain: w.daily?.precipitation_probability_max?.[0] ?? null,
+    dayCode: w.daily?.weather_code?.[0] ?? null,
     isDay: c.is_day !== 0,
     time: c.time ?? '',
     sunrise: w.daily?.sunrise?.[0] ?? null,
@@ -34,7 +43,7 @@ export const openMeteo: WeatherProvider = {
       latitude: String(latitude),
       longitude: String(longitude),
       current: 'temperature_2m,weather_code,is_day,wind_speed_10m',
-      daily: 'temperature_2m_max,temperature_2m_min,sunrise,sunset',
+      daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset',
       timezone: 'auto',
       forecast_days: '1',
     });

@@ -582,6 +582,7 @@ export const it: Catalogue = {
   'schedule.close_warning': '«{name}» cambia l’immagine di questo Canvas alle {time}, a soli {gap}.',
   'canvasSettings.pill_title': 'Etichetta della data',
   'canvasSettings.pill_hint': 'Colori e opacità dell\'etichetta con la data (e il luogo) disegnata sulle immagini di questo Canvas. Di default è bianca e opaca; un\'etichetta traslucida può apparire granulosa su e-ink a colori.',
+  'canvasSettings.pill_weather': 'La barra meteo delle immagini meteo IA usa gli stessi colori.',
   'canvasSettings.pill_bg': 'Sfondo',
   'canvasSettings.pill_text': 'Testo',
   'canvasSettings.pill_opacity': 'Opacità',
@@ -638,4 +639,6 @@ export const it: Catalogue = {
   'ai.panel': 'Tipo di cornice',
   'ai.panel_hint': 'Le immagini vengono generate per questo tipo di schermo e questo orientamento.',
   'ai.mismatch': 'Questa raccolta crea immagini per {made}, ma questa cornice è {frame}. Le immagini verranno ritagliate o ridimensionate.',
+  'ai.weather_bar': 'Barra meteo sull\'immagine',
+  'ai.weather_bar_hint': 'Disegna in basso a destra la minima, la massima e la probabilità di pioggia di oggi, con gli stessi colori dell\'etichetta della data.',
 };

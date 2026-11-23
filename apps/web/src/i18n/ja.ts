@@ -582,6 +582,7 @@ export const ja: Catalogue = {
   'schedule.close_warning': '「{name}」がこのCanvasの写真を{time}に切り替えます（わずか{gap}差）。',
   'canvasSettings.pill_title': '日付ラベル',
   'canvasSettings.pill_hint': 'この Canvas の画像に描かれる日付（と場所）ラベルの色と不透明度。初期設定は白の不透明です。半透明にするとカラー e-ink ではざらついて見えることがあります。',
+  'canvasSettings.pill_weather': 'AIの天気画像の天気バーにも同じ色が使われます。',
   'canvasSettings.pill_bg': '背景',
   'canvasSettings.pill_text': '文字',
   'canvasSettings.pill_opacity': '不透明度',
@@ -638,4 +639,6 @@ export const ja: Catalogue = {
   'ai.panel': 'フレームの種類',
   'ai.panel_hint': '画像はこの画面タイプと向きに合わせて生成されます。',
   'ai.mismatch': 'このコレクションは {made} 向けの画像を作成しますが、このフレームは {frame} です。画像はトリミングまたは拡大縮小されます。',
+  'ai.weather_bar': '画像に天気バーを表示',
+  'ai.weather_bar_hint': '右下に今日の最低気温・最高気温・降水確率を、日付ラベルと同じ色で表示します。',
 };

@@ -582,6 +582,7 @@ export const de: Catalogue = {
   'schedule.close_warning': '„{name}“ wechselt das Bild dieses Canvas um {time}, nur {gap} entfernt.',
   'canvasSettings.pill_title': 'Datumsetikett',
   'canvasSettings.pill_hint': 'Farben und Deckkraft des Datums- (und Orts-)Etiketts auf den Bildern dieses Canvas. Standard ist weiß und deckend; ein durchscheinendes Etikett kann auf Farb-E-Ink körnig wirken.',
+  'canvasSettings.pill_weather': 'Die Wetterleiste auf KI-Wetterbildern verwendet dieselben Farben.',
   'canvasSettings.pill_bg': 'Hintergrund',
   'canvasSettings.pill_text': 'Text',
   'canvasSettings.pill_opacity': 'Deckkraft',
@@ -638,4 +639,6 @@ export const de: Catalogue = {
   'ai.panel': 'Rahmentyp',
   'ai.panel_hint': 'Bilder werden für diesen Bildschirmtyp und diese Ausrichtung erzeugt.',
   'ai.mismatch': 'Diese Sammlung erzeugt Bilder für {made}, dieser Rahmen ist jedoch {frame}. Die Bilder werden zugeschnitten oder skaliert.',
+  'ai.weather_bar': 'Wetterleiste im Bild',
+  'ai.weather_bar_hint': 'Zeichnet unten rechts das heutige Minimum, Maximum und die Regenwahrscheinlichkeit, in denselben Farben wie das Datumslabel.',
 };

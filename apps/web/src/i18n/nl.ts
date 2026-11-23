@@ -582,6 +582,7 @@ export const nl: Catalogue = {
   'schedule.close_warning': '‘{name}’ wisselt de foto van dit Canvas om {time}, slechts {gap} verschil.',
   'canvasSettings.pill_title': 'Datumlabel',
   'canvasSettings.pill_hint': 'Kleuren en dekking van het datum- (en plaats)label op de afbeeldingen van dit Canvas. Standaard is het wit en ondoorzichtig; een doorzichtig label kan er korrelig uitzien op kleuren-e-ink.',
+  'canvasSettings.pill_weather': 'De weerbalk op AI-weerbeelden gebruikt dezelfde kleuren.',
   'canvasSettings.pill_bg': 'Achtergrond',
   'canvasSettings.pill_text': 'Tekst',
   'canvasSettings.pill_opacity': 'Dekking',
@@ -638,4 +639,6 @@ export const nl: Catalogue = {
   'ai.panel': 'Frametype',
   'ai.panel_hint': 'Beelden worden gegenereerd voor dit schermtype en deze oriëntatie.',
   'ai.mismatch': 'Deze collectie maakt beelden voor {made}, maar dit frame is {frame}. De beelden worden bijgesneden of geschaald.',
+  'ai.weather_bar': 'Weerbalk op het beeld',
+  'ai.weather_bar_hint': 'Tekent rechtsonder de minimum- en maximumtemperatuur van vandaag en de kans op regen, in dezelfde kleuren als het datumlabel.',
 };

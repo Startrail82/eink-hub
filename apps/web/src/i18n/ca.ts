@@ -582,6 +582,7 @@ export const ca: Catalogue = {
   'schedule.close_warning': '«{name}» canvia la foto d’aquest Canvas a les {time}, a només {gap}.',
   'canvasSettings.pill_title': 'Etiqueta de data',
   'canvasSettings.pill_hint': 'Colors i opacitat de l\'etiqueta amb la data (i el lloc) que es dibuixa sobre les imatges d\'aquest Canvas. Per defecte és blanca i opaca; una etiqueta translúcida pot veure\'s granulada en e-ink en color.',
+  'canvasSettings.pill_weather': 'La barra del temps de les imatges d\'IA fa servir els mateixos colors.',
   'canvasSettings.pill_bg': 'Fons',
   'canvasSettings.pill_text': 'Text',
   'canvasSettings.pill_opacity': 'Opacitat',
@@ -638,4 +639,6 @@ export const ca: Catalogue = {
   'ai.panel': 'Tipus de marc',
   'ai.panel_hint': 'Les imatges es generen per a aquest tipus de pantalla i aquesta orientació.',
   'ai.mismatch': 'Aquesta col·lecció crea imatges per a {made}, però aquest marc és {frame}. Les imatges es retallaran o s\'escalaran.',
+  'ai.weather_bar': 'Barra del temps a la imatge',
+  'ai.weather_bar_hint': 'Dibuixa a baix a la dreta la mínima, la màxima i la probabilitat de pluja d\'avui, amb els mateixos colors que l\'etiqueta de data.',
 };

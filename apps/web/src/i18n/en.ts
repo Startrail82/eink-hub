@@ -582,6 +582,7 @@ export const en: Messages = {
   'schedule.close_warning': '"{name}" changes this Canvas’s picture at {time}, only {gap} apart.',
   'canvasSettings.pill_title': 'Date label',
   'canvasSettings.pill_hint': 'Colours and opacity of the date (and place) label drawn on this Canvas\'s pictures. By default it is white and solid; a see-through label can look grainy on colour e-ink.',
+  'canvasSettings.pill_weather': 'The weather bar of AI weather pictures uses the same colours.',
   'canvasSettings.pill_bg': 'Background',
   'canvasSettings.pill_text': 'Text',
   'canvasSettings.pill_opacity': 'Opacity',
@@ -638,4 +639,6 @@ export const en: Messages = {
   'ai.panel': 'Frame type',
   'ai.panel_hint': 'Pictures are generated for this screen type and orientation.',
   'ai.mismatch': 'This collection makes pictures for {made}, but this canvas is {frame}. The pictures will be cropped or scaled.',
+  'ai.weather_bar': 'Weather bar on the picture',
+  'ai.weather_bar_hint': 'Draws today\'s low, high and chance of rain at the bottom right, in the same colours as the date label.',
 };

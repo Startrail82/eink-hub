@@ -582,6 +582,7 @@ export const pt: Catalogue = {
   'schedule.close_warning': '«{name}» muda a foto deste Canvas às {time}, a apenas {gap}.',
   'canvasSettings.pill_title': 'Etiqueta de data',
   'canvasSettings.pill_hint': 'Cores e opacidade da etiqueta com a data (e o local) desenhada nas imagens deste Canvas. Por defeito é branca e opaca; uma etiqueta translúcida pode ficar granulada em e-ink a cores.',
+  'canvasSettings.pill_weather': 'A barra meteorológica das imagens de IA usa as mesmas cores.',
   'canvasSettings.pill_bg': 'Fundo',
   'canvasSettings.pill_text': 'Texto',
   'canvasSettings.pill_opacity': 'Opacidade',
@@ -638,4 +639,6 @@ export const pt: Catalogue = {
   'ai.panel': 'Tipo de moldura',
   'ai.panel_hint': 'As imagens são geradas para este tipo de ecrã e esta orientação.',
   'ai.mismatch': 'Esta coleção cria imagens para {made}, mas esta moldura é {frame}. As imagens serão cortadas ou redimensionadas.',
+  'ai.weather_bar': 'Barra do tempo na imagem',
+  'ai.weather_bar_hint': 'Desenha em baixo à direita a mínima, a máxima e a probabilidade de chuva de hoje, com as mesmas cores da etiqueta da data.',
 };

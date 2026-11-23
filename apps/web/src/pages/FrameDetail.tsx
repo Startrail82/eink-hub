@@ -548,7 +548,7 @@ function PillSettings({ frame }: { frame: Frame }) {
   return (
     <div className="border-t border-line pt-6">
       <h4 className="mb-1 font-bold">{t('canvasSettings.pill_title')}</h4>
-      <p className="mb-4 text-xs text-muted">{t('canvasSettings.pill_hint')}</p>
+      <p className="mb-4 text-xs text-muted">{t('canvasSettings.pill_hint')} {t('canvasSettings.pill_weather')}</p>
       <div className="mb-4">
         <Toggle label={t('canvasSettings.pill_auto')} hint={t('canvasSettings.pill_auto_hint')} checked={auto} onChange={setAuto} />
       </div>

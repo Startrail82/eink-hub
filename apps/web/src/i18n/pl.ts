@@ -598,6 +598,7 @@ export const pl: Catalogue = {
   'schedule.close_warning': '„{name}” zmienia zdjęcie tego Canvasa o {time}, zaledwie {gap} różnicy.',
   'canvasSettings.pill_title': 'Etykieta daty',
   'canvasSettings.pill_hint': 'Kolory i krycie etykiety z datą (i miejscem) rysowanej na obrazach tego Canvasa. Domyślnie jest biała i nieprzezroczysta; półprzezroczysta etykieta może wyglądać ziarniście na kolorowym e-ink.',
+  'canvasSettings.pill_weather': 'Pasek pogody na obrazach pogodowych AI używa tych samych kolorów.',
   'canvasSettings.pill_bg': 'Tło',
   'canvasSettings.pill_text': 'Tekst',
   'canvasSettings.pill_opacity': 'Krycie',
@@ -654,4 +655,6 @@ export const pl: Catalogue = {
   'ai.panel': 'Typ ramki',
   'ai.panel_hint': 'Obrazy są generowane dla tego typu ekranu i tej orientacji.',
   'ai.mismatch': 'Ta kolekcja tworzy obrazy dla {made}, ale ta ramka to {frame}. Obrazy zostaną przycięte lub przeskalowane.',
+  'ai.weather_bar': 'Pasek pogody na obrazie',
+  'ai.weather_bar_hint': 'Rysuje w prawym dolnym rogu dzisiejsze minimum, maksimum i szansę na deszcz w tych samych kolorach co etykieta z datą.',
 };

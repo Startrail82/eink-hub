@@ -11,6 +11,9 @@ import { assetSize, type ImmichAsset } from '../immich/client.js';
 import { isDefaultPill, resolvePill } from '../imaging/pill.js';
 import { aspectKey, formatExt, probeImage, renderForFrame, thumbnail, type CropRect } from '../imaging/pipeline.js';
 import { renderTarget } from '../device/drivers/index.js';
+import { fetchDayForecast } from './weather/forecast.js';
+import { weatherConfig } from './weather/index.js';
+import { skyLabel } from '../imaging/sky.js';
 import { HttpError, immichFor, type Ctx } from './context.js';
 import { reverseGeocode } from './geo.js';
 import { homeCountry } from './location.js';
@@ -355,6 +358,9 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
   const needLocation = !!opts.showLocation && opts.showLocation !== 'off';
   if (opts.showDate || needLocation) img = await withCaptionDetails(ctx, img, { date: opts.showDate, location: needLocation });
   const landscape = frame.orientation === 'landscape';
+  const forecast = opts.weatherBar ? await fetchDayForecast(opts.weatherBar.latitude, opts.weatherBar.longitude, weatherConfig(ctx.db)).catch((err) => (ctx.log.warn({ err }, 'weather bar: no forecast, picture shown without it'), null)) : null;
+  // The word is in the hub's language, so it is part of the render's identity.
+  const weather = forecast ? { ...forecast, label: forecast.sky ? skyLabel(forecast.sky, hubLang(ctx.db)) : null } : null;
   const crop = opts.crop !== undefined ? opts.crop : getCrop(ctx.db, img.id, frameAspect(frame));
   const target = renderTarget(frame);
   const ext = formatExt(target.format);
@@ -377,6 +383,8 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
       hideHomeCountry: opts.hideHomeCountry,
       homeCountry: homeCountry(ctx.db, frame),
     }),
+    // Only when present, so existing renders keep their hash.
+    ...(weather ? { weather } : {}),
     // Only when not the default, so existing JPEG renders keep their hash.
     ...(ext === 'jpg' && !target.format.palette ? {} : { format: target.format }),
   } as const;
@@ -400,6 +408,7 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
     crop: params.crop,
     caption: params.caption,
     pill,
+    weather,
     format: target.format,
   });
   await fs.writeFile(file, buf);
