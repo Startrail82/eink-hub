@@ -557,4 +557,6 @@ export const en: Messages = {
   'week.none': 'This Canvas has no active schedules.',
   'plan.add': 'Add schedule',
   'plan.warn_close': 'Note: another schedule of this Canvas changes at {time}, only {minutes} min apart.',
+  'assign.match_orientation': 'Only pictures that suit the Canvas',
+  'assign.match_orientation_hint': 'On a portrait Canvas only upright pictures are chosen, on a landscape Canvas only wide ones. Square ones suit both. If none fit, all pictures are used.',
 };

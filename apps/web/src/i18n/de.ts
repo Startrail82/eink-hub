@@ -557,4 +557,6 @@ export const de: Catalogue = {
   'week.none': 'Dieses Canvas hat keine aktiven Zeitpläne.',
   'plan.add': 'Zeitplan hinzufügen',
   'plan.warn_close': 'Achtung: Ein anderer Zeitplan dieses Canvas wechselt um {time}, nur {minutes} Min. entfernt.',
+  'assign.match_orientation': 'Nur Bilder, die zum Canvas passen',
+  'assign.match_orientation_hint': 'Bei einem Hochformat-Canvas werden nur Hochformat-Bilder gewählt, bei einem Querformat-Canvas nur Querformat-Bilder. Quadratische passen zu beiden. Passt keines, werden alle verwendet.',
 };

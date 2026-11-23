@@ -30,6 +30,8 @@ export interface Assignment {
   fit: FitMode;
   bg: string;
   showDate: boolean;
+  /** Only pick pictures that suit the way the Canvas hangs. */
+  matchOrientation: boolean;
   enabled: boolean;
   lastChange: number | null;
 }

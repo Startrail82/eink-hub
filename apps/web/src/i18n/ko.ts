@@ -557,4 +557,6 @@ export const ko: Catalogue = {
   'week.none': '이 Canvas에는 활성 일정이 없습니다.',
   'plan.add': '일정 추가',
   'plan.warn_close': '주의: 이 Canvas의 다른 일정이 {time}에 바뀝니다. 불과 {minutes}분 차이입니다.',
+  'assign.match_orientation': 'Canvas에 맞는 사진만 사용',
+  'assign.match_orientation_hint': '세로형 Canvas에서는 세로 사진만, 가로형 Canvas에서는 가로 사진만 고릅니다. 정사각형은 둘 다에 맞습니다. 맞는 사진이 없으면 모두 사용합니다.',
 };

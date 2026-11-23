@@ -159,6 +159,8 @@ export const assignments = sqliteTable('assignments', {
   fit: text('fit', { enum: fitModes }).notNull().default('cover'),
   bg: text('bg').notNull().default('#ffffff'),
   showDate: integer('show_date', { mode: 'boolean' }).notNull().default(false),
+  /** Only pick pictures that suit the Canvas: upright ones for a portrait Canvas, wide ones for a landscape one. */
+  matchOrientation: integer('match_orientation', { mode: 'boolean' }).notNull().default(false),
   enabled: integer('enabled', { mode: 'boolean' }).notNull().default(true),
   lastChange: integer('last_change'),
 });

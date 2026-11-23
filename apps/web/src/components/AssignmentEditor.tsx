@@ -34,6 +34,7 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
   const [fit, setFit] = useState<FitMode>(a?.fit ?? 'cover');
   const [bg, setBg] = useState(a?.bg ?? '#ffffff');
   const [showDate, setShowDate] = useState(a?.showDate ?? false);
+  const [matchOrientation, setMatchOrientation] = useState(a?.matchOrientation ?? false);
   const [enabled, setEnabled] = useState(a?.enabled ?? true);
 
   const collection = collections.data?.find((c) => c.id === collectionId);
@@ -59,6 +60,7 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
         fit,
         bg,
         showDate,
+        matchOrientation,
         enabled,
       };
       return a
@@ -163,6 +165,7 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
               label={t('assign.show_date')}
               hint={t(isMemories ? 'assign.show_date_hint_memories' : 'assign.show_date_hint')}
               checked={showDate} onChange={setShowDate} />
+            <Toggle label={t('assign.match_orientation')} hint={t('assign.match_orientation_hint')} checked={matchOrientation} onChange={setMatchOrientation} />
             {hourly && (
               <div>
                 <Toggle label={t('assign.window')} hint={t('assign.window_hint')} checked={windowOn} onChange={setWindowOn} />

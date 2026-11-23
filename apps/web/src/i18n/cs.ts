@@ -573,4 +573,6 @@ export const cs: Catalogue = {
   'week.none': 'Tento Canvas nemá žádné aktivní plány.',
   'plan.add': 'Přidat plán',
   'plan.warn_close': 'Pozor: další plán tohoto Canvasu se mění v {time}, jen {minutes} min od tohoto.',
+  'assign.match_orientation': 'Jen fotky vhodné pro Canvas',
+  'assign.match_orientation_hint': 'Na Canvasu na výšku se vybírají jen fotky na výšku, na Canvasu na šířku jen fotky na šířku. Čtvercové se hodí pro oba. Pokud žádná nevyhovuje, použijí se všechny.',
 };

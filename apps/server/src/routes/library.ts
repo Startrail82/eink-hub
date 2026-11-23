@@ -173,6 +173,7 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
     fit?: (typeof fitModes)[number];
     bg?: string;
     showDate?: boolean;
+    matchOrientation?: boolean;
     enabled?: boolean;
   }
 
@@ -216,6 +217,7 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
       fit: fitModes.includes(b.fit!) ? b.fit! : ('cover' as const),
       bg: /^#[0-9a-f]{6}$/i.test(b.bg ?? '') ? b.bg! : '#ffffff',
       showDate: b.showDate ?? isMemories,
+      matchOrientation: b.matchOrientation === true,
       enabled,
     };
     const assignment = prev

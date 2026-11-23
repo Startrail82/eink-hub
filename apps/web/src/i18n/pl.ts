@@ -573,4 +573,6 @@ export const pl: Catalogue = {
   'week.none': 'Ten Canvas nie ma aktywnych harmonogramów.',
   'plan.add': 'Dodaj harmonogram',
   'plan.warn_close': 'Uwaga: inny harmonogram tego Canvasa zmienia się o {time}, zaledwie {minutes} min różnicy.',
+  'assign.match_orientation': 'Tylko zdjęcia pasujące do Canvasa',
+  'assign.match_orientation_hint': 'Na pionowym Canvasie wybierane są tylko zdjęcia pionowe, na poziomym tylko poziome. Kwadratowe pasują do obu. Jeśli żadne nie pasuje, używane są wszystkie.',
 };
