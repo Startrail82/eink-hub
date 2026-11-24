@@ -67,6 +67,9 @@ export function TestPill() {
   );
 }
 
+/** Starts the text with a capital, so it reads as a sentence of its own. */
+const sentence = (s: string) => s.charAt(0).toLocaleUpperCase() + s.slice(1);
+
 function FrameCard({ frame }: { frame: Frame }) {
   const { t } = useI18n();
   const collections = useCollections();
@@ -76,21 +79,21 @@ function FrameCard({ frame }: { frame: Frame }) {
       <div className="rounded-[32px] bg-surface-2/60 px-8 pt-10 pb-6 transition group-hover:bg-surface-2">
         <FrameMockup frame={frame} className="mx-auto max-w-[220px] transition group-hover:-translate-y-1" />
       </div>
-      <div className="mt-4 flex items-start justify-between gap-3 px-1">
-        <div className="min-w-0">
-          <h3 className="truncate text-[17px] font-bold">{frame.name}</h3>
-          <p className="text-[13px] text-muted">
-            <span className="break-words">{col ? col.name : t('canvas.no_schedule')}</span>
-            {frame.mode === 'pull' && frame.nextWake ? <span className="whitespace-nowrap">{` · ${t('canvas.next_wake_short', { when: relativeTime(frame.nextWake) })}`}</span> : null}
-          </p>
+      <div className="mt-4 px-1">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="min-w-0 truncate text-[17px] font-bold">{frame.name}</h3>
+          <div className="flex shrink-0 flex-col items-end gap-1.5">
+            <span className="flex gap-1">
+              {frame.simulated ? <TestPill /> : <KindPill kind={frame.kind} />}
+              <FrameStatus frame={frame} />
+            </span>
+            <Battery value={frame.battery} />
+          </div>
         </div>
-        <div className="flex shrink-0 flex-col items-end gap-1.5">
-          <span className="flex gap-1">
-            {frame.simulated ? <TestPill /> : <KindPill kind={frame.kind} />}
-            <FrameStatus frame={frame} />
-          </span>
-          <Battery value={frame.battery} />
-        </div>
+        <p className="mt-0.5 break-words text-[13px] text-muted">{col ? col.name : t('canvas.no_schedule')}</p>
+        {frame.mode === 'pull' && frame.nextWake ? (
+          <p className="text-[13px] text-muted">{sentence(t('canvas.next_wake_short', { when: relativeTime(frame.nextWake) }))}</p>
+        ) : null}
       </div>
     </Link>
   );
