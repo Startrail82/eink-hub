@@ -88,7 +88,7 @@ export function reverseGeocode(latitude: number, longitude: number): { city: str
   return { city: p.names[best], country: p.countries.get(p.countryCodes[best]) ?? '' };
 }
 
-/** Every country name in the list, sorted: the home country picker when Immich isn't there. */
-export function allCountries(): string[] {
-  return [...new Set(load().countries.values())].sort((a, b) => a.localeCompare(b));
+/** Every country in the list (ISO code and English name, as Immich names it), sorted by name. */
+export function allCountries(): { code: string; name: string }[] {
+  return [...load().countries].map(([code, name]) => ({ code, name })).sort((a, b) => a.name.localeCompare(b.name));
 }

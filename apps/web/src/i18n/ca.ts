@@ -234,6 +234,8 @@ export const ca: Catalogue = {
   'settings.home_country_hint': 'Serveix per ometre el país al lloc de les fotos.',
   'settings.home_country_hint_type': 'Serveix per ometre el país al lloc de les fotos. Escriu-lo tal com el mostra Immich, normalment en anglès (per exemple Belgium).',
   'settings.home_country_none': 'Cap',
+  'settings.home_country_search': 'Cerca el teu país…',
+  'settings.home_country_no_match': 'Cap país coincideix',
   'assign.remove': 'Elimina la programació',
   'assign.pick_collection': 'Tria una col·lecció',
   'assign.confirm_remove': 'Vols eliminar la programació de «{name}»? La col·lecció i les seves fotos no s’esborren.',

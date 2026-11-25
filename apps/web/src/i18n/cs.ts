@@ -242,6 +242,8 @@ export const cs: Catalogue = {
   'settings.home_country_hint': 'Slouží k vynechání země v místě fotky.',
   'settings.home_country_hint_type': 'Slouží k vynechání země v místě fotky. Zadejte ji tak, jak ji zobrazuje Immich, obvykle anglicky (například Belgium).',
   'settings.home_country_none': 'Žádná',
+  'settings.home_country_search': 'Vyhledejte svou zemi…',
+  'settings.home_country_no_match': 'Žádná země neodpovídá',
   'assign.remove': 'Odstranit plán',
   'assign.pick_collection': 'Vyberte kolekci',
   'assign.confirm_remove': 'Odstranit plán z „{name}“? Kolekce a její fotky zůstanou.',

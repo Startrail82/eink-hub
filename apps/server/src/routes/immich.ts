@@ -56,16 +56,18 @@ export function immichRoutes(app: FastifyInstance, ctx: Ctx) {
    * (or Immich at all). Immich's own names are added in case one is spelled differently.
    */
   app.get('/api/countries', async () => {
-    const names = new Set(allCountries());
+    // The code lets the UI show each name in the user's language; the name is what is stored.
+    const list: { code?: string; name: string }[] = allCountries();
     const { url, apiKey } = immichConfig(db);
     if (url && apiKey) {
       try {
-        for (const c of await immichFor(db).countries()) names.add(c);
+        const known = new Set(list.map((c) => c.name));
+        for (const name of await immichFor(db).countries()) if (!known.has(name)) list.push({ name });
       } catch (err) {
         ctx.log.debug({ err }, 'immich countries failed');
       }
     }
-    return [...names].sort((a, b) => a.localeCompare(b));
+    return list.sort((a, b) => a.name.localeCompare(b.name));
   });
 
   app.get<{ Params: { id: string } }>('/api/immich/people/:id/thumbnail', async (req, reply) =>

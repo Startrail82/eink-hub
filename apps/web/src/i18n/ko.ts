@@ -234,6 +234,8 @@ export const ko: Catalogue = {
   'settings.home_country_hint': '사진 장소에서 국가를 생략하는 데 사용합니다.',
   'settings.home_country_hint_type': '사진 장소에서 국가를 생략하는 데 사용합니다. Immich에 표시되는 대로, 보통 영어로 입력하세요(예: Belgium).',
   'settings.home_country_none': '없음',
+  'settings.home_country_search': '국가 검색…',
+  'settings.home_country_no_match': '일치하는 국가가 없습니다',
   'assign.remove': '일정 제거',
   'assign.pick_collection': '컬렉션 선택',
   'assign.confirm_remove': '‘{name}’의 일정을 제거할까요? 컬렉션과 사진은 그대로 유지됩니다.',

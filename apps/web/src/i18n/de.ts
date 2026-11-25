@@ -234,6 +234,8 @@ export const de: Catalogue = {
   'settings.home_country_hint': 'Wird genutzt, um das Land beim Ort der Fotos wegzulassen.',
   'settings.home_country_hint_type': 'Wird genutzt, um das Land beim Ort der Fotos wegzulassen. Gib es so ein, wie Immich es anzeigt, meist auf Englisch (zum Beispiel Belgium).',
   'settings.home_country_none': 'Keins',
+  'settings.home_country_search': 'Suche dein Land…',
+  'settings.home_country_no_match': 'Kein Land gefunden',
   'assign.remove': 'Zeitplan entfernen',
   'assign.pick_collection': 'Sammlung wählen',
   'assign.confirm_remove': 'Zeitplan von „{name}“ entfernen? Die Sammlung und ihre Fotos bleiben erhalten.',

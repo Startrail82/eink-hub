@@ -144,11 +144,11 @@ describe('looking up a missing location', () => {
   });
   it('lists every country for the home country picker, with or without photos from it', async () => {
     const { app } = await buildApp(db, { logger: false });
-    const list: string[] = (await app.inject({ url: '/api/countries' })).json();
+    const list: { code?: string; name: string }[] = (await app.inject({ url: '/api/countries' })).json();
     // Every country, including ones with no photos yet, without duplicates.
     expect(list.length).toBeGreaterThan(200);
-    expect(list).toEqual(expect.arrayContaining(['Belgium', 'Italy', 'Spain', 'Namibia']));
-    expect(list.filter((c) => c === 'Italy')).toHaveLength(1);
+    expect(list).toEqual(expect.arrayContaining([{ code: 'BE', name: 'Belgium' }, { code: 'ES', name: 'Spain' }, { code: 'NA', name: 'Namibia' }]));
+    expect(list.filter((c) => c.name === 'Italy')).toHaveLength(1);
     await app.close();
   });
   it('fills in the date of a photo imported by bare id when the caption needs it', async () => {
@@ -208,7 +208,7 @@ describe('offline places for uploads', () => {
   it('lists every country for the picker without Immich', () => {
     const all = allCountries();
     expect(all.length).toBeGreaterThan(200);
-    expect(all).toEqual(expect.arrayContaining(['Spain', 'Italy', 'Czechia', 'United States']));
+    expect(all).toEqual(expect.arrayContaining([{ code: 'ES', name: 'Spain' }, { code: 'IT', name: 'Italy' }, { code: 'CZ', name: 'Czechia' }, { code: 'US', name: 'United States' }]));
   });
   it('reads the original capture date, not the last edit, and the GPS', async () => {
     const meta = await sharp(await photo()).metadata();

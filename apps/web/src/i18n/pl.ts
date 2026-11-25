@@ -242,6 +242,8 @@ export const pl: Catalogue = {
   'settings.home_country_hint': 'Służy do pomijania kraju w miejscu zdjęcia.',
   'settings.home_country_hint_type': 'Służy do pomijania kraju w miejscu zdjęcia. Wpisz go tak, jak pokazuje go Immich, zwykle po angielsku (na przykład Belgium).',
   'settings.home_country_none': 'Brak',
+  'settings.home_country_search': 'Wyszukaj swój kraj…',
+  'settings.home_country_no_match': 'Brak pasującego kraju',
   'assign.remove': 'Usuń harmonogram',
   'assign.pick_collection': 'Wybierz kolekcję',
   'assign.confirm_remove': 'Usunąć harmonogram z „{name}”? Kolekcja i jej zdjęcia zostaną zachowane.',

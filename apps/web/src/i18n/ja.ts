@@ -234,6 +234,8 @@ export const ja: Catalogue = {
   'settings.home_country_hint': '写真の場所から国名を省くために使います。',
   'settings.home_country_hint_type': '写真の場所から国名を省くために使います。Immich での表記のとおり、通常は英語で入力してください（例: Belgium）。',
   'settings.home_country_none': 'なし',
+  'settings.home_country_search': '国を検索…',
+  'settings.home_country_no_match': '一致する国はありません',
   'assign.remove': 'スケジュールを削除',
   'assign.pick_collection': 'コレクションを選択',
   'assign.confirm_remove': '「{name}」のスケジュールを削除しますか？コレクションと写真は残ります。',
