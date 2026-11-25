@@ -225,29 +225,33 @@ export function photoCaption(
 }
 
 /** How long to wait before asking Immich again after a failed or unsettled lookup. */
-export const LOCATION_RETRY_MS = 30 * 60_000;
-const locationRetryAt = new Map<string, number>();
+export const DETAILS_RETRY_MS = 30 * 60_000;
+const detailsRetryAt = new Map<string, number>();
 
 /**
- * Immich photos picked by id carry no location yet: ask Immich and remember the answer. A
- * failed or not-yet-geocoded lookup is retried at most every LOCATION_RETRY_MS, so renders
- * (cache hits included) don't wait on Immich every time.
+ * Immich photos picked by id (sent from the Immich page, manual collections) carry no date or
+ * location yet: when the caption needs them, ask Immich for the asset and store what it says.
+ * A failed lookup, or a place Immich has not geocoded yet, is retried at most every
+ * DETAILS_RETRY_MS, so renders (cache hits included) don't wait on Immich every time.
  */
-export async function withLocation(ctx: Ctx, img: Image, now = Date.now()): Promise<Image> {
-  if (img.source !== 'immich' || !img.immichAssetId || img.city !== null || img.country !== null) return img;
-  if ((locationRetryAt.get(img.immichAssetId) ?? 0) > now) return img;
+export async function withImmichDetails(
+  ctx: Ctx,
+  img: Image,
+  need: { date?: boolean; location?: boolean } = { location: true },
+  now = Date.now(),
+): Promise<Image> {
+  if (img.source !== 'immich' || !img.immichAssetId) return img;
+  const missing = (i: Image) => (need.date && i.takenAt === null) || (need.location && i.city === null && i.country === null);
+  if (!missing(img) || (detailsRetryAt.get(img.immichAssetId) ?? 0) > now) return img;
   try {
-    const loc = locationFromExif((await immichFor(ctx.db).asset(img.immichAssetId)).exifInfo);
-    if (!loc) {
-      locationRetryAt.set(img.immichAssetId, now + LOCATION_RETRY_MS);
-      return img;
-    }
-    locationRetryAt.delete(img.immichAssetId);
-    ctx.db.update(schema.images).set(loc).where(eq(schema.images.id, img.id)).run();
-    return { ...img, ...loc };
+    upsertImmichAssets(ctx.db, [await immichFor(ctx.db).asset(img.immichAssetId)]);
+    const fresh = ctx.db.select().from(schema.images).where(eq(schema.images.id, img.id)).get() ?? img;
+    if (missing(fresh)) detailsRetryAt.set(img.immichAssetId, now + DETAILS_RETRY_MS);
+    else detailsRetryAt.delete(img.immichAssetId);
+    return fresh;
   } catch (err) {
-    locationRetryAt.set(img.immichAssetId, now + LOCATION_RETRY_MS);
-    ctx.log.debug({ err, asset: img.immichAssetId }, 'immich location lookup failed');
+    detailsRetryAt.set(img.immichAssetId, now + DETAILS_RETRY_MS);
+    ctx.log.debug({ err, asset: img.immichAssetId }, 'immich details lookup failed');
     return img;
   }
 }
@@ -264,7 +268,8 @@ export interface Rendered {
 }
 
 export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: DisplayOptions = {}): Promise<Rendered> {
-  if (opts.showLocation && opts.showLocation !== 'off') img = await withLocation(ctx, img);
+  const needLocation = !!opts.showLocation && opts.showLocation !== 'off';
+  if (opts.showDate || needLocation) img = await withImmichDetails(ctx, img, { date: opts.showDate, location: needLocation });
   const landscape = frame.orientation === 'landscape';
   const crop = opts.crop !== undefined ? opts.crop : getCrop(ctx.db, img.id, frameAspect(frame));
   const target = renderTarget(frame);

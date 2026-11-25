@@ -9,7 +9,10 @@ import { Button, Field, Segmented, Toggle, cx, inputClass, useConfirm } from './
 import { Select } from './Select';
 import { TimeField } from './TimeField';
 
-/** Where the photo was taken (from Immich): off / city / city and country, plus "leave out the home country". */
+/**
+ * Where the photo was taken (from Immich), as a checkbox like the date: city and country,
+ * and once it is on, "leave out the home country".
+ */
 export function LocationOptions({
   mode,
   onMode,
@@ -22,22 +25,12 @@ export function LocationOptions({
   onHideHome: (v: boolean) => void;
 }) {
   const { t } = useI18n();
+  const on = mode !== 'off';
   return (
-    <div className="space-y-3">
-      <Field label={t('assign.location')} hint={t('assign.location_hint')} group>
-        <Segmented
-          fill
-          value={mode}
-          onChange={onMode}
-          options={[
-            { value: 'off', label: t('assign.location_off') },
-            { value: 'city', label: t('assign.location_city') },
-            { value: 'city_country', label: t('assign.location_city_country') },
-          ]}
-        />
-      </Field>
-      {mode !== 'off' && <Toggle label={t('assign.hide_home_country')} hint={t('assign.hide_home_country_hint')} checked={hideHome} onChange={onHideHome} />}
-    </div>
+    <>
+      <Toggle label={t('assign.location')} hint={t('assign.location_hint')} checked={on} onChange={(v) => onMode(v ? 'city_country' : 'off')} />
+      {on && <Toggle nested label={t('assign.hide_home_country')} hint={t('assign.hide_home_country_hint')} checked={hideHome} onChange={onHideHome} />}
+    </>
   );
 }
 

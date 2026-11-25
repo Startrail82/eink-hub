@@ -11,7 +11,7 @@ process.env.AUTH_DISABLED = 'true';
 const { ensureDirs, config } = await import('../src/config.js');
 const { openDb, schema, setSetting } = await import('../src/db/index.js');
 const { buildApp } = await import('../src/app.js');
-const { LOCATION_RETRY_MS, locationText, photoCaption, upsertImmichAssets, withLocation } = await import('../src/lib/images.js');
+const { DETAILS_RETRY_MS, locationText, photoCaption, upsertImmichAssets, withImmichDetails } = await import('../src/lib/images.js');
 const { renderForFrame } = await import('../src/imaging/pipeline.js');
 const sharp = (await import('sharp')).default;
 
@@ -102,7 +102,7 @@ describe('storing the location from Immich', () => {
 describe('looking up a missing location', () => {
   const immich = Fastify();
   const hits: string[] = [];
-  const ctx = { db, log: { debug() {} } } as unknown as Parameters<typeof withLocation>[0];
+  const ctx = { db, log: { debug() {} } } as unknown as Parameters<typeof withImmichDetails>[0];
 
   beforeAll(async () => {
     immich.get<{ Params: { id: string } }>('/api/assets/:id', async (req, reply) => {
@@ -114,7 +114,7 @@ describe('looking up a missing location', () => {
           : req.params.id === 'lookup-pending'
             ? { city: null, country: null, latitude: 51.1, longitude: 4.5 }
             : { city: 'Ghent', country: 'Belgium' };
-      const asset: ImmichAsset = { id: req.params.id, type: 'IMAGE', exifInfo };
+      const asset: ImmichAsset = { id: req.params.id, type: 'IMAGE', exifInfo, ...(req.params.id === 'dated' ? { localDateTime: '2019-10-06T12:00:00.000Z' } : {}) };
       return asset;
     });
     immich.get<{ Querystring: { type: string } }>('/api/search/suggestions', async (req) =>
@@ -127,16 +127,16 @@ describe('looking up a missing location', () => {
 
   it('asks Immich once and remembers the answer', async () => {
     upsertImmichAssets(db, [{ id: 'lookup-1', type: 'IMAGE' }]);
-    const first = await withLocation(ctx, rowOf('lookup-1'));
+    const first = await withImmichDetails(ctx, rowOf('lookup-1'));
     expect([first.city, first.country]).toEqual(['Ghent', 'Belgium']);
     expect([rowOf('lookup-1').city, rowOf('lookup-1').country]).toEqual(['Ghent', 'Belgium']);
-    await withLocation(ctx, rowOf('lookup-1'));
+    await withImmichDetails(ctx, rowOf('lookup-1'));
     expect(hits.filter((h) => h === 'lookup-1')).toHaveLength(1);
   });
   it('remembers "no location" too', async () => {
     upsertImmichAssets(db, [{ id: 'lookup-none', type: 'IMAGE' }]);
-    await withLocation(ctx, rowOf('lookup-none'));
-    await withLocation(ctx, rowOf('lookup-none'));
+    await withImmichDetails(ctx, rowOf('lookup-none'));
+    await withImmichDetails(ctx, rowOf('lookup-none'));
     expect([rowOf('lookup-none').city, rowOf('lookup-none').country]).toEqual(['', '']);
     expect(hits.filter((h) => h === 'lookup-none')).toHaveLength(1);
   });
@@ -145,27 +145,34 @@ describe('looking up a missing location', () => {
     expect((await app.inject({ url: '/api/immich/countries' })).json()).toEqual(['Belgium', 'Italy']);
     await app.close();
   });
+  it('fills in the date of a photo imported by bare id when the caption needs it', async () => {
+    upsertImmichAssets(db, [{ id: 'dated', type: 'IMAGE' }]);
+    expect(rowOf('dated').takenAt).toBeNull();
+    const img = await withImmichDetails(ctx, rowOf('dated'), { date: true });
+    expect(img.takenAt).toBe(Date.parse('2019-10-06T12:00:00.000Z'));
+    expect(rowOf('dated').takenAt).toBe(img.takenAt);
+  });
   it('does not ask for local uploads', async () => {
     const local = db.insert(schema.images).values({ source: 'local', createdAt: Date.now() }).returning().get();
-    expect(await withLocation(ctx, local)).toBe(local);
+    expect(await withImmichDetails(ctx, local)).toBe(local);
   });
   it('keeps going when Immich is unreachable, and retries later, not on every render', async () => {
     upsertImmichAssets(db, [{ id: 'broken', type: 'IMAGE' }]);
     const t0 = Date.now();
-    const img = await withLocation(ctx, rowOf('broken'), t0);
+    const img = await withImmichDetails(ctx, rowOf('broken'), {location:true}, t0);
     expect([img.city, img.country]).toEqual([null, null]);
     expect([rowOf('broken').city, rowOf('broken').country]).toEqual([null, null]);
-    await withLocation(ctx, rowOf('broken'), t0 + 1000);
+    await withImmichDetails(ctx, rowOf('broken'), {location:true}, t0 + 1000);
     expect(hits.filter((h) => h === 'broken')).toHaveLength(1);
-    await withLocation(ctx, rowOf('broken'), t0 + LOCATION_RETRY_MS + 1);
+    await withImmichDetails(ctx, rowOf('broken'), {location:true}, t0 + DETAILS_RETRY_MS + 1);
     expect(hits.filter((h) => h === 'broken')).toHaveLength(2);
   });
   it('does not remember "no location" while Immich has not geocoded the GPS yet', async () => {
     upsertImmichAssets(db, [{ id: 'lookup-pending', type: 'IMAGE' }]);
     const t0 = Date.now();
-    await withLocation(ctx, rowOf('lookup-pending'), t0);
+    await withImmichDetails(ctx, rowOf('lookup-pending'), {location:true}, t0);
     expect([rowOf('lookup-pending').city, rowOf('lookup-pending').country]).toEqual([null, null]);
-    await withLocation(ctx, rowOf('lookup-pending'), t0 + LOCATION_RETRY_MS + 1);
+    await withImmichDetails(ctx, rowOf('lookup-pending'), {location:true}, t0 + DETAILS_RETRY_MS + 1);
     expect(hits.filter((h) => h === 'lookup-pending')).toHaveLength(2);
   });
 });

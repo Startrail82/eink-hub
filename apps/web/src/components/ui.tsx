@@ -144,14 +144,27 @@ export function Field({ label, hint, children, group }: { label: string; hint?: 
   );
 }
 
-export function Toggle({ label, hint, checked, onChange }: { label: string; hint?: string; checked: boolean; onChange: (v: boolean) => void }) {
+export function Toggle({
+  label,
+  hint,
+  checked,
+  onChange,
+  nested,
+}: {
+  label: string;
+  hint?: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  /** A sub-option of the toggle above it: indented, with smaller text. */
+  nested?: boolean;
+}) {
   return (
-    <label className="flex items-center justify-between gap-3">
+    <label className={cx('flex items-center justify-between gap-3', nested && '-mt-1 ml-1 border-l-2 border-line pl-4')}>
       <span className="min-w-0">
-        <span className="block text-sm font-semibold">{label}</span>
-        {hint && <span className="block text-xs text-muted">{hint}</span>}
+        <span className={cx('block font-semibold', nested ? 'text-xs' : 'text-sm')}>{label}</span>
+        {hint && <span className={cx('block text-muted', nested ? 'text-[11px] leading-snug' : 'text-xs')}>{hint}</span>}
       </span>
-      <input type="checkbox" className="size-5 shrink-0 accent-[var(--ink)]" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <input type="checkbox" className={cx('shrink-0 accent-[var(--ink)]', nested ? 'size-4' : 'size-5')} checked={checked} onChange={(e) => onChange(e.target.checked)} />
     </label>
   );
 }
