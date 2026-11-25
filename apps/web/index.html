@@ -5,10 +5,22 @@
     <script>
       // Set the page language before anything else, so the browser does not offer to translate it.
       // The app takes over (and keeps it in sync) once it has loaded.
-      try {
-        var l = localStorage.getItem('lang') || navigator.language || 'en';
-        document.documentElement.lang = l.replace('_', '-');
-      } catch (e) {}
+      // Mirrors initialLang()/matchLang() in src/i18n/index.tsx: keep the language list in sync with `languages`.
+      (function () {
+        var supported = ['es', 'eu', 'en', 'ca', 'gl', 'fr', 'de', 'it', 'pt', 'pl', 'cs', 'ru', 'nl', 'ja', 'ko', 'zh', 'zh-TW'];
+        var lang = 'en';
+        try {
+          var saved = localStorage.getItem('lang');
+          if (supported.indexOf(saved) !== -1) {
+            lang = saved;
+          } else {
+            var t = (navigator.language || '').toLowerCase();
+            if (t.indexOf('zh') === 0) lang = /^zh-(tw|hk|mo|hant)/.test(t) ? 'zh-TW' : 'zh';
+            else if (supported.indexOf(t.slice(0, 2)) !== -1) lang = t.slice(0, 2);
+          }
+        } catch (e) {}
+        document.documentElement.lang = lang;
+      })();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f4f1eb" />
