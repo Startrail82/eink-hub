@@ -6,7 +6,7 @@ import { schema } from '../db/index.js';
 import { collectionTypes, fitModes, locationModes, orderModes, type Assignment, type CollectionType, type DisplayOptions } from '../db/schema.js';
 import { addItems, getCollection, refreshCount, syncCollection } from '../lib/collections.js';
 import { HttpError, type Ctx } from '../lib/context.js';
-import { getAssignment, getAssignmentById, getAssignments, getFrame } from '../lib/display.js';
+import { firstAssignment, getAssignmentById, getAssignments, getFrame } from '../lib/display.js';
 import { checkSchedule, overview } from '../lib/plan.js';
 import { DEFAULT_SCHEDULE, MEMORIES_SCHEDULE, firstRun, isFrequent, parseSchedule, upcoming } from '../lib/schedule.js';
 import { deleteImage, frameAspect, getCrop, getImage, imageThumbnail, loadSource, readRender, renderFor, saveLocalUpload, setCrop } from '../lib/images.js';
@@ -178,6 +178,16 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
     enabled?: boolean;
   }
 
+  /** Throws 409 when the schedule would change at the same minute as another one of the Canvas. */
+  function assertNoClash(frameId: number, candidate: Parameters<typeof checkSchedule>[2], lang: Lang) {
+    const check = checkSchedule(db, frameId, candidate);
+    if (check.clash) {
+      const name = db.select({ name: schema.collections.name }).from(schema.collections).where(eq(schema.collections.id, check.clash.other.collectionId)).get()?.name ?? '';
+      throw new HttpError(409, 'schedule_conflict', { name, time: new Date(check.clash.at).toLocaleString(lang, { dateStyle: 'short', timeStyle: 'short' }) });
+    }
+    return check;
+  }
+
   /** Create (no `prev`) or change one schedule of a Canvas. Two schedules may not change at the same minute. */
   function saveAssignment(frameId: number, prev: Assignment | undefined, b: AssignmentBody, lang: Lang) {
     const collection = getCollection(db, b.collectionId);
@@ -189,12 +199,6 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
     const hourly = schedule.kind === 'interval';
     const window = { activeFrom: hourly ? hhmm(b.activeFrom) : null, activeTo: hourly ? hhmm(b.activeTo) : null };
     const enabled = b.enabled ?? prev?.enabled ?? true;
-
-    const check = enabled ? checkSchedule(db, frameId, { id: prev?.id, schedule, ...window }) : {};
-    if (check.clash) {
-      const name = db.select({ name: schema.collections.name }).from(schema.collections).where(eq(schema.collections.id, check.clash.other.collectionId)).get()?.name ?? '';
-      throw new HttpError(409, 'schedule_conflict', { name, time: new Date(check.clash.at).toLocaleString(lang, { dateStyle: 'short', timeStyle: 'short' }) });
-    }
 
     const others = getAssignments(db, frameId).filter((x) => x.id !== prev?.id);
     // New rotation or new collection: change right away. New timing: start counting from now.
@@ -209,6 +213,8 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
         : JSON.stringify(prev.schedule) !== JSON.stringify(schedule) || prev.activeFrom !== window.activeFrom || prev.activeTo !== window.activeTo
           ? (firstRun(schedule, new Date(), window)?.getTime() ?? null)
           : prev.nextChange;
+    // Compared at the times it will really run once saved (hourly ones run relative to nextChange).
+    const check = enabled ? assertNoClash(frameId, { id: prev?.id, schedule, ...window, nextChange }, lang) : {};
     const values = {
       collectionId: b.collectionId,
       orderMode: isMemories ? ('random' as const) : orderModes.includes(b.orderMode!) ? b.orderMode! : ('random' as const),
@@ -236,10 +242,11 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
     return { assignment, warnings: close ? [{ kind: 'close' as const, ...close }] : [] };
   }
 
-  // The schedule that changes next, for clients that only know one schedule per Canvas.
+  // Clients that only know one schedule per Canvas: they work on its oldest schedule, which
+  // stays the same between calls (the one that changes next moves around during the day).
   app.put<{ Params: { frameId: string }; Body: AssignmentBody }>('/api/frames/:frameId/assignment', async (req) => {
     const frameId = getFrame(db, +req.params.frameId).id;
-    return saveAssignment(frameId, getAssignment(db, frameId), req.body, requestLang(req, db)).assignment;
+    return saveAssignment(frameId, firstAssignment(db, frameId), req.body, requestLang(req, db)).assignment;
   });
 
   // Several schedules per Canvas.
@@ -254,15 +261,7 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
   });
   app.patch<{ Params: { id: string }; Body: { enabled?: boolean } }>('/api/assignments/:id', async (req) => {
     const prev = getAssignmentById(db, +req.params.id);
-    const enabled = req.body?.enabled === true;
-    if (enabled && !prev.enabled) {
-      const check = checkSchedule(db, prev.frameId, { id: prev.id, schedule: prev.schedule, activeFrom: prev.activeFrom, activeTo: prev.activeTo });
-      if (check.clash) {
-        const name = db.select({ name: schema.collections.name }).from(schema.collections).where(eq(schema.collections.id, check.clash.other.collectionId)).get()?.name ?? '';
-        throw new HttpError(409, 'schedule_conflict', { name, time: new Date(check.clash.at).toLocaleString(requestLang(req, db), { dateStyle: 'short', timeStyle: 'short' }) });
-      }
-    }
-    return setEnabled(prev, enabled);
+    return setEnabled(prev, req.body?.enabled === true, requestLang(req, db));
   });
   app.delete<{ Params: { id: string } }>('/api/assignments/:id', async (req) => {
     db.delete(schema.assignments).where(eq(schema.assignments.id, getAssignmentById(db, +req.params.id).id)).run();
@@ -276,21 +275,25 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
   });
 
   /** Pause or resume one schedule. A change that fell due while paused starts counting again from now. */
-  function setEnabled(prev: Assignment, enabled: boolean) {
+  function setEnabled(prev: Assignment, enabled: boolean, lang: Lang) {
     const window = { activeFrom: prev.activeFrom, activeTo: prev.activeTo };
-    const stale = enabled && !prev.enabled && prev.nextChange !== null && prev.nextChange <= Date.now();
+    const resumed = enabled && !prev.enabled;
+    const stale = resumed && prev.nextChange !== null && prev.nextChange <= Date.now();
+    const nextChange = stale ? (firstRun(prev.schedule, new Date(), window)?.getTime() ?? null) : prev.nextChange;
+    // It cannot be resumed on top of another schedule of the Canvas.
+    if (resumed) assertNoClash(prev.frameId, { id: prev.id, schedule: prev.schedule, ...window, nextChange }, lang);
     return db
       .update(schema.assignments)
-      .set({ enabled, ...(stale ? { nextChange: firstRun(prev.schedule, new Date(), window)?.getTime() ?? null } : {}) })
+      .set({ enabled, ...(stale ? { nextChange } : {}) })
       .where(eq(schema.assignments.id, prev.id))
       .returning()
       .get();
   }
 
-  // Pause / resume the schedule that changes next (one-schedule clients).
+  // Pause / resume the oldest schedule (one-schedule clients).
   app.patch<{ Params: { frameId: string }; Body: { enabled?: boolean } }>('/api/frames/:frameId/assignment', async (req) => {
-    const prev = getAssignment(db, getFrame(db, +req.params.frameId).id);
-    return prev ? setEnabled(prev, req.body?.enabled === true) : null;
+    const prev = firstAssignment(db, getFrame(db, +req.params.frameId).id);
+    return prev ? setEnabled(prev, req.body?.enabled === true, requestLang(req, db)) : null;
   });
 
   /** Validates a schedule and returns its next runs, so the UI shows exactly what will happen. */
@@ -309,8 +312,10 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
     }
   });
 
+  // One-schedule clients: removes the oldest schedule only, like PUT and PATCH above, not all of them.
   app.delete<{ Params: { frameId: string } }>('/api/frames/:frameId/assignment', async (req) => {
-    db.delete(schema.assignments).where(eq(schema.assignments.frameId, +req.params.frameId)).run();
+    const first = firstAssignment(db, +req.params.frameId);
+    if (first) db.delete(schema.assignments).where(eq(schema.assignments.id, first.id)).run();
     return { ok: true };
   });
 }

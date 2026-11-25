@@ -1,7 +1,7 @@
 import { schema, type DB } from '../db/index.js';
 import type { Assignment } from '../db/schema.js';
 import { getAssignments } from './display.js';
-import { firstRun, nextRun, type Schedule } from './schedule.js';
+import { firstRun, isDue, nextRun, type Schedule } from './schedule.js';
 
 const DAY = 24 * 3600_000;
 /** How far ahead schedules are compared and listed. */
@@ -47,11 +47,13 @@ export interface ScheduleCheck {
 
 /**
  * Compares a schedule with the other schedules of the same Canvas over the coming month.
- * `id` is the schedule being edited, so it is not compared with itself.
+ * `id` is the schedule being edited, so it is not compared with itself. `nextChange` is the
+ * change time it will have once saved: hourly schedules run relative to it, so leaving it out
+ * would compare times it never runs at.
  */
 export function checkSchedule(db: DB, frameId: number, candidate: Timing & { id?: number }, now = new Date()): ScheduleCheck {
   const until = new Date(now.getTime() + CHECK_DAYS * DAY);
-  const mine = projection({ ...candidate, nextChange: null }, now, until);
+  const mine = projection({ ...candidate, nextChange: candidate.nextChange ?? null }, now, until);
   const result: ScheduleCheck = {};
   for (const other of getAssignments(db, frameId)) {
     if (other.id === candidate.id || !other.enabled) continue;
@@ -83,6 +85,8 @@ export interface OverviewItem {
   assignmentId: number;
   collectionId: number;
   collection: string;
+  /** A change that is already due and waits for the Canvas (listed at `now`). */
+  pending?: boolean;
 }
 export interface OverviewDay {
   /** Local date, YYYY-MM-DD. */
@@ -100,6 +104,9 @@ export function overview(db: DB, frameId: number, days = 7, now = new Date()): O
   const items: OverviewItem[] = [];
   for (const a of getAssignments(db, frameId)) {
     if (!a.enabled) continue;
+    // Due already (no time yet, or past): it happens as soon as the Canvas responds or wakes.
+    // (A time still ahead is listed by the projection below.)
+    if (a.nextChange == null ? isDue(null, now, a.schedule, a) : a.nextChange < now.getTime()) items.push({ at: now.getTime(), assignmentId: a.id, collectionId: a.collectionId, collection: names.get(a.collectionId) ?? '', pending: true });
     for (const t of projection(a, now, end)) items.push({ at: t.getTime(), assignmentId: a.id, collectionId: a.collectionId, collection: names.get(a.collectionId) ?? '' });
   }
   items.sort((x, y) => x.at - y.at);

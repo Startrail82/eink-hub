@@ -5,7 +5,7 @@ import { prepareCollection } from './collections.js';
 import type { Ctx } from './context.js';
 import { assignmentOptions, chooseNextImage, getAssignments, latestDue, nextAssignment, renderWelcomeFor } from './display.js';
 import { getImage, renderFor, type Rendered } from './images.js';
-import { firstRun, nextRun } from './schedule.js';
+import { firstRun, isDue, nextRun } from './schedule.js';
 import { inWindow } from './selection.js';
 import { recordBattery } from './stats.js';
 
@@ -64,10 +64,13 @@ export async function servePull(ctx: Ctx, frame: Frame, req: PullRequest): Promi
   let next: Date | null = null;
   for (const p of plans) {
     const served = p.id === dueOne?.id;
-    let t: Date | null = served || p.nextChange == null ? nextRun(p.schedule, now, p) : new Date(p.nextChange);
+    // Also due, but older than the one served: skipped, as the push scheduler does, so its
+    // stale picture does not replace this one on the next wake.
+    const skipped = !!dueOne && !served && isDue(p.nextChange, now, p.schedule, p);
+    let t: Date | null = served || skipped || p.nextChange == null ? nextRun(p.schedule, now, p) : new Date(p.nextChange);
     // A rotation that was due but deferred (welcome shown instead) restarts from now.
     if (t && t <= now) t = firstRun(p.schedule, now, p);
-    if (served) ctx.db.update(schema.assignments).set({ nextChange: t?.getTime() ?? null }).where(eq(schema.assignments.id, p.id)).run();
+    if (served || skipped) ctx.db.update(schema.assignments).set({ nextChange: t?.getTime() ?? null }).where(eq(schema.assignments.id, p.id)).run();
     if (t && (!next || t < next)) next = t;
   }
   if (!plans.length) next = nextRun(frame.pullSchedule, now);

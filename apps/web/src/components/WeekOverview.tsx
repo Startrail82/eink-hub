@@ -23,10 +23,22 @@ export function WeekOverview({ frame }: { frame: Frame }) {
     refetchInterval: 60_000,
   });
   if (overview.isLoading) return <Spinner />;
-  const days = overview.data ?? [];
-  if (!days.some((d) => d.items.length)) return <p className="text-sm text-muted">{t('week.none')}</p>;
-  const today = localKey(new Date());
-  const tomorrow = localKey(new Date(Date.now() + 86_400_000));
+  // The hub groups by its own timezone; regroup by this browser's days, which is what the
+  // clock times below and "Today" are shown in.
+  const items = (overview.data ?? []).flatMap((d) => d.items);
+  if (!items.length) return <p className="text-sm text-muted">{t('week.none')}</p>;
+  const dayAt = (i: number) => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + i);
+    return localKey(d);
+  };
+  const days = Array.from({ length: overview.data?.length || 7 }, (_, i) => {
+    const date = dayAt(i);
+    return { date, items: items.filter((it) => localKey(new Date(it.at)) === date) };
+  });
+  const today = dayAt(0);
+  const tomorrow = dayAt(1);
 
   return (
     <div className="grid gap-3 lg:grid-cols-2">
@@ -43,7 +55,7 @@ export function WeekOverview({ frame }: { frame: Frame }) {
               <ol className="mt-3 space-y-2">
                 {day.items.map((i) => (
                   <li key={`${i.assignmentId}-${i.at}`} className="flex items-center gap-3 rounded-xl bg-surface-2 px-3 py-2">
-                    <span className="w-12 shrink-0 text-sm font-bold tabular-nums">{clock(i.at)}</span>
+                    <span className={cx('min-w-12 shrink-0 text-sm font-bold tabular-nums', i.pending && 'text-warn')}>{i.pending ? t('detail.pending') : clock(i.at)}</span>
                     <span className={cx('size-2.5 shrink-0 rounded-full', dot(i.collectionId))} aria-hidden />
                     <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink-2">{i.collection}</span>
                   </li>

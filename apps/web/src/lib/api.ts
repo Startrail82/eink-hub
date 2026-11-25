@@ -56,6 +56,8 @@ export interface OverviewItem {
   assignmentId: number;
   collectionId: number;
   collection: string;
+  /** Already due: it happens as soon as the Canvas responds or wakes. */
+  pending?: boolean;
 }
 export interface OverviewDay {
   /** Local date, YYYY-MM-DD. */
@@ -124,7 +126,7 @@ export interface Frame {
   currentImageId: number | null;
   currentRender: string | null;
   nextWake: number | null;
-  /** The first schedule (kept for older code); all of them are in `assignments`. */
+  /** The schedule that changes next (kept for older code); all of them are in `assignments`. */
   assignment: Assignment | null;
   assignments: Assignment[];
   /** A simulated Canvas running inside the hub. */
