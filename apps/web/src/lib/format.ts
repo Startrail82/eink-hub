@@ -78,6 +78,15 @@ export function formatPercent(part: number, whole: number): string {
   return new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 0 }).format(part / whole);
 }
 
+/** A gap in minutes, e.g. "20 min" or "5 h 20 min" (in the active locale where the browser can). */
+export function duration(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  const DF = (Intl as unknown as { DurationFormat?: new (l: string, o: object) => { format(d: object): string } }).DurationFormat;
+  if (DF && !basqueFallback()) return new DF(locale, { style: 'short' }).format(h ? (m ? { hours: h, minutes: m } : { hours: h }) : { minutes: m });
+  return h ? (m ? `${h} h ${m} min` : `${h} h`) : `${m} min`;
+}
+
 /** Clock time in the active locale, e.g. "20:00". */
 export function clock(ms: number): string {
   const d = new Date(ms);

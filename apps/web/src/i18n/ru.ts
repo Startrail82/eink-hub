@@ -290,7 +290,7 @@ export const ru: Catalogue = {
   'schedule.cron_ex3': '1-го числа каждого месяца в 09:00',
   'schedule.cron_ex4': 'по субботам в 09:00',
   'schedule.battery_warning':
-    'Частая смена чаще будит Canvas и сильно сокращает время работы от батареи. Для электронных чернил рекомендуется не чаще одной смены в день.',
+    'Частая смена чаще будит Canvas и сильно сокращает время работы от батареи. Чтобы батарея работала дольше, рекомендуется не чаще одной смены в день.',
   'schedule.next_changes': 'Ближайшие смены: {list}',
   'schedule.desc_daily': 'Каждый день в {at}',
   'schedule.desc_days_one': 'Каждый {n} день в {at}',
@@ -582,7 +582,7 @@ export const ru: Catalogue = {
   'week.empty_day': 'Без смен',
   'week.none': 'У этого Canvas нет активных расписаний.',
   'plan.add': 'Добавить расписание',
-  'schedule.close_warning': '«{name}» меняет фото этого Canvas в {time}, всего в {minutes} мин. Каждая смена будит Canvas и расходует батарею.',
+  'schedule.close_warning': '«{name}» меняет фото этого Canvas в {time}, всего через {gap}.',
   'canvasSettings.pill_title': 'Плашка с датой',
   'canvasSettings.pill_hint': 'Цвета и непрозрачность плашки с датой (и местом) на картинках этого Canvas. По умолчанию она белая и непрозрачная; полупрозрачная плашка может выглядеть зернистой на цветном e-ink.',
   'canvasSettings.pill_bg': 'Фон',

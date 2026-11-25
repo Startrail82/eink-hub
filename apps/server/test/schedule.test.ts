@@ -61,9 +61,12 @@ describe('parseSchedule', () => {
 
 describe('battery warning', () => {
   it('flags more than one change a day', () => {
-    expect(isFrequent({ kind: 'interval', hours: 12 })).toBe(true);
+    // Less than 12 hours apart: twice a day, 12 hours apart, is fine.
+    expect(isFrequent({ kind: 'interval', hours: 6 })).toBe(true);
+    expect(isFrequent({ kind: 'interval', hours: 12 })).toBe(false);
     expect(isFrequent({ kind: 'days', days: 1, at: '07:00' })).toBe(false);
-    expect(isFrequent({ kind: 'cron', expr: '0 8,20 * * *' })).toBe(true);
+    expect(isFrequent({ kind: 'cron', expr: '0 8,20 * * *' })).toBe(false);
+    expect(isFrequent({ kind: 'cron', expr: '0 8,19 * * *' })).toBe(true);
     expect(isFrequent({ kind: 'cron', expr: '0 8 * * *' })).toBe(false);
   });
 });

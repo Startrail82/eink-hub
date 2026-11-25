@@ -280,7 +280,7 @@ export const zh: Catalogue = {
   'schedule.cron_ex3': '每月 1 日 09:00',
   'schedule.cron_ex4': '每周六 09:00',
   'schedule.battery_warning':
-    '频繁更换会让 Canvas 更频繁地唤醒，大幅缩短电池续航。对于电子墨水屏，建议每天最多更换一次。',
+    '频繁更换会让 Canvas 更频繁地唤醒，大幅缩短电池续航。为延长电池续航，建议每天最多更换一次。',
   'schedule.next_changes': '接下来的更换：{list}',
   'schedule.desc_daily': '每天 {at}',
   'schedule.desc_days_one': '每 {n} 天 {at}',
@@ -566,7 +566,7 @@ export const zh: Catalogue = {
   'week.empty_day': '无切换',
   'week.none': '此 Canvas 没有启用的计划。',
   'plan.add': '添加计划',
-  'schedule.close_warning': '「{name}」在 {time} 切换此 Canvas 的照片，仅相差 {minutes} 分钟。每次切换都会唤醒 Canvas 并消耗电量。',
+  'schedule.close_warning': '「{name}」在 {time} 切换此 Canvas 的照片，仅相差 {gap}。',
   'canvasSettings.pill_title': '日期标签',
   'canvasSettings.pill_hint': '此 Canvas 图片上绘制的日期（和地点）标签的颜色与不透明度。默认是白色不透明；半透明标签在彩色墨水屏上可能显得有颗粒感。',
   'canvasSettings.pill_bg': '背景',

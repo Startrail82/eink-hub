@@ -38,7 +38,7 @@ export interface Assignment {
   lastChange: number | null;
 }
 
-/** Two changes of one Canvas that are close together (allowed, but worth a warning). */
+/** Another schedule of the Canvas changes less than 12 hours from this one (allowed, but worth a warning). */
 export interface CloseWarning {
   kind: 'close';
   minutes: number;

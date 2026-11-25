@@ -280,7 +280,7 @@ export const en: Messages = {
   'schedule.cron_ex3': 'the 1st of every month at 09:00',
   'schedule.cron_ex4': 'Saturdays at 09:00',
   'schedule.battery_warning':
-    'Frequent changes wake the Canvas more often and greatly reduce battery life. For e-ink, changing at most once a day is recommended.',
+    'Frequent changes wake the Canvas more often and greatly reduce battery life. Changing at most once a day is recommended to make the battery last longer.',
   'schedule.next_changes': 'Next changes: {list}',
   'schedule.desc_daily': 'Every day at {at}',
   'schedule.desc_days_one': 'Every {n} day at {at}',
@@ -566,7 +566,7 @@ export const en: Messages = {
   'week.empty_day': 'No changes',
   'week.none': 'This Canvas has no active schedules.',
   'plan.add': 'Add schedule',
-  'schedule.close_warning': '"{name}" changes this Canvas’s picture at {time}, only {minutes} min apart. Every change wakes the Canvas and uses battery.',
+  'schedule.close_warning': '"{name}" changes this Canvas’s picture at {time}, only {gap} apart.',
   'canvasSettings.pill_title': 'Date label',
   'canvasSettings.pill_hint': 'Colours and opacity of the date (and place) label drawn on this Canvas\'s pictures. By default it is white and solid; a see-through label can look grainy on colour e-ink.',
   'canvasSettings.pill_bg': 'Background',

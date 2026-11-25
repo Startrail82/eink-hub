@@ -280,7 +280,7 @@ export const pt: Catalogue = {
   'schedule.cron_ex3': 'dia 1 de cada mês às 09:00',
   'schedule.cron_ex4': 'sábados às 09:00',
   'schedule.battery_warning':
-    'Mudanças frequentes acordam o Canvas com mais frequência e reduzem muito a duração da bateria. Para e-ink recomenda-se no máximo uma mudança por dia.',
+    'Mudanças frequentes acordam o Canvas com mais frequência e reduzem muito a duração da bateria. Recomenda-se no máximo uma mudança por dia para prolongar a duração da bateria.',
   'schedule.next_changes': 'Próximas mudanças: {list}',
   'schedule.desc_daily': 'Todos os dias às {at}',
   'schedule.desc_days_one': 'Cada {n} dia às {at}',
@@ -566,7 +566,7 @@ export const pt: Catalogue = {
   'week.empty_day': 'Sem alterações',
   'week.none': 'Este Canvas não tem programações ativas.',
   'plan.add': 'Adicionar programação',
-  'schedule.close_warning': '«{name}» muda a foto deste Canvas às {time}, a apenas {minutes} min. Cada mudança acorda o Canvas e gasta bateria.',
+  'schedule.close_warning': '«{name}» muda a foto deste Canvas às {time}, a apenas {gap}.',
   'canvasSettings.pill_title': 'Etiqueta de data',
   'canvasSettings.pill_hint': 'Cores e opacidade da etiqueta com a data (e o local) desenhada nas imagens deste Canvas. Por defeito é branca e opaca; uma etiqueta translúcida pode ficar granulada em e-ink a cores.',
   'canvasSettings.pill_bg': 'Fundo',

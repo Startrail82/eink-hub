@@ -160,11 +160,19 @@ function minGap(runs: Date[]) {
   return gap;
 }
 
-/** More than one change a day → warn about battery. */
+/**
+ * Changes less than this many hours apart get a battery warning, for one schedule (`isFrequent`)
+ * and between the schedules of a Canvas (`checkSchedule`). Twice a day, 12 hours apart, is fine.
+ */
+export const MIN_GAP_HOURS = 12;
+/** Changes run a few minutes early or late: "every 12 hours" must not count as less. */
+export const GAP_SLACK = TOLERANCE;
+
+/** Changes less than MIN_GAP_HOURS apart → warn about battery. */
 export function isFrequent(s: Schedule): boolean {
-  if (s.kind === 'interval') return true;
+  if (s.kind === 'interval') return s.hours < MIN_GAP_HOURS;
   if (s.kind !== 'cron') return false;
-  return minGap(upcoming(s, new Date(), 12)) < DAY - TOLERANCE;
+  return minGap(upcoming(s, new Date(), 12)) < MIN_GAP_HOURS * HOUR - GAP_SLACK;
 }
 
 /** Whether a change is due now, given the stored next change time. */

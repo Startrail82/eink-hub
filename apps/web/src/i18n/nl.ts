@@ -280,7 +280,7 @@ export const nl: Catalogue = {
   'schedule.cron_ex3': 'de 1e van elke maand om 09:00',
   'schedule.cron_ex4': 'zaterdag om 09:00',
   'schedule.battery_warning':
-    'Vaak wisselen maakt het Canvas vaker wakker en verkort de batterijduur sterk. Voor e-ink wordt hooguit één wissel per dag aanbevolen.',
+    'Vaak wisselen maakt het Canvas vaker wakker en verkort de batterijduur sterk. Hooguit één wissel per dag wordt aanbevolen om de batterij langer te laten meegaan.',
   'schedule.next_changes': 'Volgende wisselingen: {list}',
   'schedule.desc_daily': 'Elke dag om {at}',
   'schedule.desc_days_one': 'Elke {n} dag om {at}',
@@ -566,7 +566,7 @@ export const nl: Catalogue = {
   'week.empty_day': 'Geen wissels',
   'week.none': 'Dit Canvas heeft geen actieve planningen.',
   'plan.add': 'Planning toevoegen',
-  'schedule.close_warning': '‘{name}’ wisselt de foto van dit Canvas om {time}, slechts {minutes} min verschil. Elke wissel wekt het Canvas en kost batterij.',
+  'schedule.close_warning': '‘{name}’ wisselt de foto van dit Canvas om {time}, slechts {gap} verschil.',
   'canvasSettings.pill_title': 'Datumlabel',
   'canvasSettings.pill_hint': 'Kleuren en dekking van het datum- (en plaats)label op de afbeeldingen van dit Canvas. Standaard is het wit en ondoorzichtig; een doorzichtig label kan er korrelig uitzien op kleuren-e-ink.',
   'canvasSettings.pill_bg': 'Achtergrond',

@@ -280,7 +280,7 @@ export const ko: Catalogue = {
   'schedule.cron_ex3': '매월 1일 09:00',
   'schedule.cron_ex4': '토요일 09:00',
   'schedule.battery_warning':
-    '자주 바꾸면 Canvas가 더 자주 깨어나 배터리 수명이 크게 줄어듭니다. E-ink는 하루 한 번 이하로 바꾸는 것을 권장합니다.',
+    '자주 바꾸면 Canvas가 더 자주 깨어나 배터리 수명이 크게 줄어듭니다. 배터리를 오래 쓰려면 하루 한 번 이하로 바꾸는 것을 권장합니다.',
   'schedule.next_changes': '다음 전환: {list}',
   'schedule.desc_daily': '매일 {at}',
   'schedule.desc_days_one': '{n}일마다 {at}',
@@ -566,7 +566,7 @@ export const ko: Catalogue = {
   'week.empty_day': '변경 없음',
   'week.none': '이 Canvas에는 활성 일정이 없습니다.',
   'plan.add': '일정 추가',
-  'schedule.close_warning': '「{name}」이(가) 이 Canvas의 사진을 {time}에 바꿉니다. 불과 {minutes}분 차이입니다. 바뀔 때마다 Canvas가 깨어나 배터리를 사용합니다.',
+  'schedule.close_warning': '「{name}」이(가) 이 Canvas의 사진을 {time}에 바꿉니다. 불과 {gap} 차이입니다.',
   'canvasSettings.pill_title': '날짜 라벨',
   'canvasSettings.pill_hint': '이 Canvas의 이미지에 그려지는 날짜(및 장소) 라벨의 색과 불투명도입니다. 기본값은 흰색 불투명이며, 반투명 라벨은 컬러 e-ink에서 거칠게 보일 수 있습니다.',
   'canvasSettings.pill_bg': '배경',

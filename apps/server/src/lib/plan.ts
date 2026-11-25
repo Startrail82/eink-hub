@@ -1,13 +1,16 @@
 import { schema, type DB } from '../db/index.js';
 import type { Assignment } from '../db/schema.js';
 import { getAssignments } from './display.js';
-import { firstRun, isDue, nextRun, type Schedule } from './schedule.js';
+import { GAP_SLACK, MIN_GAP_HOURS, firstRun, isDue, nextRun, type Schedule } from './schedule.js';
 
 const DAY = 24 * 3600_000;
 /** How far ahead schedules are compared and listed. */
 export const CHECK_DAYS = 31;
-/** Two changes closer than this get a warning (an e-ink refresh takes a while and costs battery). */
-export const CLOSE_MINUTES = 30;
+/**
+ * Two changes of a Canvas closer than this get a warning: every change wakes the Canvas and costs
+ * battery. The same limit as the battery warning of a single schedule (see `isFrequent`).
+ */
+const CLOSE_MS = MIN_GAP_HOURS * 3600_000 - GAP_SLACK;
 const MAX_RUNS = 800;
 
 /** The parts of a schedule that decide when it changes the picture. */
@@ -33,7 +36,9 @@ export interface ScheduleClash {
   other: Assignment;
 }
 export interface CloseChanges {
+  /** This schedule's change… */
   at: number;
+  /** …and the other schedule's change closest to it. */
   otherAt: number;
   minutes: number;
   other: Assignment;
@@ -41,7 +46,7 @@ export interface CloseChanges {
 export interface ScheduleCheck {
   /** Two schedules change at exactly the same minute: not allowed. */
   clash?: ScheduleClash;
-  /** Two changes less than CLOSE_MINUTES apart: allowed, but worth a warning. */
+  /** Another schedule changes less than MIN_GAP_HOURS from this one: allowed, but worth a warning. */
   close?: CloseChanges;
 }
 
@@ -54,30 +59,33 @@ export interface ScheduleCheck {
 export function checkSchedule(db: DB, frameId: number, candidate: Timing & { id?: number }, now = new Date()): ScheduleCheck {
   const until = new Date(now.getTime() + CHECK_DAYS * DAY);
   const mine = projection({ ...candidate, nextChange: candidate.nextChange ?? null }, now, until);
-  const result: ScheduleCheck = {};
+  let close: CloseChanges | undefined;
   for (const other of getAssignments(db, frameId)) {
     if (other.id === candidate.id || !other.enabled) continue;
     const theirs = projection(other, now, until);
     const taken = new Set(theirs.map(minute));
     const same = mine.find((d) => taken.has(minute(d)));
     if (same) return { clash: { at: same.getTime(), other } };
-    if (result.close) continue;
-    // Both lists are sorted: walk them together for the closest pair.
-    let j = 0;
-    for (const d of mine) {
-      while (j + 1 < theirs.length && theirs[j + 1] <= d) j++;
-      for (const t of [theirs[j], theirs[j + 1]]) {
-        if (!t) continue;
-        const minutes = Math.abs(t.getTime() - d.getTime()) / 60_000;
-        if (minutes < CLOSE_MINUTES) {
-          result.close = { at: d.getTime(), otherAt: t.getTime(), minutes: Math.round(minutes), other };
-          break;
-        }
-      }
-      if (result.close) break;
+    const pair = closestPair(mine, theirs);
+    if (pair && pair.ms < CLOSE_MS && (!close || pair.ms < close.minutes * 60_000))
+      close = { at: pair.a.getTime(), otherAt: pair.b.getTime(), minutes: Math.round(pair.ms / 60_000), other };
+  }
+  return { close };
+}
+
+/** The closest pair of changes between two sorted lists. */
+function closestPair(xs: Date[], ys: Date[]): { a: Date; b: Date; ms: number } | undefined {
+  let best: { a: Date; b: Date; ms: number } | undefined;
+  let j = 0;
+  for (const a of xs) {
+    while (j + 1 < ys.length && ys[j + 1] <= a) j++;
+    for (const b of [ys[j], ys[j + 1]]) {
+      if (!b) continue;
+      const ms = Math.abs(b.getTime() - a.getTime());
+      if (!best || ms < best.ms) best = { a, b, ms };
     }
   }
-  return result;
+  return best;
 }
 
 export interface OverviewItem {

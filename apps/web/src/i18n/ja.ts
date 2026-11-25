@@ -280,7 +280,7 @@ export const ja: Catalogue = {
   'schedule.cron_ex3': '毎月1日の9:00',
   'schedule.cron_ex4': '毎週土曜の9:00',
   'schedule.battery_warning':
-    '切り替えの頻度が高いとCanvasが頻繁に起動し、バッテリーの持ちが大きく低下します。E-inkでは、切り替えは1日1回までをおすすめします。',
+    '切り替えの頻度が高いとCanvasが頻繁に起動し、バッテリーの持ちが大きく低下します。バッテリーを長持ちさせるには、切り替えは1日1回までをおすすめします。',
   'schedule.next_changes': '次回の切り替え：{list}',
   'schedule.desc_daily': '毎日 {at}',
   'schedule.desc_days_one': '{n}日ごと {at}',
@@ -566,7 +566,7 @@ export const ja: Catalogue = {
   'week.empty_day': '切り替えなし',
   'week.none': 'このCanvasには有効なスケジュールがありません。',
   'plan.add': 'スケジュールを追加',
-  'schedule.close_warning': '「{name}」がこのCanvasの写真を{time}に切り替えます（わずか{minutes}分差）。切り替えのたびにCanvasが起動し、バッテリーを消費します。',
+  'schedule.close_warning': '「{name}」がこのCanvasの写真を{time}に切り替えます（わずか{gap}差）。',
   'canvasSettings.pill_title': '日付ラベル',
   'canvasSettings.pill_hint': 'この Canvas の画像に描かれる日付（と場所）ラベルの色と不透明度。初期設定は白の不透明です。半透明にするとカラー e-ink ではざらついて見えることがあります。',
   'canvasSettings.pill_bg': '背景',

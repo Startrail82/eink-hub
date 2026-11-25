@@ -305,7 +305,7 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
   /**
    * Validates a schedule and returns its next runs, so the UI shows exactly what will happen.
    * With `frameId` (and `assignmentId` when editing one) it is also compared with the other
-   * schedules of that Canvas: the same minute is an error, less than 30 minutes apart a warning.
+   * schedules of that Canvas: the same minute is an error, less than 12 hours apart a warning.
    */
   app.post<{
     Body: { schedule: unknown; activeFrom?: string | null; activeTo?: string | null; frameId?: number; assignmentId?: number; collectionId?: number; enabled?: boolean };
@@ -314,13 +314,13 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
       const b = req.body ?? {};
       const schedule = parseSchedule(b.schedule);
       const window = windowFor(schedule, b.activeFrom, b.activeTo);
-      let close: { minutes: number; at: number; otherAt: number; collection: string } | undefined;
+      let close: { minutes: number; otherAt: number; collection: string } | undefined;
       if (b.frameId && b.enabled !== false) {
         const frameId = getFrame(db, +b.frameId).id;
         const prev = b.assignmentId ? getAssignmentById(db, +b.assignmentId) : undefined;
         const nextChange = plannedNextChange(frameId, prev?.frameId === frameId ? prev : undefined, b.collectionId, schedule, window);
         const check = assertNoClash(frameId, { id: prev?.id, schedule, ...window, nextChange }, requestLang(req, db));
-        if (check.close) close = { minutes: check.close.minutes, at: check.close.at, otherAt: check.close.otherAt, collection: collectionName(check.close.other.collectionId) };
+        if (check.close) close = { minutes: check.close.minutes, otherAt: check.close.otherAt, collection: collectionName(check.close.other.collectionId) };
       }
       return {
         ok: true,

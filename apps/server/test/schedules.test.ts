@@ -89,7 +89,7 @@ describe('several schedules on one Canvas', () => {
     expect(getAssignments(db, frame)).toHaveLength(1);
   });
 
-  it('allows changes a few minutes apart and warns when they are less than 30 minutes apart', async () => {
+  it('allows changes a few minutes apart and warns when they are less than 12 hours apart', async () => {
     const frame = await newFrame('Close');
     const a = await newCollection('Photos 2');
     const b = await newCollection('AI 2');
@@ -97,10 +97,14 @@ describe('several schedules on one Canvas', () => {
     const apart = await post(frame, { collectionId: b, schedule: cron('5 20 * * *') });
     expect(apart.statusCode).toBe(200);
     expect(apart.json().warnings).toEqual([expect.objectContaining({ kind: 'close', minutes: 5 })]);
-    const far = await post(frame, { collectionId: b, schedule: cron('0 7 * * *') });
-    expect(far.statusCode).toBe(200);
-    expect(far.json().warnings).toEqual([]);
+    // 7 hours before 20:00 is still too close…
+    const morning = await post(frame, { collectionId: b, schedule: cron('0 13 * * *') });
+    expect(morning.json().warnings).toEqual([expect.objectContaining({ kind: 'close', minutes: 7 * 60 })]);
     expect(getAssignments(db, frame)).toHaveLength(3);
+    // …while exactly 12 hours from the only other schedule is fine.
+    const other = await newFrame('Twelve');
+    await post(other, { collectionId: a, schedule: cron('0 7 * * *') });
+    expect((await post(other, { collectionId: b, schedule: cron('0 19 * * *') })).json().warnings).toEqual([]);
   });
 
   it('can change a schedule without clashing with itself, and clears a clash when paused', async () => {
@@ -183,6 +187,8 @@ describe('several schedules on one Canvas', () => {
     const check = checkSchedule(db, frame, { schedule: cron('15 20 * * *'), activeFrom: null, activeTo: null }, NOW);
     expect(check.clash).toBeUndefined();
     expect(check.close?.minutes).toBe(15);
+    // Exactly 12 hours apart: no warning.
+    expect(checkSchedule(db, frame, { schedule: cron('0 8 * * *'), activeFrom: null, activeTo: null }, NOW).close).toBeUndefined();
   });
 });
 
@@ -239,7 +245,7 @@ describe('a pull Canvas with several schedules', () => {
 });
 
 describe('the schedule preview while editing', () => {
-  it('compares with the other schedules of the Canvas: same minute is an error, close is a warning', async () => {
+  it('compares with the other schedules of the Canvas: same minute is an error, less than 12 hours a warning', async () => {
     const frame = await newFrame('Preview');
     const a = await newCollection('Photos P');
     const b = await newCollection('AI P');

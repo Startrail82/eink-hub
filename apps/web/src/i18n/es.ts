@@ -279,7 +279,7 @@ export const es = {
   'schedule.cron_ex3': 'el día 1 de cada mes a las 09:00',
   'schedule.cron_ex4': 'los sábados a las 09:00',
   'schedule.battery_warning':
-    'Cambios frecuentes despiertan el Canvas más a menudo y reducen mucho la duración de la batería. Para tinta electrónica se recomienda cambiar como mucho una vez al día.',
+    'Cambios frecuentes despiertan el Canvas más a menudo y reducen mucho la duración de la batería. Se recomienda cambiar como mucho una vez al día para prolongar la duración de la batería.',
   'schedule.next_changes': 'Próximos cambios: {list}',
   'schedule.desc_daily': 'Cada día a las {at}',
   'schedule.desc_days_one': 'Cada {n} día a las {at}',
@@ -565,7 +565,7 @@ export const es = {
   'week.empty_day': 'Sin cambios',
   'week.none': 'Este Canvas no tiene programaciones activas.',
   'plan.add': 'Añadir programación',
-  'schedule.close_warning': '«{name}» cambia la foto de este Canvas a las {time}, a solo {minutes} min. Cada cambio despierta el Canvas y gasta batería.',
+  'schedule.close_warning': '«{name}» cambia la foto de este Canvas a las {time}, a solo {gap}.',
   'canvasSettings.pill_title': 'Etiqueta de fecha',
   'canvasSettings.pill_hint': 'Colores y opacidad de la etiqueta con la fecha (y el lugar) que se dibuja sobre las imágenes de este Canvas. Por defecto es blanca y opaca; una etiqueta translúcida puede verse granulada en e-ink en color.',
   'canvasSettings.pill_bg': 'Fondo',

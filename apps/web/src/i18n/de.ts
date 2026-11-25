@@ -280,7 +280,7 @@ export const de: Catalogue = {
   'schedule.cron_ex3': 'am 1. jedes Monats um 09:00',
   'schedule.cron_ex4': 'samstags um 09:00',
   'schedule.battery_warning':
-    'Häufige Wechsel wecken das Canvas öfter auf und verkürzen die Akkulaufzeit erheblich. Bei E-Ink wird höchstens ein Wechsel pro Tag empfohlen.',
+    'Häufige Wechsel wecken das Canvas öfter auf und verkürzen die Akkulaufzeit erheblich. Damit der Akku länger hält, wird höchstens ein Wechsel pro Tag empfohlen.',
   'schedule.next_changes': 'Nächste Wechsel: {list}',
   'schedule.desc_daily': 'Jeden Tag um {at}',
   'schedule.desc_days_one': 'Jeden {n}. Tag um {at}',
@@ -566,7 +566,7 @@ export const de: Catalogue = {
   'week.empty_day': 'Keine Wechsel',
   'week.none': 'Dieses Canvas hat keine aktiven Zeitpläne.',
   'plan.add': 'Zeitplan hinzufügen',
-  'schedule.close_warning': '„{name}“ wechselt das Bild dieses Canvas um {time}, nur {minutes} Min. entfernt. Jeder Wechsel weckt den Canvas und kostet Akku.',
+  'schedule.close_warning': '„{name}“ wechselt das Bild dieses Canvas um {time}, nur {gap} entfernt.',
   'canvasSettings.pill_title': 'Datumsetikett',
   'canvasSettings.pill_hint': 'Farben und Deckkraft des Datums- (und Orts-)Etiketts auf den Bildern dieses Canvas. Standard ist weiß und deckend; ein durchscheinendes Etikett kann auf Farb-E-Ink körnig wirken.',
   'canvasSettings.pill_bg': 'Hintergrund',

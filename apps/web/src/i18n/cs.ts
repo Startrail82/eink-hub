@@ -290,7 +290,7 @@ export const cs: Catalogue = {
   'schedule.cron_ex3': 'prvního dne každého měsíce v 09:00',
   'schedule.cron_ex4': 'v sobotu v 09:00',
   'schedule.battery_warning':
-    'Časté změny budí Canvas častěji a výrazně zkracují výdrž baterie. U e-inku se doporučuje nejvýše jedna změna denně.',
+    'Časté změny budí Canvas častěji a výrazně zkracují výdrž baterie. Pro delší výdrž baterie se doporučuje měnit nejvýše jednou denně.',
   'schedule.next_changes': 'Další změny: {list}',
   'schedule.desc_daily': 'Každý den v {at}',
   'schedule.desc_days_one': 'Každý {n} den v {at}',
@@ -582,7 +582,7 @@ export const cs: Catalogue = {
   'week.empty_day': 'Žádné změny',
   'week.none': 'Tento Canvas nemá žádné aktivní plány.',
   'plan.add': 'Přidat plán',
-  'schedule.close_warning': '„{name}“ mění obrázek tohoto Canvasu v {time}, jen {minutes} min od tohoto. Každá změna Canvas probudí a stojí baterii.',
+  'schedule.close_warning': '„{name}“ mění obrázek tohoto Canvasu v {time}, jen {gap} od tohoto.',
   'canvasSettings.pill_title': 'Štítek s datem',
   'canvasSettings.pill_hint': 'Barvy a krytí štítku s datem (a místem), který se kreslí na obrázky tohoto Canvasu. Výchozí je bílý a nepropustný; průhledný štítek může na barevném e-inku působit zrnitě.',
   'canvasSettings.pill_bg': 'Pozadí',

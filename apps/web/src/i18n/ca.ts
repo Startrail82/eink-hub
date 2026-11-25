@@ -280,7 +280,7 @@ export const ca: Catalogue = {
   'schedule.cron_ex3': 'l’1 de cada mes a les 09:00',
   'schedule.cron_ex4': 'dissabtes a les 09:00',
   'schedule.battery_warning':
-    'Els canvis freqüents desperten el Canvas més sovint i redueixen molt la durada de la bateria. Per a e-ink es recomana canviar com a màxim un cop al dia.',
+    'Els canvis freqüents desperten el Canvas més sovint i redueixen molt la durada de la bateria. Es recomana canviar com a màxim un cop al dia per allargar la durada de la bateria.',
   'schedule.next_changes': 'Propers canvis: {list}',
   'schedule.desc_daily': 'Cada dia a les {at}',
   'schedule.desc_days_one': 'Cada {n} dia a les {at}',
@@ -566,7 +566,7 @@ export const ca: Catalogue = {
   'week.empty_day': 'Sense canvis',
   'week.none': 'Aquest Canvas no té programacions actives.',
   'plan.add': 'Afegeix programació',
-  'schedule.close_warning': '«{name}» canvia la foto d’aquest Canvas a les {time}, a només {minutes} min. Cada canvi desperta el Canvas i gasta bateria.',
+  'schedule.close_warning': '«{name}» canvia la foto d’aquest Canvas a les {time}, a només {gap}.',
   'canvasSettings.pill_title': 'Etiqueta de data',
   'canvasSettings.pill_hint': 'Colors i opacitat de l\'etiqueta amb la data (i el lloc) que es dibuixa sobre les imatges d\'aquest Canvas. Per defecte és blanca i opaca; una etiqueta translúcida pot veure\'s granulada en e-ink en color.',
   'canvasSettings.pill_bg': 'Fons',

@@ -280,7 +280,7 @@ export const eu: Messages = {
   'schedule.cron_ex3': 'hilabete bakoitzeko 1. egunean, 09:00etan',
   'schedule.cron_ex4': 'larunbatetan, 09:00etan',
   'schedule.battery_warning':
-    'Aldaketa maizek Canvasa sarriago esnatzen dute eta bateriaren iraupena asko murrizten dute. Tinta elektronikorako, egunean behin gehienez aldatzea gomendatzen da.',
+    'Aldaketa maizek Canvasa sarriago esnatzen dute eta bateriaren iraupena asko murrizten dute. Bateriak gehiago iraun dezan, egunean behin gehienez aldatzea gomendatzen da.',
   'schedule.next_changes': 'Hurrengo aldaketak: {list}',
   'schedule.desc_daily': 'Egunero, {at}',
   'schedule.desc_days_one': '{n} egunean behin, {at}',
@@ -566,7 +566,7 @@ export const eu: Messages = {
   'week.empty_day': 'Aldaketarik ez',
   'week.none': 'Canvas honek ez du programazio aktiborik.',
   'plan.add': 'Gehitu programazioa',
-  'schedule.close_warning': '«{name}»(e)k Canvas honen argazkia {time}etan aldatzen du, {minutes} min besterik ez. Aldaketa bakoitzak Canvasa esnatzen du eta bateria kontsumitzen du.',
+  'schedule.close_warning': '«{name}»(e)k Canvas honen argazkia {time}etan aldatzen du, {gap} besterik ez.',
   'canvasSettings.pill_title': 'Data etiketa',
   'canvasSettings.pill_hint': 'Canvas honetako irudien gainean marrazten den data (eta lekua) etiketaren koloreak eta opakotasuna. Lehenespenez zuria eta opakoa da; etiketa gardena koloretako e-inkean ale-ale ager daiteke.',
   'canvasSettings.pill_bg': 'Atzealdea',

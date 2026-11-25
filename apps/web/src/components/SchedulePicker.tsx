@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { BatteryWarning, CalendarClock, Clock } from 'lucide-react';
 import { api, type Schedule } from '../lib/api';
-import { clock, dateTime, weekdayName } from '../lib/format';
+import { clock, dateTime, duration, weekdayName } from '../lib/format';
 import { useI18n, type MsgKey } from '../i18n';
 import { Field, inputClass } from './ui';
 import { Select } from './Select';
@@ -85,7 +85,7 @@ export function SchedulePicker({
   disabled?: boolean;
   /**
    * Compare with the other schedules of this Canvas while editing: the same minute shows as an
-   * error (and makes the schedule invalid), less than 30 minutes apart as a warning.
+   * error (and makes the schedule invalid), less than 12 hours apart as a warning (like the battery one).
    */
   compare?: { frameId: number; assignmentId?: number; collectionId?: number; enabled: boolean };
 }) {
@@ -198,9 +198,17 @@ export function SchedulePicker({
       )}
 
       {preview.data?.ok && preview.data.close && (
+        // The battery note, starting with the other schedule that changes too close to this one.
         <div className="flex gap-3 rounded-2xl bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-900/25 dark:text-amber-200">
           <Clock className="mt-0.5 size-5 shrink-0" />
-          <p>{t('schedule.close_warning', { name: preview.data.close.collection, time: clock(preview.data.close.otherAt), minutes: preview.data.close.minutes })}</p>
+          <p>
+            {t('schedule.close_warning', {
+              name: preview.data.close.collection,
+              time: clock(preview.data.close.otherAt),
+              gap: duration(preview.data.close.minutes),
+            })}{' '}
+            {t('schedule.battery_warning')}
+          </p>
         </div>
       )}
 

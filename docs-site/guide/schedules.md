@@ -16,14 +16,14 @@ A frame can have one or more schedules. Each one has its own collection and timi
 - **Every N days / weeks** at a time, **monthly** on a day, or a **cron** expression.
 - **Order**: random (avoiding recent repeats), sequential or newest first.
 
-More than one change a day costs battery on battery-powered frames; the UI warns you.
+Changes less than 12 hours apart cost battery on battery-powered frames; the form warns you. Twice a day, 12 hours apart, is fine.
 
 ### Several schedules on one frame
 
 Add as many schedules as you like to a frame, for example one collection in the morning and another in the evening. Every schedule changes the picture on its own, at its own time, with its own collection, order, fit and active hours. Nothing has to be "active" at a given moment: whichever schedule comes up changes the picture, and the picture stays until the next change of any schedule.
 
 - Two schedules of the same frame can't change at exactly the same minute (for example `0 20 * * *` twice). The form says which schedule it clashes with while you pick the time, and Save stays off until you change it.
-- Two changes less than 30 minutes apart are allowed, but the form shows a warning as you pick the time: an e-ink refresh takes a while and costs battery. `0 20 * * *` and `5 20 * * *` are fine, just unusual.
+- Two schedules that change less than 12 hours apart are allowed, but the form shows the same battery warning as you pick the time, naming the other schedule. `0 7 * * *` and `0 19 * * *` get no warning; `0 7 * * *` and `20 7 * * *` do.
 - Paused schedules don't take part in the comparison. Resuming one that would clash is refused.
 - Hourly schedules are compared by their projected times, so for those the check is approximate.
 
