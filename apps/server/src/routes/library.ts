@@ -127,8 +127,9 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
 
   app.patch<{ Params: { id: string }; Body: { name?: string; config?: Record<string, unknown> } }>('/api/collections/:id', async (req) => {
     const col = getCollection(db, +req.params.id);
+    const name = typeof req.body.name === 'string' ? req.body.name.trim() : '';
     db.update(schema.collections)
-      .set({ ...(req.body.name ? { name: req.body.name } : {}), ...(req.body.config ? { config: req.body.config } : {}) })
+      .set({ ...(name ? { name } : {}), ...(req.body.config ? { config: req.body.config } : {}) })
       .where(eq(schema.collections.id, col.id))
       .run();
     const updated = getCollection(db, col.id);
