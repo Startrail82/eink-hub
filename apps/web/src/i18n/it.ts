@@ -567,4 +567,13 @@ export const it: Catalogue = {
   'week.none': 'Questo Canvas non ha programmazioni attive.',
   'plan.add': 'Aggiungi programmazione',
   'plan.warn_close': 'Attenzione: un\'altra programmazione di questo Canvas cambia alle {time}, a soli {minutes} min.',
+  'canvasSettings.pill_title': 'Etichetta della data',
+  'canvasSettings.pill_hint': 'Colori e opacità dell\'etichetta con la data (e il luogo) disegnata sulle immagini di questo Canvas. Di default è bianca e opaca; un\'etichetta traslucida può apparire granulosa su e-ink a colori.',
+  'canvasSettings.pill_bg': 'Sfondo',
+  'canvasSettings.pill_text': 'Testo',
+  'canvasSettings.pill_opacity': 'Opacità',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Ripristina',
+  'canvasSettings.pill_auto': 'Colori automatici',
+  'canvasSettings.pill_auto_hint': 'L\'Hub guarda la foto dove va l\'etichetta: sfondo chiaro sulle zone scure e scuro su quelle chiare, nella tonalità della foto. Sulle cornici in cui l\'Hub riduce l\'immagine a pochi colori, solo bianco o nero.',
 };

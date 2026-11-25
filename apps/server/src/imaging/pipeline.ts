@@ -1,5 +1,6 @@
 import sharp, { type Sharp } from 'sharp';
 import exifReader from 'exif-reader';
+import { AUTO, DEFAULT_PILL, autoPill, type PillStyle } from './pill.js';
 import type { FitMode } from '../db/schema.js';
 import type { ImageFormat } from '../device/drivers/types.js';
 import { PALETTES, ditherToPalette, encodeBmp, indicesToRgb } from './dither.js';
@@ -24,6 +25,8 @@ export interface RenderOptions {
   crop?: CropRect | null;
   /** Text drawn in a label at the bottom-left, e.g. the photo's date. */
   caption?: string | null;
+  /** Colours and opacity of the date label. */
+  pill?: PillStyle;
   quality?: number;
   /** Baseline JPEG unless the frame asks for something else. */
   format?: ImageFormat;
@@ -74,7 +77,7 @@ export async function renderForFrame(src: Buffer, o: RenderOptions): Promise<Buf
     composed = await sharp(oriented).resize(tw, th, { fit: 'cover', position: sharp.strategy.attention }).toBuffer();
   }
 
-  if (o.caption) composed = await addCaption(composed, o.caption, tw, th);
+  if (o.caption) composed = await addCaption(composed, o.caption, tw, th, o.pill ?? DEFAULT_PILL, !!o.format?.palette);
 
   let out = sharp(composed);
   if (o.landscape && o.rotate) out = out.rotate(o.rotate);
@@ -112,19 +115,21 @@ export async function convertRender(jpeg: Buffer, f: ImageFormat): Promise<Buffe
 const escapeMarkup = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 /**
- * Solid white rounded label with dark text, bottom-left. Solid colours dither cleanly on
- * colour e-ink; translucent gradients would turn into noise.
+ * Rounded label bottom-left, white with dark text unless the Canvas chose other colours, or
+ * "auto" ones taken from the picture under it. Solid colours dither cleanly on colour e-ink;
+ * translucent ones turn into some noise. `plain`: the hub dithers to a palette, so an automatic
+ * label stays white or black instead of a tint.
  */
-async function addCaption(img: Buffer, caption: string, w: number, h: number): Promise<Buffer> {
-  const textLabel = (size: number) =>
+async function addCaption(img: Buffer, caption: string, w: number, h: number, style: PillStyle, plain = false): Promise<Buffer> {
+  const textLabel = (size: number, colour: string) =>
     sharp({
-      text: { text: `<span foreground="#1d1c1a">${escapeMarkup(caption)}</span>`, font: `Inter,Arial,DejaVu Sans,Sans Semi-Bold ${size}`, dpi: 72, rgba: true },
+      text: { text: `<span foreground="${colour}">${escapeMarkup(caption)}</span>`, font: `Inter,Arial,DejaVu Sans,Sans Semi-Bold ${size}`, dpi: 72, rgba: true },
     })
       .png()
       .toBuffer({ resolveWithObject: true });
   const margin = Math.round(Math.min(w, h) * 0.04);
   let size = Math.max(14, Math.round(Math.min(w, h) * 0.032));
-  let label = await textLabel(size);
+  let label = await textLabel(size, style.text);
   // A long caption (date · city, country) must stay inside the pill: shrink the font to fit,
   // and if it is still too wide at the smallest size, cut the text at the pill's edge.
   const room = (s: number) => w - 2 * margin - 2 * Math.round(s * 0.75);
@@ -132,21 +137,30 @@ async function addCaption(img: Buffer, caption: string, w: number, h: number): P
     const smaller = Math.max(10, Math.floor((size * room(size)) / label.info.width));
     if (smaller < size) {
       size = smaller;
-      label = await textLabel(size);
+      label = await textLabel(size, style.text);
     }
   }
-  if (label.info.width > room(size)) {
-    const width = Math.max(1, room(size));
-    label = await sharp(label.data).extract({ left: 0, top: 0, width, height: label.info.height }).png().toBuffer({ resolveWithObject: true });
-  }
+  const fit = async (l: typeof label) =>
+    l.info.width > room(size)
+      ? sharp(l.data).extract({ left: 0, top: 0, width: Math.max(1, room(size)), height: l.info.height }).png().toBuffer({ resolveWithObject: true })
+      : l;
+  label = await fit(label);
   const padX = Math.round(size * 0.75);
   const padY = Math.round(size * 0.45);
   const pillW = Math.min(w - 2 * margin, label.info.width + 2 * padX);
   const pillH = label.info.height + 2 * padY;
-  const pill = Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${pillW}" height="${pillH}"><rect width="${pillW}" height="${pillH}" rx="${pillH / 2}" fill="#ffffff"/></svg>`,
-  );
   const top = h - margin - pillH;
+  let { bg, text } = style;
+  if (bg === AUTO) {
+    // The mean colour of the picture where the label goes decides it; the text is drawn again
+    // in the colour that goes with it (same size, so the pill doesn't move).
+    const { channels } = await sharp(img).extract({ left: margin, top, width: pillW, height: pillH }).removeAlpha().stats();
+    ({ bg, text } = autoPill([channels[0].mean, channels[1].mean, channels[2].mean], plain));
+    label = await fit(await textLabel(size, text));
+  }
+  const pill = Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${pillW}" height="${pillH}"><rect width="${pillW}" height="${pillH}" rx="${pillH / 2}" fill="${bg}" fill-opacity="${style.opacity / 100}"/></svg>`,
+  );
   return sharp(img)
     .composite([
       { input: pill, left: margin, top },

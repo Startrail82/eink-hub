@@ -567,4 +567,13 @@ export const gl: Catalogue = {
   'week.none': 'Este Canvas non ten programacións activas.',
   'plan.add': 'Engadir programación',
   'plan.warn_close': 'Ollo: outra programación deste Canvas cambia ás {time}, a só {minutes} min.',
+  'canvasSettings.pill_title': 'Etiqueta de data',
+  'canvasSettings.pill_hint': 'Cores e opacidade da etiqueta coa data (e o lugar) que se debuxa sobre as imaxes deste Canvas. Por defecto é branca e opaca; unha etiqueta translúcida pode verse granulada en e-ink en cor.',
+  'canvasSettings.pill_bg': 'Fondo',
+  'canvasSettings.pill_text': 'Texto',
+  'canvasSettings.pill_opacity': 'Opacidade',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Restablecer',
+  'canvasSettings.pill_auto': 'Cores automáticas',
+  'canvasSettings.pill_auto_hint': 'O Hub mira a foto onde vai a etiqueta e pon un fondo claro sobre zonas escuras e un escuro sobre zonas claras, no ton da foto. En marcos onde o Hub reduce a imaxe a poucas cores, só branco ou negro.',
 };

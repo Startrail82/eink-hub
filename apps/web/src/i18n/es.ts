@@ -566,6 +566,15 @@ export const es = {
   'week.none': 'Este Canvas no tiene programaciones activas.',
   'plan.add': 'Añadir programación',
   'plan.warn_close': 'Ojo: otra programación de este Canvas cambia a las {time}, a solo {minutes} min.',
+  'canvasSettings.pill_title': 'Etiqueta de fecha',
+  'canvasSettings.pill_hint': 'Colores y opacidad de la etiqueta con la fecha (y el lugar) que se dibuja sobre las imágenes de este Canvas. Por defecto es blanca y opaca; una etiqueta translúcida puede verse granulada en e-ink en color.',
+  'canvasSettings.pill_bg': 'Fondo',
+  'canvasSettings.pill_text': 'Texto',
+  'canvasSettings.pill_opacity': 'Opacidad',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Restablecer',
+  'canvasSettings.pill_auto': 'Colores automáticos',
+  'canvasSettings.pill_auto_hint': 'El Hub mira la foto donde va la etiqueta y pone un fondo claro sobre zonas oscuras y uno oscuro sobre zonas claras, en el tono de la foto. En marcos donde el Hub reduce la imagen a pocos colores, solo blanco o negro.',
 };
 
 export type Messages = Record<keyof typeof es, string>;

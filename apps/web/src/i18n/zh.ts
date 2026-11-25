@@ -567,4 +567,13 @@ export const zh: Catalogue = {
   'week.none': '此 Canvas 没有启用的计划。',
   'plan.add': '添加计划',
   'plan.warn_close': '注意：此 Canvas 的另一个计划在 {time} 切换，仅相差 {minutes} 分钟。',
+  'canvasSettings.pill_title': '日期标签',
+  'canvasSettings.pill_hint': '此 Canvas 图片上绘制的日期（和地点）标签的颜色与不透明度。默认是白色不透明；半透明标签在彩色墨水屏上可能显得有颗粒感。',
+  'canvasSettings.pill_bg': '背景',
+  'canvasSettings.pill_text': '文字',
+  'canvasSettings.pill_opacity': '不透明度',
+  'canvasSettings.pill_sample': '2026年11月21日',
+  'canvasSettings.pill_reset': '重置',
+  'canvasSettings.pill_auto': '自动颜色',
+  'canvasSettings.pill_auto_hint': 'Hub 会查看标签所在位置的照片：暗处用浅色背景，亮处用深色背景，并沿用照片的色调。在 Hub 将图片减少为少数几种颜色的相框上，只用白色或黑色。',
 };

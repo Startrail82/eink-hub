@@ -583,4 +583,13 @@ export const ru: Catalogue = {
   'week.none': 'У этого Canvas нет активных расписаний.',
   'plan.add': 'Добавить расписание',
   'plan.warn_close': 'Внимание: другое расписание этого Canvas меняет картинку в {time}, всего в {minutes} мин.',
+  'canvasSettings.pill_title': 'Плашка с датой',
+  'canvasSettings.pill_hint': 'Цвета и непрозрачность плашки с датой (и местом) на картинках этого Canvas. По умолчанию она белая и непрозрачная; полупрозрачная плашка может выглядеть зернистой на цветном e-ink.',
+  'canvasSettings.pill_bg': 'Фон',
+  'canvasSettings.pill_text': 'Текст',
+  'canvasSettings.pill_opacity': 'Непрозрачность',
+  'canvasSettings.pill_sample': '21 нояб. 2026',
+  'canvasSettings.pill_reset': 'Сбросить',
+  'canvasSettings.pill_auto': 'Автоматические цвета',
+  'canvasSettings.pill_auto_hint': 'Hub смотрит на фото там, где будет плашка: светлый фон на тёмных участках и тёмный на светлых, в оттенке фото. Для рамок, где Hub сводит картинку к нескольким цветам, только белый или чёрный.',
 };

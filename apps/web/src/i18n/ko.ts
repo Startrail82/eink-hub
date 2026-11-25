@@ -567,4 +567,13 @@ export const ko: Catalogue = {
   'week.none': '이 Canvas에는 활성 일정이 없습니다.',
   'plan.add': '일정 추가',
   'plan.warn_close': '주의: 이 Canvas의 다른 일정이 {time}에 바뀝니다. 불과 {minutes}분 차이입니다.',
+  'canvasSettings.pill_title': '날짜 라벨',
+  'canvasSettings.pill_hint': '이 Canvas의 이미지에 그려지는 날짜(및 장소) 라벨의 색과 불투명도입니다. 기본값은 흰색 불투명이며, 반투명 라벨은 컬러 e-ink에서 거칠게 보일 수 있습니다.',
+  'canvasSettings.pill_bg': '배경',
+  'canvasSettings.pill_text': '글자',
+  'canvasSettings.pill_opacity': '불투명도',
+  'canvasSettings.pill_sample': '2026년 11월 21일',
+  'canvasSettings.pill_reset': '초기화',
+  'canvasSettings.pill_auto': '자동 색상',
+  'canvasSettings.pill_auto_hint': 'Hub가 라벨이 놓일 곳의 사진을 보고 어두운 부분에는 밝은 배경, 밝은 부분에는 어두운 배경을 사진의 색조로 사용합니다. Hub가 이미지를 몇 가지 색으로 줄이는 액자에서는 흰색 또는 검은색만 씁니다.',
 };

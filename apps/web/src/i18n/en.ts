@@ -567,4 +567,13 @@ export const en: Messages = {
   'week.none': 'This Canvas has no active schedules.',
   'plan.add': 'Add schedule',
   'plan.warn_close': 'Note: another schedule of this Canvas changes at {time}, only {minutes} min apart.',
+  'canvasSettings.pill_title': 'Date label',
+  'canvasSettings.pill_hint': 'Colours and opacity of the date (and place) label drawn on this Canvas\'s pictures. By default it is white and solid; a see-through label can look grainy on colour e-ink.',
+  'canvasSettings.pill_bg': 'Background',
+  'canvasSettings.pill_text': 'Text',
+  'canvasSettings.pill_opacity': 'Opacity',
+  'canvasSettings.pill_sample': '21 Nov 2026',
+  'canvasSettings.pill_reset': 'Reset',
+  'canvasSettings.pill_auto': 'Automatic colours',
+  'canvasSettings.pill_auto_hint': 'The Hub looks at the photo where the label goes and uses a light background over dark areas and a dark one over light areas, in the photo\'s own tone. On frames where the Hub reduces the picture to a few colours, only white or black.',
 };

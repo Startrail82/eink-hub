@@ -567,4 +567,13 @@ export const ja: Catalogue = {
   'week.none': 'このCanvasには有効なスケジュールがありません。',
   'plan.add': 'スケジュールを追加',
   'plan.warn_close': '注意：このCanvasの別のスケジュールが{time}に切り替わります（わずか{minutes}分差）。',
+  'canvasSettings.pill_title': '日付ラベル',
+  'canvasSettings.pill_hint': 'この Canvas の画像に描かれる日付（と場所）ラベルの色と不透明度。初期設定は白の不透明です。半透明にするとカラー e-ink ではざらついて見えることがあります。',
+  'canvasSettings.pill_bg': '背景',
+  'canvasSettings.pill_text': '文字',
+  'canvasSettings.pill_opacity': '不透明度',
+  'canvasSettings.pill_sample': '2026年11月21日',
+  'canvasSettings.pill_reset': 'リセット',
+  'canvasSettings.pill_auto': '自動の色',
+  'canvasSettings.pill_auto_hint': 'Hub がラベルの位置の写真を見て、暗い部分には明るい背景、明るい部分には暗い背景を写真の色味で使います。Hub が画像を少数の色に減らすフレームでは白か黒のみです。',
 };

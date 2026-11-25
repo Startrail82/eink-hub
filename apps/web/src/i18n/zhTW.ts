@@ -567,4 +567,13 @@ export const zhTW: Catalogue = {
   'week.none': '此 Canvas 沒有啟用的排程。',
   'plan.add': '新增排程',
   'plan.warn_close': '注意：此 Canvas 的另一個排程在 {time} 切換，僅相差 {minutes} 分鐘。',
+  'canvasSettings.pill_title': '日期標籤',
+  'canvasSettings.pill_hint': '此 Canvas 圖片上繪製的日期（與地點）標籤的顏色與不透明度。預設為白色不透明；半透明標籤在彩色電子紙上可能顯得有顆粒感。',
+  'canvasSettings.pill_bg': '背景',
+  'canvasSettings.pill_text': '文字',
+  'canvasSettings.pill_opacity': '不透明度',
+  'canvasSettings.pill_sample': '2026年11月21日',
+  'canvasSettings.pill_reset': '重設',
+  'canvasSettings.pill_auto': '自動顏色',
+  'canvasSettings.pill_auto_hint': 'Hub 會查看標籤所在位置的照片：暗處用淺色背景，亮處用深色背景，並沿用照片的色調。在 Hub 將圖片減少為少數幾種顏色的相框上，只用白色或黑色。',
 };

@@ -583,4 +583,13 @@ export const pl: Catalogue = {
   'week.none': 'Ten Canvas nie ma aktywnych harmonogramów.',
   'plan.add': 'Dodaj harmonogram',
   'plan.warn_close': 'Uwaga: inny harmonogram tego Canvasa zmienia się o {time}, zaledwie {minutes} min różnicy.',
+  'canvasSettings.pill_title': 'Etykieta daty',
+  'canvasSettings.pill_hint': 'Kolory i krycie etykiety z datą (i miejscem) rysowanej na obrazach tego Canvasa. Domyślnie jest biała i nieprzezroczysta; półprzezroczysta etykieta może wyglądać ziarniście na kolorowym e-ink.',
+  'canvasSettings.pill_bg': 'Tło',
+  'canvasSettings.pill_text': 'Tekst',
+  'canvasSettings.pill_opacity': 'Krycie',
+  'canvasSettings.pill_sample': '21 lis 2026',
+  'canvasSettings.pill_reset': 'Przywróć',
+  'canvasSettings.pill_auto': 'Automatyczne kolory',
+  'canvasSettings.pill_auto_hint': 'Hub sprawdza zdjęcie w miejscu etykiety: jasne tło na ciemnych obszarach, ciemne na jasnych, w odcieniu zdjęcia. W ramkach, dla których Hub redukuje obraz do kilku kolorów, tylko biel lub czerń.',
 };

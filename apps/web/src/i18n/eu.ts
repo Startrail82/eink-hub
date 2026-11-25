@@ -567,4 +567,13 @@ export const eu: Messages = {
   'week.none': 'Canvas honek ez du programazio aktiborik.',
   'plan.add': 'Gehitu programazioa',
   'plan.warn_close': 'Kontuz: Canvas honen beste programazio batek {time}etan aldatzen du, {minutes} min besterik gabe.',
+  'canvasSettings.pill_title': 'Data etiketa',
+  'canvasSettings.pill_hint': 'Canvas honetako irudien gainean marrazten den data (eta lekua) etiketaren koloreak eta opakotasuna. Lehenespenez zuria eta opakoa da; etiketa gardena koloretako e-inkean ale-ale ager daiteke.',
+  'canvasSettings.pill_bg': 'Atzealdea',
+  'canvasSettings.pill_text': 'Testua',
+  'canvasSettings.pill_opacity': 'Opakotasuna',
+  'canvasSettings.pill_sample': '2026ko aza. 21',
+  'canvasSettings.pill_reset': 'Berrezarri',
+  'canvasSettings.pill_auto': 'Kolore automatikoak',
+  'canvasSettings.pill_auto_hint': 'Hub-ak etiketa doan argazkiaren zatiari begiratzen dio: atzealde argia zati ilunen gainean eta iluna zati argien gainean, argazkiaren tonuan. Hub-ak irudia kolore gutxitara murrizten duen markoetan, zuria edo beltza bakarrik.',
 };
