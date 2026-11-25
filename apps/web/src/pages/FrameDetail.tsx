@@ -464,6 +464,7 @@ function FrameLookSettings({ frame }: { frame: Frame }) {
   );
 }
 
+/** Same as DEFAULT_PILL in apps/server/src/imaging/pill.ts: keep them in sync. */
 const PILL_DEFAULT = { bg: '#ffffff', text: '#1d1c1a', opacity: 100 };
 
 const withAlpha = (hex: string, percent: number) => {
@@ -471,13 +472,19 @@ const withAlpha = (hex: string, percent: number) => {
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${percent / 100})`;
 };
 
-/** Colours and see-through-ness of the date and weather labels drawn on this Canvas's pictures. */
+/** Colours and see-through-ness of the date label drawn on this Canvas's pictures. */
 function PillSettings({ frame }: { frame: Frame }) {
   const { t } = useI18n();
   const saved = frame.config.pill;
   const [bg, setBg] = useState(saved?.bg ?? PILL_DEFAULT.bg);
   const [text, setText] = useState(saved?.text ?? PILL_DEFAULT.text);
   const [opacity, setOpacity] = useState(saved?.opacity ?? PILL_DEFAULT.opacity);
+  // Follow what is saved when it changes elsewhere (another tab, a refetch after saving).
+  useEffect(() => {
+    setBg(saved?.bg ?? PILL_DEFAULT.bg);
+    setText(saved?.text ?? PILL_DEFAULT.text);
+    setOpacity(saved?.opacity ?? PILL_DEFAULT.opacity);
+  }, [saved?.bg, saved?.text, saved?.opacity]);
   const save = useAction(() => api.patch(`/api/frames/${frame.id}`, { config: { pill: { bg, text, opacity } } }), { success: t('common.saved') });
   const reset = useAction(
     async () => {

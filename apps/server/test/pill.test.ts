@@ -33,6 +33,9 @@ describe('pill style', () => {
     expect(resolvePill({ bg: 'red', text: '#12', opacity: 500 })).toEqual({ ...DEFAULT_PILL, opacity: 100 });
     expect(resolvePill({ opacity: 3 }).opacity).toBe(10);
     expect(resolvePill({ opacity: Number.NaN }).opacity).toBe(100);
+    // Not a number at all: the default, not the 10% floor.
+    expect(resolvePill({ opacity: null as unknown as number }).opacity).toBe(100);
+    expect(resolvePill({ opacity: '' as unknown as number }).opacity).toBe(100);
   });
 
   it('draws the labels in the chosen colours', async () => {
@@ -43,8 +46,9 @@ describe('pill style', () => {
       const i = (y * r.info.width + x) * r.info.channels;
       return [...r.data.subarray(i, i + 3)];
     };
-    // Left edge of the date pill, inside it but clear of the text: x=30, a line above the bottom.
-    const y = 800 - 24 - 6;
+    // Inside the date pill at its vertical middle, left of the text and clear of the rounded
+    // corner's anti-aliasing: margin 24, the pill is about 42px tall at this size.
+    const y = 800 - 24 - 21;
     expect(await px(await renderForFrame(src, base), 30, y)).toEqual([255, 255, 255]);
     expect(await px(await renderForFrame(src, { ...base, pill: { bg: '#000000', text: '#ffffff', opacity: 100 } }), 30, y)).toEqual([0, 0, 0]);
     const half = await px(await renderForFrame(src, { ...base, pill: { bg: '#000000', text: '#ffffff', opacity: 50 } }), 30, y);

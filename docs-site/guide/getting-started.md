@@ -48,7 +48,7 @@ The first time a frame connects it shows a welcome picture with a QR code that o
 
 ## Send a photo
 
-Upload photos in **Library** (or connect [Immich](/guide/immich)), open one and press **Send**. The preview is exactly what the frame will receive. You can let the hub find the subject (smart crop), crop by hand, fit with a border or fit on a blurred background. Tick **Show the photo's date** to add a small label with the date it was taken in the bottom-left corner, as a schedule can. The colours and the opacity of that label are set per Canvas, under **Settings → Date and weather labels**. It is white and solid by default; a see-through label can look slightly grainy on a colour e-ink panel.
+Upload photos in **Library** (or connect [Immich](/guide/immich)), open one and press **Send**. The preview is exactly what the frame will receive. You can let the hub find the subject (smart crop), crop by hand, fit with a border or fit on a blurred background. Tick **Show the photo's date** to add a small label with the date it was taken in the bottom-left corner, as a schedule can. The colours and the opacity of that label are set per Canvas, under **Settings → Date label**. It is white and solid by default; a see-through label can look slightly grainy on a colour e-ink panel.
 
 If the frame is asleep, the photo is queued and shown the next time it wakes.
 
