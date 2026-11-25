@@ -61,7 +61,12 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
-      - run: node scripts/check-commits.mjs "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+      # The script comes from the base, not the checked-out head: a branch cut
+      # before it existed would otherwise fail with "Cannot find module", and a
+      # pull request can't loosen the check by editing it.
+      - run: |
+          git show "${{ github.event.pull_request.base.sha }}:scripts/check-commits.mjs" > "$RUNNER_TEMP/check-commits.mjs"
+          node "$RUNNER_TEMP/check-commits.mjs" "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
 
   # Same build as a release, thrown away afterwards.
   docker-build:
