@@ -65,5 +65,11 @@ describe('matching the way a Canvas hangs', () => {
     // Hang the Canvas the other way and the other picture is the one that fits.
     await app.inject({ method: 'PATCH', url: `/api/frames/${frameId}`, payload: { orientation: 'landscape' } });
     expect(picks(on.id)).toEqual(new Set([wide]));
+
+    // A client that leaves the option out (older app, the one-schedule endpoint) keeps what was set.
+    const kept = await app.inject({ method: 'PUT', url: `/api/assignments/${on.id}`, payload: { collectionId } });
+    expect(kept.json().assignment.matchOrientation).toBe(true);
+    const legacy = await app.inject({ method: 'PUT', url: `/api/frames/${frameId}/assignment`, payload: { collectionId } });
+    expect(legacy.json().matchOrientation).toBe(true);
   });
 });
