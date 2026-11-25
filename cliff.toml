@@ -14,16 +14,36 @@ web share a single number (see `VERSION` at the repository root).
 Generated automatically from commit messages. The 0.1.0 entry is the only
 one written by hand: it summarises everything before the first release.
 """
-# Each new release is prepended to what is already there (--prepend in
+# Each new release is inserted above what is already there (by
 # scripts/release.mjs), so this body only describes ONE version.
-body = """{% if version %}## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}{% else %}## [Unreleased]{% endif %}
+#
+# Commits by anyone other than the maintainer get "by @user" (looked up on
+# GitHub, see [remote.github]), and people whose first pull request lands in
+# this version are listed under "New contributors". Bots are not credited.
+# Mentions are links because a bare @user isn't linked inside a file;
+# scripts/release-notes.mjs turns them back into @user for the Release page.
+body = """{% macro credited(user) %}{% if user and user != "yayitazale" and user is not ending_with("[bot]") %}true{% endif %}{% endmacro credited %}\
+{% if version %}## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}{% else %}## [Unreleased]{% endif %}
 {% for group, commits in commits | group_by(attribute="group") %}
 ### {{ group | striptags | trim }}
 {% for commit in commits %}
-- {% if commit.scope %}**{{ commit.scope }}**: {% endif %}{{ commit.message | upper_first }} ([{{ commit.id | truncate(length=8, end="") }}](https://github.com/yayitazale/eink-hub/commit/{{ commit.id }})){% endfor %}
-{% endfor %}"""
+- {% if commit.scope %}**{{ commit.scope }}**: {% endif %}{{ commit.message | upper_first }} ([{{ commit.id | truncate(length=8, end="") }}](https://github.com/yayitazale/eink-hub/commit/{{ commit.id }})){% if self::credited(user=commit.remote.username) %} by [@{{ commit.remote.username }}](https://github.com/{{ commit.remote.username }}){% if commit.remote.pr_number %} in [#{{ commit.remote.pr_number }}](https://github.com/yayitazale/eink-hub/pull/{{ commit.remote.pr_number }}){% endif %}{% endif %}{% endfor %}
+{% endfor %}\
+{% set newcomers = [] %}{% if github %}{% for contributor in github.contributors | filter(attribute="is_first_time", value=true) %}{% if self::credited(user=contributor.username) %}{% set_global newcomers = newcomers | concat(with=contributor) %}{% endif %}{% endfor %}{% endif %}\
+{% if newcomers | length > 0 %}
+### New contributors
+{% for contributor in newcomers %}
+- [@{{ contributor.username }}](https://github.com/{{ contributor.username }}) made their first contribution{% if contributor.pr_number %} in [#{{ contributor.pr_number }}](https://github.com/yayitazale/eink-hub/pull/{{ contributor.pr_number }}){% endif %}{% endfor %}
+{% endif %}"""
 trim = false
 footer = ""
+
+# Who wrote each commit and which pull request brought it, for the credits in
+# the body. Needs a token in GITHUB_TOKEN; scripts/release.mjs takes it from
+# `gh auth token` when it isn't set.
+[remote.github]
+owner = "yayitazale"
+repo = "eink-hub"
 
 [git]
 conventional_commits = true

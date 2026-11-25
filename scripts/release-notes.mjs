@@ -30,8 +30,16 @@ export function changelogSection(changelog, version) {
   return body || null
 }
 
+/** CHANGELOG.md writes credits as [@user](https://github.com/user), since a
+ *  bare @user isn't linked inside a file. On the Release page a plain @user is
+ *  better: GitHub links it and lists the contributors with their avatars. */
+export function plainMentions(markdown) {
+  return markdown.replace(/\[@([A-Za-z0-9-]+)\]\(https:\/\/github\.com\/\1\)/g, '@$1')
+}
+
 export function releaseNotes(changelog, tag) {
-  const section = changelogSection(changelog, tag)
+  const raw = changelogSection(changelog, tag)
+  const section = raw && plainMentions(raw)
   const link = `[Full changelog](${REPO_URL}/blob/${tag}/CHANGELOG.md)`
   return [
     `Image: \`${IMAGE}:${tag}\``,
