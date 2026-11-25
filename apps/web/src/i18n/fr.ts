@@ -231,7 +231,7 @@ export const fr: Catalogue = {
   'assign.hide_home_country': 'Masquer le pays d’origine',
   'assign.hide_home_country_hint': 'Les photos de votre pays d’origine n’affichent que la ville. Indiquez le pays d’origine dans les Réglages.',
   'settings.home_country': 'Pays d’origine',
-  'settings.home_country_hint': 'Sert à masquer le pays dans le lieu des photos. Avec Immich, la liste affiche les pays de vos photos.',
+  'settings.home_country_hint': 'Sert à masquer le pays dans le lieu des photos.',
   'settings.home_country_hint_type': 'Sert à masquer le pays dans le lieu des photos. Saisissez-le comme Immich l’affiche, en général en anglais (par exemple Belgium).',
   'settings.home_country_none': 'Aucun',
   'assign.remove': 'Supprimer le planning',

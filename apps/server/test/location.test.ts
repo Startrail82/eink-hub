@@ -142,9 +142,13 @@ describe('looking up a missing location', () => {
     expect([rowOf('lookup-none').city, rowOf('lookup-none').country]).toEqual(['', '']);
     expect(hits.filter((h) => h === 'lookup-none')).toHaveLength(1);
   });
-  it('lists the countries in the library for the home country picker', async () => {
+  it('lists every country for the home country picker, with or without photos from it', async () => {
     const { app } = await buildApp(db, { logger: false });
-    expect((await app.inject({ url: '/api/countries' })).json()).toEqual(['Belgium', 'Italy']);
+    const list: string[] = (await app.inject({ url: '/api/countries' })).json();
+    // Every country, including ones with no photos yet, without duplicates.
+    expect(list.length).toBeGreaterThan(200);
+    expect(list).toEqual(expect.arrayContaining(['Belgium', 'Italy', 'Spain', 'Namibia']));
+    expect(list.filter((c) => c === 'Italy')).toHaveLength(1);
     await app.close();
   });
   it('fills in the date of a photo imported by bare id when the caption needs it', async () => {

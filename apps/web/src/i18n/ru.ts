@@ -239,7 +239,7 @@ export const ru: Catalogue = {
   'assign.hide_home_country': 'Не показывать родную страну',
   'assign.hide_home_country_hint': 'Для фото из вашей родной страны показывается только город. Укажите родную страну в Настройках.',
   'settings.home_country': 'Родная страна',
-  'settings.home_country_hint': 'Нужна, чтобы не показывать страну в месте съёмки. С Immich в списке — страны из ваших фото.',
+  'settings.home_country_hint': 'Нужна, чтобы не показывать страну в месте съёмки.',
   'settings.home_country_hint_type': 'Нужна, чтобы не показывать страну в месте съёмки. Введите её так, как её показывает Immich, обычно по-английски (например, Belgium).',
   'settings.home_country_none': 'Нет',
   'assign.remove': 'Удалить расписание',

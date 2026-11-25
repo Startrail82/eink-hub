@@ -239,7 +239,7 @@ export const pl: Catalogue = {
   'assign.hide_home_country': 'Pomiń kraj ojczysty',
   'assign.hide_home_country_hint': 'Zdjęcia z Twojego kraju ojczystego pokazują tylko miasto. Ustaw kraj ojczysty w Ustawieniach.',
   'settings.home_country': 'Kraj ojczysty',
-  'settings.home_country_hint': 'Służy do pomijania kraju w miejscu zdjęcia. Z Immich lista pokazuje kraje z Twoich zdjęć.',
+  'settings.home_country_hint': 'Służy do pomijania kraju w miejscu zdjęcia.',
   'settings.home_country_hint_type': 'Służy do pomijania kraju w miejscu zdjęcia. Wpisz go tak, jak pokazuje go Immich, zwykle po angielsku (na przykład Belgium).',
   'settings.home_country_none': 'Brak',
   'assign.remove': 'Usuń harmonogram',

@@ -231,7 +231,7 @@ export const ja: Catalogue = {
   'assign.hide_home_country': '自国を表示しない',
   'assign.hide_home_country_hint': '自国で撮影した写真は市区町村だけを表示します。自国は設定で指定してください。',
   'settings.home_country': '自国',
-  'settings.home_country_hint': '写真の場所から国名を省くために使います。Immich を使う場合、一覧には写真に含まれる国が表示されます。',
+  'settings.home_country_hint': '写真の場所から国名を省くために使います。',
   'settings.home_country_hint_type': '写真の場所から国名を省くために使います。Immich での表記のとおり、通常は英語で入力してください（例: Belgium）。',
   'settings.home_country_none': 'なし',
   'assign.remove': 'スケジュールを削除',

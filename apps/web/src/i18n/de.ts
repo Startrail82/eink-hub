@@ -231,7 +231,7 @@ export const de: Catalogue = {
   'assign.hide_home_country': 'Heimatland weglassen',
   'assign.hide_home_country_hint': 'Fotos aus deinem Heimatland zeigen nur die Stadt. Lege das Heimatland in den Einstellungen fest.',
   'settings.home_country': 'Heimatland',
-  'settings.home_country_hint': 'Wird genutzt, um das Land beim Ort der Fotos wegzulassen. Mit Immich zeigt die Liste die Länder deiner Fotos.',
+  'settings.home_country_hint': 'Wird genutzt, um das Land beim Ort der Fotos wegzulassen.',
   'settings.home_country_hint_type': 'Wird genutzt, um das Land beim Ort der Fotos wegzulassen. Gib es so ein, wie Immich es anzeigt, meist auf Englisch (zum Beispiel Belgium).',
   'settings.home_country_none': 'Keins',
   'assign.remove': 'Zeitplan entfernen',

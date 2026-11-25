@@ -231,7 +231,7 @@ export const nl: Catalogue = {
   'assign.hide_home_country': 'Thuisland weglaten',
   'assign.hide_home_country_hint': 'Foto’s uit je thuisland tonen alleen de stad. Stel het thuisland in bij Instellingen.',
   'settings.home_country': 'Thuisland',
-  'settings.home_country_hint': 'Wordt gebruikt om het land weg te laten bij de locatie van foto’s. Met Immich toont de lijst de landen uit je foto’s.',
+  'settings.home_country_hint': 'Wordt gebruikt om het land weg te laten bij de locatie van foto’s.',
   'settings.home_country_hint_type': 'Wordt gebruikt om het land weg te laten bij de locatie van foto’s. Typ het zoals Immich het toont, meestal in het Engels (bijvoorbeeld Belgium).',
   'settings.home_country_none': 'Geen',
   'assign.remove': 'Planning verwijderen',

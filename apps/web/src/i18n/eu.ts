@@ -231,7 +231,7 @@ export const eu: Messages = {
   'assign.hide_home_country': 'Ez erakutsi jatorrizko herrialdea',
   'assign.hide_home_country_hint': 'Zure jatorrizko herrialdeko argazkiek hiria bakarrik erakusten dute. Ezarri jatorrizko herrialdea Ezarpenetan.',
   'settings.home_country': 'Jatorrizko herrialdea',
-  'settings.home_country_hint': 'Argazkien kokalekuan herrialdea kentzeko erabiltzen da. Immich-ekin, zerrendak zure argazkietako herrialdeak erakusten ditu.',
+  'settings.home_country_hint': 'Argazkien kokalekuan herrialdea kentzeko erabiltzen da.',
   'settings.home_country_hint_type': 'Argazkien kokalekuan herrialdea kentzeko erabiltzen da. Idatzi Immich-ek erakusten duen bezala, normalean ingelesez (adibidez Belgium).',
   'settings.home_country_none': 'Bat ere ez',
   'assign.remove': 'Kendu programazioa',

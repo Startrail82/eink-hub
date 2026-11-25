@@ -231,7 +231,7 @@ export const ko: Catalogue = {
   'assign.hide_home_country': '자국 생략',
   'assign.hide_home_country_hint': '자국에서 찍은 사진은 도시만 표시합니다. 자국은 설정에서 지정하세요.',
   'settings.home_country': '자국',
-  'settings.home_country_hint': '사진 장소에서 국가를 생략하는 데 사용합니다. Immich를 사용하면 목록에 사진에 있는 국가가 표시됩니다.',
+  'settings.home_country_hint': '사진 장소에서 국가를 생략하는 데 사용합니다.',
   'settings.home_country_hint_type': '사진 장소에서 국가를 생략하는 데 사용합니다. Immich에 표시되는 대로, 보통 영어로 입력하세요(예: Belgium).',
   'settings.home_country_none': '없음',
   'assign.remove': '일정 제거',

@@ -27,7 +27,7 @@ A schedule can draw a small label in the bottom-left corner of each photo. Under
 
 With both on, the label reads like `6 October 2019 · Rome, Italy`. With neither, there is no label.
 
-With **Place** on, **Leave out the home country** shows only the city for photos taken in your home country. Pick the home country in *Settings*: with Immich, the list shows the countries in your photos; without it, every country.
+With **Place** on, **Leave out the home country** shows only the city for photos taken in your home country. Pick the home country in *Settings*.
 
 ## How each frame gets the next photo
 

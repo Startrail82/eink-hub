@@ -231,7 +231,7 @@ export const ca: Catalogue = {
   'assign.hide_home_country': 'Omet el país d’origen',
   'assign.hide_home_country_hint': 'Les fotos del teu país d’origen només mostren la ciutat. Indica el país d’origen a Configuració.',
   'settings.home_country': 'País d’origen',
-  'settings.home_country_hint': 'Serveix per ometre el país al lloc de les fotos. Amb Immich, la llista mostra els països de les teves fotos.',
+  'settings.home_country_hint': 'Serveix per ometre el país al lloc de les fotos.',
   'settings.home_country_hint_type': 'Serveix per ometre el país al lloc de les fotos. Escriu-lo tal com el mostra Immich, normalment en anglès (per exemple Belgium).',
   'settings.home_country_none': 'Cap',
   'assign.remove': 'Elimina la programació',

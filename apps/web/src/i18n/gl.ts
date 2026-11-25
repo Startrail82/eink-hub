@@ -231,7 +231,7 @@ export const gl: Catalogue = {
   'assign.hide_home_country': 'Omitir o país de orixe',
   'assign.hide_home_country_hint': 'As fotos do teu país de orixe só mostran a cidade. Indica o país de orixe en Axustes.',
   'settings.home_country': 'País de orixe',
-  'settings.home_country_hint': 'Serve para omitir o país no lugar das fotos. Con Immich, a lista mostra os países das túas fotos.',
+  'settings.home_country_hint': 'Serve para omitir o país no lugar das fotos.',
   'settings.home_country_hint_type': 'Serve para omitir o país no lugar das fotos. Escríbeo como o mostra Immich, normalmente en inglés (por exemplo Belgium).',
   'settings.home_country_none': 'Ningún',
   'assign.remove': 'Eliminar programación',

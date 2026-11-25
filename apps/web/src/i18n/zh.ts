@@ -231,7 +231,7 @@ export const zh: Catalogue = {
   'assign.hide_home_country': '省略本国',
   'assign.hide_home_country_hint': '来自本国的照片只显示城市。请在设置中指定本国。',
   'settings.home_country': '本国',
-  'settings.home_country_hint': '用于在照片地点中省略国家。使用 Immich 时，列表显示你照片中的国家。',
+  'settings.home_country_hint': '用于在照片地点中省略国家。',
   'settings.home_country_hint_type': '用于在照片地点中省略国家。请按 Immich 显示的方式输入，通常为英文（例如 Belgium）。',
   'settings.home_country_none': '无',
   'assign.remove': '移除计划',

@@ -231,7 +231,7 @@ export const en: Messages = {
   'assign.hide_home_country': 'Leave out the home country',
   'assign.hide_home_country_hint': 'Photos from your home country show only the city. Set the home country in Settings.',
   'settings.home_country': 'Home country',
-  'settings.home_country_hint': 'Used to leave the country out of photo locations. With Immich, the list shows the countries in your photos.',
+  'settings.home_country_hint': 'Used to leave the country out of photo locations.',
   'settings.home_country_hint_type': 'Used to leave the country out of photo locations. Type it the way Immich shows it, usually in English (for example Belgium).',
   'settings.home_country_none': 'None',
   'assign.remove': 'Remove schedule',

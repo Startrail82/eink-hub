@@ -52,7 +52,7 @@ function LanguageSettings() {
 function HomeCountrySettings() {
   const { t } = useI18n();
   const settings = useSettings();
-  // The countries in the Immich library (spelled the way Immich stores them), or all of them without Immich.
+  // Every country, spelled the way Immich and the built-in place list name them.
   const countries = useQuery({ queryKey: ['countries'], queryFn: () => api.get<string[]>('/api/countries'), retry: false, staleTime: 5 * 60_000 });
   const [country, setCountry] = useState('');
   useEffect(() => {

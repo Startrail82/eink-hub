@@ -239,7 +239,7 @@ export const cs: Catalogue = {
   'assign.hide_home_country': 'Vynechat domovskou zemi',
   'assign.hide_home_country_hint': 'Fotky z vaší domovské země zobrazí jen město. Domovskou zemi nastavte v Nastavení.',
   'settings.home_country': 'Domovská země',
-  'settings.home_country_hint': 'Slouží k vynechání země v místě fotky. S Immich seznam ukazuje země z vašich fotek.',
+  'settings.home_country_hint': 'Slouží k vynechání země v místě fotky.',
   'settings.home_country_hint_type': 'Slouží k vynechání země v místě fotky. Zadejte ji tak, jak ji zobrazuje Immich, obvykle anglicky (například Belgium).',
   'settings.home_country_none': 'Žádná',
   'assign.remove': 'Odstranit plán',

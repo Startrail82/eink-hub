@@ -52,20 +52,20 @@ export function immichRoutes(app: FastifyInstance, ctx: Ctx) {
   );
 
   /**
-   * For the home country picker: the countries in the Immich library, or every country when
-   * there is no Immich (or none of its photos are geocoded yet).
+   * For the home country picker: every country, whether or not there are photos from it yet
+   * (or Immich at all). Immich's own names are added in case one is spelled differently.
    */
   app.get('/api/countries', async () => {
+    const names = new Set(allCountries());
     const { url, apiKey } = immichConfig(db);
     if (url && apiKey) {
       try {
-        const list = [...new Set(await immichFor(db).countries())].sort((a, b) => a.localeCompare(b));
-        if (list.length) return list;
+        for (const c of await immichFor(db).countries()) names.add(c);
       } catch (err) {
         ctx.log.debug({ err }, 'immich countries failed');
       }
     }
-    return allCountries();
+    return [...names].sort((a, b) => a.localeCompare(b));
   });
 
   app.get<{ Params: { id: string } }>('/api/immich/people/:id/thumbnail', async (req, reply) =>

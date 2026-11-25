@@ -230,7 +230,7 @@ export const es = {
   'assign.hide_home_country': 'Omitir el país de origen',
   'assign.hide_home_country_hint': 'Las fotos de tu país de origen solo muestran la ciudad. Indica el país de origen en Ajustes.',
   'settings.home_country': 'País de origen',
-  'settings.home_country_hint': 'Sirve para omitir el país en el lugar de las fotos. Con Immich, la lista muestra los países de tus fotos.',
+  'settings.home_country_hint': 'Sirve para omitir el país en el lugar de las fotos.',
   'settings.home_country_hint_type': 'Sirve para omitir el país en el lugar de las fotos. Escríbelo como lo muestra Immich, normalmente en inglés (por ejemplo Belgium).',
   'settings.home_country_none': 'Ninguno',
   'assign.remove': 'Quitar programación',
