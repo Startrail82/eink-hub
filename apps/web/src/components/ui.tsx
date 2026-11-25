@@ -152,11 +152,12 @@ export function Chips<T extends string>({
           aria-pressed={o.on}
           onClick={() => o.onChange(!o.on)}
           className={cx(
-            'flex min-w-0 flex-1 items-center justify-center gap-1.5 truncate rounded-full px-2 py-1.5 text-[13px] font-semibold whitespace-nowrap transition',
+            'relative min-w-0 flex-1 truncate rounded-full px-7 py-1.5 text-center text-[13px] font-semibold whitespace-nowrap transition',
             o.on ? 'bg-surface text-ink shadow-soft' : 'text-muted hover:text-ink',
           )}
         >
-          {o.on && <Check className="size-3.5 shrink-0" />}
+          {/* Out of the flow, so the label stays put when the tick appears. */}
+          {o.on && <Check className="absolute top-1/2 left-3 size-3.5 -translate-y-1/2" />}
           {o.label}
         </button>
       ))}
