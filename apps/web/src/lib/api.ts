@@ -308,6 +308,8 @@ export interface AiCollectionConfig {
   prompt: string;
   /** Weather source: draw today's low, high and chance of rain on the picture. */
   weatherBar: boolean;
+  /** Weather source: hours ahead the weather is for (0 = now, up to 47). */
+  weatherOffset: number;
   feedUrl: string;
   latitude: number | null;
   longitude: number | null;

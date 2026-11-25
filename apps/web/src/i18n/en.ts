@@ -641,4 +641,6 @@ export const en: Messages = {
   'ai.mismatch': 'This collection makes pictures for {made}, but this canvas is {frame}. The pictures will be cropped or scaled.',
   'ai.weather_bar': 'Weather bar on the picture',
   'ai.weather_bar_hint': 'Draws today\'s low, high and chance of rain at the bottom right, in the same colours as the date label.',
+  'ai.weather_offset': 'Weather in (hours)',
+  'ai.weather_offset_hint': '0 = the weather now. With 4, at 7:00 you get the weather of 11:00. The bar uses the sky of that hour and the numbers of that day.',
 };

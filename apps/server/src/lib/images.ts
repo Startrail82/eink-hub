@@ -358,7 +358,7 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
   const needLocation = !!opts.showLocation && opts.showLocation !== 'off';
   if (opts.showDate || needLocation) img = await withCaptionDetails(ctx, img, { date: opts.showDate, location: needLocation });
   const landscape = frame.orientation === 'landscape';
-  const forecast = opts.weatherBar ? await fetchDayForecast(opts.weatherBar.latitude, opts.weatherBar.longitude, weatherConfig(ctx.db)).catch((err) => (ctx.log.warn({ err }, 'weather bar: no forecast, picture shown without it'), null)) : null;
+  const forecast = opts.weatherBar ? await fetchDayForecast(opts.weatherBar.latitude, opts.weatherBar.longitude, weatherConfig(ctx.db), Date.now(), opts.weatherBar.offset).catch((err) => (ctx.log.warn({ err }, 'weather bar: no forecast, picture shown without it'), null)) : null;
   // The word is in the hub's language, so it is part of the render's identity.
   const weather = forecast ? { ...forecast, label: forecast.sky ? skyLabel(forecast.sky, hubLang(ctx.db)) : null } : null;
   const crop = opts.crop !== undefined ? opts.crop : getCrop(ctx.db, img.id, frameAspect(frame));

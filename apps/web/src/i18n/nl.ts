@@ -641,4 +641,6 @@ export const nl: Catalogue = {
   'ai.mismatch': 'Deze collectie maakt beelden voor {made}, maar dit frame is {frame}. De beelden worden bijgesneden of geschaald.',
   'ai.weather_bar': 'Weerbalk op het beeld',
   'ai.weather_bar_hint': 'Tekent rechtsonder de minimum- en maximumtemperatuur van vandaag en de kans op regen, in dezelfde kleuren als het datumlabel.',
+  'ai.weather_offset': 'Weer over (uren)',
+  'ai.weather_offset_hint': '0 = het weer van nu. Met 4 krijg je om 7u het weer van 11u. De balk gebruikt de lucht van dat uur en de cijfers van die dag.',
 };

@@ -31,6 +31,21 @@ export interface WeatherRequest {
   longitude: number;
   /** The key saved in Settings; empty when none was given. */
   apiKey: string;
+  /**
+   * Whole hours ahead the weather is for: 0 is now, up to MAX_OFFSET_HOURS. The snapshot then
+   * describes that hour (code, temperature, wind, isDay, time) and, for the figures of a whole
+   * day (high, low, rain, sunrise, sunset), the day that hour falls on. `dayCode` is the sky of
+   * that hour. A source that cannot look ahead may throw an AiError.
+   */
+  hours: number;
+}
+
+export const MAX_OFFSET_HOURS = 47;
+
+/** Whole hours ahead, 0 to 47; anything else counts as now. */
+export function cleanOffset(v: unknown): number {
+  const n = Math.round(Number(v));
+  return Number.isFinite(n) && n > 0 ? Math.min(n, MAX_OFFSET_HOURS) : 0;
 }
 
 export interface WeatherProvider {
@@ -40,6 +55,6 @@ export interface WeatherProvider {
   name: string;
   /** Whether Settings asks for an API key: not at all, may be left empty, or must be filled in. */
   key: 'none' | 'optional' | 'required';
-  /** Current weather and today's figures at a place. Throw an AiError with a readable message when it fails. */
+  /** The weather at a place, now or `req.hours` ahead, with the figures of that day. Throw an AiError with a readable message when it fails. */
   fetch(req: WeatherRequest): Promise<WeatherSnapshot>;
 }

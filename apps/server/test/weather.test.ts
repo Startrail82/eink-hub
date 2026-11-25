@@ -18,8 +18,8 @@ import { buildPrompt, collectionConfig, validateCollectionConfig } from '../src/
 import { AiError } from '../src/lib/ai/providers.js';
 import { weatherCondition, weatherLook, weatherVars } from '../src/lib/weather/describe.js';
 import { dayForecast, fetchDayForecast } from '../src/lib/weather/forecast.js';
-import { fetchWeatherVars, saveWeatherConfig, weatherConfig, weatherProviders, type WeatherProvider, type WeatherSnapshot } from '../src/lib/weather/index.js';
-import { snapshotFromOpenMeteo } from '../src/lib/weather/openmeteo.js';
+import { cleanOffset, fetchWeatherVars, saveWeatherConfig, weatherConfig, weatherProviders, type WeatherProvider, type WeatherSnapshot } from '../src/lib/weather/index.js';
+import { atOffset, openMeteo, snapshotFromOpenMeteo, targetHour } from '../src/lib/weather/openmeteo.js';
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -278,5 +278,84 @@ describe('weather bar option', () => {
     expect(assignmentOptions(db, assign(add({ source: 'weather', weatherBar: false, ...place }))).weatherBar).toBeUndefined();
     expect(assignmentOptions(db, assign(add({ source: 'prompt', weatherBar: true, ...place }))).weatherBar).toBeUndefined();
     expect(assignmentOptions(db, assign(add({ source: 'weather', weatherBar: true }))).weatherBar).toBeUndefined();
+  });
+});
+
+describe('weather some hours ahead', () => {
+  const hours = (day: string) => Array.from({ length: 24 }, (_, h) => `${day}T${String(h).padStart(2, '0')}:00`);
+  const forecast = (now: string) => ({
+    current: { time: now, temperature_2m: 5, weather_code: 3, is_day: 0, wind_speed_10m: 10 },
+    hourly: {
+      time: [...hours('2026-11-23'), ...hours('2026-11-24')],
+      temperature_2m: Array.from({ length: 48 }, (_, i) => i),
+      weather_code: Array.from({ length: 48 }, (_, i) => (i === 11 ? 63 : i === 27 ? 71 : 0)),
+      is_day: Array.from({ length: 48 }, (_, i) => (i % 24 >= 8 && i % 24 < 17 ? 1 : 0)),
+      wind_speed_10m: Array.from({ length: 48 }, (_, i) => 100 + i),
+    },
+    daily: {
+      time: ['2026-11-23', '2026-11-24'],
+      temperature_2m_max: [9.6, 4.2],
+      temperature_2m_min: [2.1, -1.4],
+      sunrise: ['2026-11-23T08:00', '2026-11-24T08:02'],
+      sunset: ['2026-11-23T16:45', '2026-11-24T16:44'],
+      precipitation_probability_max: [80, 20],
+      weather_code: [3, 71],
+    },
+  });
+  const answer = (body: unknown) => ({ ok: true, status: 200, headers: new Headers({ 'content-type': 'application/json' }), text: async () => JSON.stringify(body) });
+  const none = { latitude: 51, longitude: 4.5, apiKey: '' };
+
+  it('keeps hours within 0 to 47', () => {
+    expect([undefined, 'x', -3, 0, 4, 4.4, 99].map(cleanOffset)).toEqual([0, 0, 0, 0, 4, 4, 47]);
+  });
+
+  it('finds the full hour nearest to then, also past midnight', () => {
+    expect(targetHour(forecast('2026-11-23T06:50'), 4)).toMatchObject({ time: '2026-11-23T11:00', hourIndex: 11, dayIndex: 0 });
+    expect(targetHour(forecast('2026-11-23T22:40'), 4)).toMatchObject({ time: '2026-11-24T03:00', hourIndex: 27, dayIndex: 1 });
+    expect(targetHour(forecast('2026-11-23T22:40'), 40)).toBeNull(); // beyond what was returned
+  });
+
+  it("turns the forecast into a reading of that hour, with that day's sun and extremes", () => {
+    const v = atOffset(forecast('2026-11-23T06:50'), 4);
+    expect(v.current).toMatchObject({ time: '2026-11-23T11:00', temperature_2m: 11, weather_code: 63, is_day: 1, wind_speed_10m: 111 });
+    expect(v.daily?.temperature_2m_max).toEqual([9.6]);
+    expect(atOffset(forecast('2026-11-23T06:50'), 0).current?.weather_code).toBe(3); // unchanged for 0
+    expect(atOffset(forecast('2026-11-23T22:40'), 4).daily?.sunrise).toEqual(['2026-11-24T08:02']);
+  });
+
+  it('asks Open-Meteo for the hours and gives a snapshot of that hour', async () => {
+    vi.stubGlobal('fetch', async (url: string) => {
+      expect(String(url)).toContain('hourly=');
+      expect(String(url)).toContain('forecast_days=2');
+      return answer(forecast('2026-11-23T06:50'));
+    });
+    const snap = await openMeteo.fetch({ ...none, hours: 4 });
+    expect(snap).toMatchObject({ temperature: 11, code: 63, dayCode: 63, isDay: true, high: 9.6, low: 2.1, rain: 80, time: '2026-11-23T11:00' });
+    vi.stubGlobal('fetch', async (url: string) => {
+      expect(String(url)).not.toContain('hourly=');
+      return answer(forecast('2026-11-23T06:50'));
+    });
+    expect((await openMeteo.fetch({ ...none, hours: 0 })).code).toBe(3);
+  });
+
+  it('gives a prompt for the later hour: its condition and light, not the one of now', async () => {
+    vi.stubGlobal('fetch', async () => answer(forecast('2026-11-23T06:50')));
+    const vars = await fetchWeatherVars(51, 4.5, { provider: 'open-meteo', apiKey: '' }, 4);
+    expect(vars.temperature).toBe('11');
+    expect(vars.condition).toContain('rain');
+    expect(vars.daypart).toBe('day time'); // 07:00 is still dark, 11:00 is not
+  });
+
+  it("takes the weather bar's sky from that hour and its numbers from that day", async () => {
+    vi.stubGlobal('fetch', async () => answer(forecast('2026-11-23T22:40')));
+    const cfg = { provider: 'open-meteo', apiKey: '' };
+    expect(await fetchDayForecast(51, 4.5, cfg, 1_000, 4)).toEqual({ min: -1, max: 4, rain: 20, sky: 'snow' });
+    // Another offset is another cache entry.
+    expect(await fetchDayForecast(51, 4.5, cfg, 1_000, 0)).toMatchObject({ min: 2, max: 10, rain: 80 });
+  });
+
+  it('is part of the collection and of the bar option', () => {
+    expect(collectionConfig({ config: { source: 'weather', weatherOffset: 99 } } as never).weatherOffset).toBe(47);
+    expect(collectionConfig({ config: { source: 'weather' } } as never).weatherOffset).toBe(0);
   });
 });

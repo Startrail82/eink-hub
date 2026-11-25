@@ -641,4 +641,6 @@ export const zh: Catalogue = {
   'ai.mismatch': '此图集按 {made} 生成图片,但此相框为 {frame}。图片将被裁剪或缩放。',
   'ai.weather_bar': '在图片上显示天气栏',
   'ai.weather_bar_hint': '在右下角用与日期标签相同的颜色绘制今天的最低温、最高温和降雨概率。',
+  'ai.weather_offset': '几小时后的天气',
+  'ai.weather_offset_hint': '0 = 当前天气。设为 4 时，7:00 显示 11:00 的天气。天气栏使用该时刻的天空和当天的数值。',
 };

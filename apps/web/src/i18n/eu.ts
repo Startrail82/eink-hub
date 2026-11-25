@@ -641,4 +641,6 @@ export const eu: Messages = {
   'ai.mismatch': 'Bilduma honek {made} motarako sortzen ditu irudiak, baina marko hau {frame} da. Irudiak moztu edo eskalatu egingo dira.',
   'ai.weather_bar': 'Eguraldi-barra irudian',
   'ai.weather_bar_hint': 'Beheko eskuinean gaurko minimoa, maximoa eta euri-probabilitatea marrazten ditu, datu-etiketaren kolore berdinekin.',
+  'ai.weather_offset': 'Eguraldia zenbat ordutara (orduak)',
+  'ai.weather_offset_hint': '0 = oraingo eguraldia. 4rekin, 7:00etan 11:00etako eguraldia agertzen da. Barrak ordu horretako zerua eta egun horretako balioak erabiltzen ditu.',
 };

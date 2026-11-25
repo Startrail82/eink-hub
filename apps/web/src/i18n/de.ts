@@ -641,4 +641,6 @@ export const de: Catalogue = {
   'ai.mismatch': 'Diese Sammlung erzeugt Bilder für {made}, dieser Rahmen ist jedoch {frame}. Die Bilder werden zugeschnitten oder skaliert.',
   'ai.weather_bar': 'Wetterleiste im Bild',
   'ai.weather_bar_hint': 'Zeichnet unten rechts das heutige Minimum, Maximum und die Regenwahrscheinlichkeit, in denselben Farben wie das Datumslabel.',
+  'ai.weather_offset': 'Wetter in (Stunden)',
+  'ai.weather_offset_hint': '0 = das Wetter jetzt. Mit 4 gibt es um 7:00 Uhr das Wetter von 11:00 Uhr. Die Leiste nutzt den Himmel dieser Stunde und die Werte dieses Tages.',
 };

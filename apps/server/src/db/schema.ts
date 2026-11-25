@@ -19,7 +19,7 @@ export interface DisplayOptions {
   /** Leave the country out of the location when it is the hub's home country (Settings). */
   hideHomeCountry?: boolean;
   /** AI weather collections: draw today's minimum, maximum and chance of rain for this place. */
-  weatherBar?: { latitude: number; longitude: number };
+  weatherBar?: { latitude: number; longitude: number; /** Hours ahead the bar is for (0 = today). */ offset?: number };
 }
 
 /** Per-kind settings that don't deserve a column. */

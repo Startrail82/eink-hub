@@ -641,4 +641,6 @@ export const ko: Catalogue = {
   'ai.mismatch': '이 컬렉션은 {made}용 이미지를 만들지만, 이 프레임은 {frame}입니다. 이미지가 잘리거나 크기가 조정됩니다.',
   'ai.weather_bar': '이미지에 날씨 막대 표시',
   'ai.weather_bar_hint': '오른쪽 아래에 오늘의 최저·최고 기온과 강수 확률을 날짜 라벨과 같은 색으로 그립니다.',
+  'ai.weather_offset': '몇 시간 뒤의 날씨',
+  'ai.weather_offset_hint': '0 = 현재 날씨. 4로 하면 7:00에 11:00의 날씨를 보여 줍니다. 막대는 그 시각의 하늘과 그날의 수치를 사용합니다.',
 };
