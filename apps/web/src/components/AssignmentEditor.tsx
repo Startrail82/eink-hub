@@ -1,13 +1,55 @@
 import { useState } from 'react';
 import { History, Trash2 } from 'lucide-react';
-import { api, type Assignment, type FitMode, type Frame, type OrderMode, type Schedule } from '../lib/api';
+import { api, type Assignment, type FitMode, type Frame, type LocationMode, type OrderMode, type Schedule } from '../lib/api';
 import { useAction, useCollections } from '../lib/hooks';
 import { SchedulePicker } from './SchedulePicker';
 import { useI18n, type MsgKey } from '../i18n';
 import { BgPicker } from './BgPicker';
-import { Button, Field, Segmented, Toggle, cx, inputClass, useConfirm } from './ui';
+import { Button, Chips, Field, Segmented, Toggle, cx, inputClass, useConfirm } from './ui';
 import { Select } from './Select';
 import { TimeField } from './TimeField';
+
+/**
+ * The label drawn on the photo: date and/or place (from Immich) as two chips, none = no label.
+ * With the place on, "leave out the home country" shows under it.
+ */
+export function CaptionOptions({
+  showDate,
+  onShowDate,
+  location,
+  onLocation,
+  hideHome,
+  onHideHome,
+  memories,
+}: {
+  showDate: boolean;
+  onShowDate: (v: boolean) => void;
+  location: LocationMode;
+  onLocation: (m: LocationMode) => void;
+  hideHome: boolean;
+  onHideHome: (v: boolean) => void;
+  /** "On this day": the date reads "5 years ago today". */
+  memories?: boolean;
+}) {
+  const { t } = useI18n();
+  const place = location !== 'off';
+  return (
+    <Field label={t('assign.caption')} group>
+      <p className="mb-2 text-xs text-muted">{t(memories ? 'assign.caption_hint_memories' : 'assign.caption_hint')}</p>
+      <Chips
+        options={[
+          { value: 'date', label: t('assign.caption_date'), on: showDate, onChange: onShowDate },
+          { value: 'place', label: t('assign.caption_place'), on: place, onChange: (v) => onLocation(v ? 'city_country' : 'off') },
+        ]}
+      />
+      {place && (
+        <div className="mt-3">
+          <Toggle nested label={t('assign.hide_home_country')} hint={t('assign.hide_home_country_hint')} checked={hideHome} onChange={onHideHome} />
+        </div>
+      )}
+    </Field>
+  );
+}
 
 const DEFAULT_SCHEDULE: Schedule = { kind: 'days', days: 1, at: '07:00' };
 
@@ -32,6 +74,8 @@ export function AssignmentEditor({ frame: fixed, choices, onSaved }: { frame?: F
   const [fit, setFit] = useState<FitMode>(a?.fit ?? 'cover');
   const [bg, setBg] = useState(a?.bg ?? '#ffffff');
   const [showDate, setShowDate] = useState(a?.showDate ?? false);
+  const [showLocation, setShowLocation] = useState<LocationMode>(a?.showLocation ?? 'off');
+  const [hideHome, setHideHome] = useState(a?.hideHomeCountry ?? false);
   const [enabled, setEnabled] = useState(a?.enabled ?? true);
 
   const collection = collections.data?.find((c) => c.id === collectionId);
@@ -57,6 +101,8 @@ export function AssignmentEditor({ frame: fixed, choices, onSaved }: { frame?: F
         fit,
         bg,
         showDate,
+        showLocation,
+        hideHomeCountry: hideHome,
         enabled,
       }),
     { success: t('assign.saved'), invalidate: [['frames']] },
@@ -147,11 +193,17 @@ export function AssignmentEditor({ frame: fixed, choices, onSaved }: { frame?: F
             )}
           </Field>
 
+          <CaptionOptions
+            showDate={showDate}
+            onShowDate={setShowDate}
+            location={showLocation}
+            onLocation={setShowLocation}
+            hideHome={hideHome}
+            onHideHome={setHideHome}
+            memories={isMemories}
+          />
+
           <div className="space-y-4 rounded-2xl bg-surface-2 p-4">
-            <Toggle
-              label={t('assign.show_date')}
-              hint={t(isMemories ? 'assign.show_date_hint_memories' : 'assign.show_date_hint')}
-              checked={showDate} onChange={setShowDate} />
             {hourly && (
               <div>
                 <Toggle label={t('assign.window')} hint={t('assign.window_hint')} checked={windowOn} onChange={setWindowOn} />
