@@ -11,6 +11,7 @@ import { assetSize, type ImmichAsset } from '../immich/client.js';
 import { aspectKey, formatExt, probeImage, renderForFrame, thumbnail, type CropRect } from '../imaging/pipeline.js';
 import { renderTarget } from '../device/drivers/index.js';
 import { HttpError, immichFor, type Ctx } from './context.js';
+import { reverseGeocode } from './geo.js';
 
 const RENDER_VERSION = 1;
 
@@ -49,10 +50,17 @@ export async function saveLocalUpload(db: DB, buf: Buffer, originalName: string)
       width: meta.width,
       height: meta.height,
       takenAt: meta.takenAt ?? Date.now(),
+      // From the photo's GPS, with the offline place list; '' = no GPS or nowhere near a place.
+      ...placeOf(meta.gps),
       createdAt: Date.now(),
     })
     .returning()
     .get();
+}
+
+/** City and country for a GPS position ('' when there is none or no place near it). */
+function placeOf(gps?: { latitude: number; longitude: number }): { city: string; country: string } {
+  return (gps && reverseGeocode(gps.latitude, gps.longitude)) || { city: '', country: '' };
 }
 
 /**
@@ -229,17 +237,19 @@ export const DETAILS_RETRY_MS = 30 * 60_000;
 const detailsRetryAt = new Map<string, number>();
 
 /**
- * Immich photos picked by id (sent from the Immich page, manual collections) carry no date or
- * location yet: when the caption needs them, ask Immich for the asset and store what it says.
+ * Fill in what the caption needs and the row doesn't have yet. Uploads from before places were
+ * read get theirs from the original's GPS. Immich photos picked by id (sent from the Immich
+ * page, manual collections) carry no date or location: ask Immich for the asset and store it.
  * A failed lookup, or a place Immich has not geocoded yet, is retried at most every
  * DETAILS_RETRY_MS, so renders (cache hits included) don't wait on Immich every time.
  */
-export async function withImmichDetails(
+export async function withCaptionDetails(
   ctx: Ctx,
   img: Image,
   need: { date?: boolean; location?: boolean } = { location: true },
   now = Date.now(),
 ): Promise<Image> {
+  if (img.source === 'local') return withLocalPlace(ctx, img, need);
   if (img.source !== 'immich' || !img.immichAssetId) return img;
   const missing = (i: Image) => (need.date && i.takenAt === null) || (need.location && i.city === null && i.country === null);
   if (!missing(img) || (detailsRetryAt.get(img.immichAssetId) ?? 0) > now) return img;
@@ -252,6 +262,20 @@ export async function withImmichDetails(
   } catch (err) {
     detailsRetryAt.set(img.immichAssetId, now + DETAILS_RETRY_MS);
     ctx.log.debug({ err, asset: img.immichAssetId }, 'immich details lookup failed');
+    return img;
+  }
+}
+
+/** Uploads from before places were read: name the place from the original's GPS once. */
+async function withLocalPlace(ctx: Ctx, img: Image, need: { location?: boolean }): Promise<Image> {
+  if (!need.location || img.city !== null || img.country !== null || !img.filePath) return img;
+  try {
+    const { gps } = await probeImage(await fs.readFile(path.join(config.originalsDir, img.filePath)));
+    const place = placeOf(gps);
+    ctx.db.update(schema.images).set(place).where(eq(schema.images.id, img.id)).run();
+    return { ...img, ...place };
+  } catch (err) {
+    ctx.log.debug({ err, image: img.id }, 'reading the place of an upload failed');
     return img;
   }
 }
@@ -269,7 +293,7 @@ export interface Rendered {
 
 export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: DisplayOptions = {}): Promise<Rendered> {
   const needLocation = !!opts.showLocation && opts.showLocation !== 'off';
-  if (opts.showDate || needLocation) img = await withImmichDetails(ctx, img, { date: opts.showDate, location: needLocation });
+  if (opts.showDate || needLocation) img = await withCaptionDetails(ctx, img, { date: opts.showDate, location: needLocation });
   const landscape = frame.orientation === 'landscape';
   const crop = opts.crop !== undefined ? opts.crop : getCrop(ctx.db, img.id, frameAspect(frame));
   const target = renderTarget(frame);
