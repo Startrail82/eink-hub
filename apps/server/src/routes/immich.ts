@@ -50,6 +50,9 @@ export function immichRoutes(app: FastifyInstance, ctx: Ctx) {
     (await immichFor(db).people()).map((p) => ({ id: p.id, name: p.name })).sort((a, b) => (a.name ? 0 : 1) - (b.name ? 0 : 1) || a.name.localeCompare(b.name)),
   );
 
+  /** Countries in the Immich library, for the home country picker. */
+  app.get('/api/immich/countries', async () => [...new Set(await immichFor(db).countries())].sort((a, b) => a.localeCompare(b)));
+
   app.get<{ Params: { id: string } }>('/api/immich/people/:id/thumbnail', async (req, reply) =>
     pipeImage(reply, await immichFor(db).personThumbnail(req.params.id)),
   );

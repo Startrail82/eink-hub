@@ -117,6 +117,9 @@ describe('looking up a missing location', () => {
       const asset: ImmichAsset = { id: req.params.id, type: 'IMAGE', exifInfo };
       return asset;
     });
+    immich.get<{ Querystring: { type: string } }>('/api/search/suggestions', async (req) =>
+      req.query.type === 'country' ? ['Italy', null, 'Belgium', '', 'Italy'] : [],
+    );
     setSetting(db, 'immich.url', await immich.listen({ port: 0, host: '127.0.0.1' }));
     setSetting(db, 'immich.apiKey', 'test');
   });
@@ -136,6 +139,11 @@ describe('looking up a missing location', () => {
     await withLocation(ctx, rowOf('lookup-none'));
     expect([rowOf('lookup-none').city, rowOf('lookup-none').country]).toEqual(['', '']);
     expect(hits.filter((h) => h === 'lookup-none')).toHaveLength(1);
+  });
+  it('lists the countries in the library for the home country picker', async () => {
+    const { app } = await buildApp(db, { logger: false });
+    expect((await app.inject({ url: '/api/immich/countries' })).json()).toEqual(['Belgium', 'Italy']);
+    await app.close();
   });
   it('does not ask for local uploads', async () => {
     const local = db.insert(schema.images).values({ source: 'local', createdAt: Date.now() }).returning().get();
