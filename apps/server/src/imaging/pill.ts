@@ -1,4 +1,4 @@
-/** How the date and weather labels on a picture look. Kept per Canvas, in its config. */
+/** How the date label on a picture looks. Kept per Canvas, in its config. */
 export interface PillStyle {
   /** Background colour, "#rrggbb". */
   bg: string;
@@ -15,7 +15,8 @@ const HEX = /^#[0-9a-f]{6}$/i;
 
 /** What was saved, completed with the defaults; anything invalid falls back to the default. */
 export function resolvePill(saved?: Partial<PillStyle> | null): PillStyle {
-  const opacity = Math.round(Number(saved?.opacity));
+  // Only a real number counts: Number(null) and Number('') are 0, which would clamp to 10%.
+  const opacity = typeof saved?.opacity === 'number' ? Math.round(saved.opacity) : Number.NaN;
   return {
     bg: typeof saved?.bg === 'string' && HEX.test(saved.bg) ? saved.bg.toLowerCase() : DEFAULT_PILL.bg,
     text: typeof saved?.text === 'string' && HEX.test(saved.text) ? saved.text.toLowerCase() : DEFAULT_PILL.text,

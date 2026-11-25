@@ -564,6 +564,6 @@ export const eu: Messages = {
   'canvasSettings.pill_bg': 'Atzealdea',
   'canvasSettings.pill_text': 'Testua',
   'canvasSettings.pill_opacity': 'Opakotasuna',
-  'canvasSettings.pill_sample': '2026ko ira. 21',
+  'canvasSettings.pill_sample': '2026ko aza. 21',
   'canvasSettings.pill_reset': 'Berrezarri',
 };

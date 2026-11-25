@@ -318,12 +318,13 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
       hideHomeCountry: opts.hideHomeCountry,
       homeCountry: getSetting(ctx.db, 'homeCountry'),
     }),
-    // Only when not the default, so existing renders keep their hash.
-    ...(isDefaultPill(pill) ? {} : { pill }),
     // Only when not the default, so existing JPEG renders keep their hash.
     ...(ext === 'jpg' && !target.format.palette ? {} : { format: target.format }),
   } as const;
-  const hash = crypto.createHash('sha1').update(JSON.stringify(params)).digest('hex');
+  // The label style only matters when there is a label, and only when not the default, so
+  // pictures without a caption and existing renders keep their hash.
+  const hashed = params.caption && !isDefaultPill(pill) ? { ...params, pill } : params;
+  const hash = crypto.createHash('sha1').update(JSON.stringify(hashed)).digest('hex');
   const file = path.join(config.cacheDir, `${hash}.${ext}`);
   const deviceName = `h${img.id}_${hash.slice(0, 10)}_${landscape ? 'L' : 'P'}.${ext}`;
   if (await exists(file)) return { hash, file, deviceName, ext, buf: await fs.readFile(file) };
