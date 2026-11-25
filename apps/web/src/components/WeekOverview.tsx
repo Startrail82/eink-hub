@@ -5,7 +5,10 @@ import { clock, dayTitle } from '../lib/format';
 import { useI18n } from '../i18n';
 import { Card, Spinner, cx } from './ui';
 
-/** A calm set of dots to tell collections apart; the same collection always gets the same one. */
+/**
+ * A calm set of dots to tell collections apart: the colour comes from the collection's id, so
+ * the same collection always gets the same one (it has no colour of its own).
+ */
 const DOTS = ['bg-accent', 'bg-leaf', 'bg-warn', 'bg-ink-2', 'bg-accent/50', 'bg-leaf/50'];
 const dot = (collectionId: number) => DOTS[collectionId % DOTS.length];
 
@@ -61,20 +64,22 @@ export function WeekOverview({ frames, showFrame = false, compact = false }: { f
               <span className="text-xs text-muted first-letter:uppercase">{day.date === today || day.date === tomorrow ? `${title.weekday} ${title.rest}` : title.rest}</span>
             </div>
             {day.items.length ? (
-              <ol className={compact ? 'mt-2 space-y-1' : 'mt-3 space-y-2'}>
+              // One grid per day, each row a subgrid: times, dots, names and Canvases line up in
+              // columns even when a row says "Pending" instead of a time.
+              <ol className={cx('grid grid-cols-[auto_auto_minmax(0,1fr)_auto]', compact ? 'mt-2 gap-x-2 gap-y-1' : 'mt-3 gap-x-3 gap-y-2')}>
                 {day.items.map((i) => (
-                  <li key={`${i.assignmentId}-${i.at}`} className={cx('flex items-center rounded-xl bg-surface-2', compact ? 'gap-2 px-2.5 py-1' : 'gap-3 px-3 py-2')}>
-                    <span className={cx('shrink-0 font-bold tabular-nums', compact ? 'min-w-10 text-xs' : 'min-w-12 text-sm', i.pending && 'text-warn')}>{i.pending ? t('detail.pending') : clock(i.at)}</span>
-                    <span className={cx('shrink-0 rounded-full', compact ? 'size-2' : 'size-2.5', dot(i.collectionId))} aria-hidden />
-                    <span className="min-w-0 flex-1">
-                      <span className={cx('block truncate font-medium text-ink-2', compact ? 'text-xs' : 'text-sm')}>{i.collection}</span>
-                      {showFrame && (
-                        <span className="flex min-w-0 items-center gap-1 text-xs text-muted">
-                          <FrameIcon className="size-3 shrink-0" aria-hidden />
-                          <span className="truncate">{i.frameName}</span>
-                        </span>
-                      )}
-                    </span>
+                  <li key={`${i.assignmentId}-${i.at}`} className={cx('col-span-full grid grid-cols-subgrid items-center rounded-xl bg-surface-2', compact ? 'px-2.5 py-1' : 'px-3 py-2')}>
+                    <span className={cx('font-bold tabular-nums', compact ? 'text-xs' : 'text-sm', i.pending && 'text-warn')}>{i.pending ? t('detail.pending') : clock(i.at)}</span>
+                    <span className={cx('rounded-full', compact ? 'size-2' : 'size-2.5', dot(i.collectionId))} aria-hidden />
+                    <span className={cx('truncate font-medium text-ink-2', compact ? 'text-xs' : 'text-sm')}>{i.collection}</span>
+                    {showFrame ? (
+                      <span className="flex max-w-24 min-w-0 items-center justify-end sm:max-w-40 gap-1 text-xs text-muted">
+                        <FrameIcon className="size-3 shrink-0" aria-hidden />
+                        <span className="truncate">{i.frameName}</span>
+                      </span>
+                    ) : (
+                      <span />
+                    )}
                   </li>
                 ))}
               </ol>
