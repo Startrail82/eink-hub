@@ -1,6 +1,6 @@
 # AI images
 
-An **AI collection** fills itself with pictures drawn by an image generator: a cartoon about today's headline, or anything you can describe in a prompt. The Hub makes each picture shortly before a Canvas changes, so a new one is ready when the Canvas wakes up.
+An **AI collection** fills itself with pictures drawn by an image generator: a cartoon about today's headline, an illustration of the weather, or anything you can describe in a prompt. The Hub makes each picture shortly before a Canvas changes, so a new one is ready when the Canvas wakes up.
 
 ## 1. Connect a generator
 
@@ -41,6 +41,7 @@ In the **Library**, choose **New AI collection** and pick what to draw:
 
 - **A fixed prompt.** The same description every time. The result still differs from picture to picture. `{date}`, `{time}` (the nearest full hour, like `14:00`) and `{season}` can be used in it. `{date}`, `{time}` and `{season}` work in every kind of collection.
 - **An RSS feed.** Each picture is made from the newest feed item that has not been drawn yet. When all items were drawn, it starts again with the newest. Leave the prompt empty for a cartoon of the headline, or write your own with `{title}` and `{description}`. RSS 2.0 and Atom are supported.
+- **The weather.** Uses the weather source chosen under **Settings > Weather** (by default [Open-Meteo](https://open-meteo.com/), no account needed) for a latitude and longitude. Leave the prompt empty for a weather illustration, or write your own with `{condition}`, `{temperature}`, `{high}`, `{low}`, `{wind}`, `{daypart}`, `{sunrise}`, `{sunset}` and `{season}`. `{condition}` describes the weather the way a picture can show it, for example `steady rain, rain streaks falling, wet glistening ground with puddle reflections`, `snowfall, snowflakes drifting through the air, snow-covered ground` or, by night, `clear sky with a bright moon and stars`. `{daypart}` is `night time, dark night`, `sunrise, soft golden light on the horizon` (within 45 minutes of sunrise), `day time` or `sunset, warm glowing sky` (within 45 minutes of sunset), for the hour of the picture. `{sunrise}` and `{sunset}` are today's times at the location.
 
 Choose the **Frame type** (screen) and **orientation** the pictures are made for. They are generated at that screen's shape, so they fit without cropping. When you later use the collection on a Canvas with a different resolution or orientation, the Hub warns you that the pictures will be cropped or scaled.
 

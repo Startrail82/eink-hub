@@ -89,6 +89,7 @@ export default defineConfig({
           items: [
             { text: 'Contributing', link: '/development/' },
             { text: 'Versioning & releases', link: '/development/versioning' },
+            { text: 'Adding a weather provider', link: '/development/weather-providers' },
           ],
         },
       ],

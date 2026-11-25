@@ -8,6 +8,7 @@ import { AboutLinks, UpdateNotice } from '../components/About';
 import { languages, useI18n, type Lang, type MsgKey } from '../i18n';
 import { ServerLogs } from '../components/ServerLogs';
 import { AiSettings } from '../components/AiSettings';
+import { WeatherSettings } from '../components/WeatherSettings';
 import { AccountSettings, PasskeySettings, UsersSettings } from '../components/Accounts';
 import { useIsAdmin, useMe } from '../lib/me';
 
@@ -266,8 +267,9 @@ export function SettingsPage() {
         </div>
       )}
       {tab === 'ai' && admin && (
-        <div className="max-w-2xl">
+        <div className="grid max-w-2xl gap-6">
           <AiSettings />
+          <WeatherSettings />
         </div>
       )}
       {tab === 'security' && accounts && (

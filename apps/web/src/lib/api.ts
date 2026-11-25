@@ -302,13 +302,27 @@ export interface AiSettings {
   configured: boolean;
 }
 
-export type AiSource = 'prompt' | 'rss';
+export type AiSource = 'prompt' | 'rss' | 'weather';
 export interface AiCollectionConfig {
   source: AiSource;
   prompt: string;
   feedUrl: string;
+  latitude: number | null;
+  longitude: number | null;
   keep: number;
   /** Panel resolution "shortxlong" the pictures are made for, and how that panel hangs. */
   panel: string | null;
   orientation: 'portrait' | 'landscape';
+}
+
+export interface WeatherProviderInfo {
+  id: string;
+  name: string;
+  /** Whether an API key is asked for: not at all, may be left empty, or must be filled in. */
+  key: 'none' | 'optional' | 'required';
+}
+export interface WeatherSettings {
+  provider: string;
+  apiKeySet: boolean;
+  providers: WeatherProviderInfo[];
 }

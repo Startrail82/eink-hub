@@ -12,6 +12,7 @@ import { ImmichError } from './immich/client.js';
 import { HttpError, type Ctx } from './lib/context.js';
 import { requestLang, tr } from './i18n.js';
 import { aiRoutes } from './routes/ai.js';
+import { weatherRoutes } from './routes/weather.js';
 import { frameRoutes } from './routes/frames.js';
 import { immichRoutes } from './routes/immich.js';
 import { libraryRoutes } from './routes/library.js';
@@ -56,6 +57,7 @@ export async function buildApp(db: DB, opts: { logger?: boolean; logDir?: string
   libraryRoutes(app, ctx);
   immichRoutes(app, ctx);
   aiRoutes(app, ctx);
+  weatherRoutes(app, ctx);
   logRoutes(app, ctx);
   statsRoutes(app, ctx);
 

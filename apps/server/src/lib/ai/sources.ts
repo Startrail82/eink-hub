@@ -26,7 +26,7 @@ export function commonVars(now = new Date()): PromptVars {
   };
 }
 
-async function fetchText(url: string, accept: string, limit: number): Promise<string> {
+export async function fetchText(url: string, accept: string, limit: number): Promise<string> {
   let res: Response;
   try {
     res = await fetch(url, { headers: { accept, 'user-agent': 'eink-hub' }, signal: AbortSignal.timeout(15_000), redirect: 'follow' });

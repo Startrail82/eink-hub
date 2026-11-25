@@ -14,6 +14,7 @@ const DEFAULT_KEEP = 20;
 const TAGS: Record<AiSource, string[]> = {
   prompt: ['date', 'time', 'season'],
   rss: ['title', 'description', 'date', 'time', 'season'],
+  weather: ['condition', 'temperature', 'high', 'low', 'wind', 'daypart', 'sunrise', 'sunset', 'date', 'time', 'season'],
 };
 
 async function copyText(text: string) {
@@ -62,6 +63,8 @@ function configOf(c?: Collection): AiCollectionConfig {
     source: raw.source ?? 'prompt',
     prompt: raw.prompt ?? '',
     feedUrl: raw.feedUrl ?? '',
+    latitude: raw.latitude ?? null,
+    longitude: raw.longitude ?? null,
     keep: raw.keep ?? DEFAULT_KEEP,
     panel: raw.panel ?? null,
     orientation: raw.orientation === 'landscape' ? 'landscape' : 'portrait',
@@ -75,6 +78,8 @@ export function AiCollectionDialog({ open, onClose, collection, onCreated }: { o
   const frames = useFrames();
   const [name, setName] = useState('');
   const [cfg, setCfg] = useState<AiCollectionConfig>(configOf());
+  const [lat, setLat] = useState('');
+  const [lon, setLon] = useState('');
   const [keep, setKeep] = useState(String(DEFAULT_KEEP));
 
   useEffect(() => {
@@ -88,11 +93,14 @@ export function AiCollectionDialog({ open, onClose, collection, onCreated }: { o
     }
     setName(collection?.name ?? '');
     setCfg(c);
+    setLat(c.latitude === null ? '' : String(c.latitude));
+    setLon(c.longitude === null ? '' : String(c.longitude));
     setKeep(String(c.keep));
   }, [open, collection, frames.data]);
 
   const set = <K extends keyof AiCollectionConfig>(k: K, v: AiCollectionConfig[K]) => setCfg((c) => ({ ...c, [k]: v }));
-  const config = (): AiCollectionConfig => ({ ...cfg, keep: Math.max(0, Math.floor(Number(keep) || 0)) });
+  const num = (s: string) => (s.trim() === '' || !Number.isFinite(Number(s)) ? null : Number(s));
+  const config = (): AiCollectionConfig => ({ ...cfg, latitude: num(lat), longitude: num(lon), keep: Math.max(0, Math.floor(Number(keep) || 0)) });
 
   const save = useAction(
     () =>
@@ -104,8 +112,8 @@ export function AiCollectionDialog({ open, onClose, collection, onCreated }: { o
 
   const complete =
     !!name.trim() &&
-    (cfg.source === 'prompt' ? !!cfg.prompt.trim() : /^https?:\/\//i.test(cfg.feedUrl.trim()));
-  const hint: Record<AiSource, MsgKey> = { prompt: 'ai.prompt_hint_prompt', rss: 'ai.prompt_hint_rss' };
+    (cfg.source === 'prompt' ? !!cfg.prompt.trim() : cfg.source === 'rss' ? /^https?:\/\//i.test(cfg.feedUrl.trim()) : num(lat) !== null && num(lon) !== null);
+  const hint: Record<AiSource, MsgKey> = { prompt: 'ai.prompt_hint_prompt', rss: 'ai.prompt_hint_rss', weather: 'ai.prompt_hint_weather' };
 
   return (
     <Modal open={open} onClose={onClose} title={collection ? t('ai.collection_edit') : t('library.new_ai')}>
@@ -122,12 +130,21 @@ export function AiCollectionDialog({ open, onClose, collection, onCreated }: { o
             options={[
               { value: 'prompt', label: t('ai.source_prompt') },
               { value: 'rss', label: t('ai.source_rss') },
+              { value: 'weather', label: t('ai.source_weather') },
             ]}
           />
         </Field>
         {cfg.source === 'rss' && (
           <Field label={t('ai.feed_url')}>
             <input className={inputClass} placeholder="https://example.org/feed.xml" value={cfg.feedUrl} onChange={(e) => set('feedUrl', e.target.value)} />
+          </Field>
+        )}
+        {cfg.source === 'weather' && (
+          <Field label={t('ai.latitude')} hint={t('ai.location_hint')} group>
+            <div className="grid grid-cols-2 gap-3">
+              <input className={inputClass} inputMode="decimal" aria-label={t('ai.latitude')} placeholder={t('ai.latitude')} value={lat} onChange={(e) => setLat(e.target.value)} />
+              <input className={inputClass} inputMode="decimal" aria-label={t('ai.longitude')} placeholder={t('ai.longitude')} value={lon} onChange={(e) => setLon(e.target.value)} />
+            </div>
           </Field>
         )}
         <Field label={t('ai.prompt')} hint={t(hint[cfg.source])}>

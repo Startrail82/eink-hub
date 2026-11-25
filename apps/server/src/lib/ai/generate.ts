@@ -6,17 +6,20 @@ import type { Ctx } from '../context.js';
 import { deleteImage, saveLocalUpload } from '../images.js';
 import { AiError, generateImage } from './providers.js';
 import { aiConfig, aiConfigured } from './settings.js';
+import { DEFAULT_WEATHER_PROVIDER, fetchWeatherVars, weatherConfig, type WeatherConfig } from '../weather/index.js';
 import { commonVars, fetchFeed, fillTemplate, nextFeedItem, type PromptVars } from './sources.js';
 
-export const aiSources = ['prompt', 'rss'] as const;
+export const aiSources = ['prompt', 'rss', 'weather'] as const;
 export type AiSource = (typeof aiSources)[number];
 
 /** Per-collection settings, kept in the collection's config. */
 export interface AiCollectionConfig {
   source: AiSource;
-  /** Prompt text; {title}, {description}, {date}, {time}, {season} are filled in. Empty = a default. */
+  /** Prompt text; {title}, {description}, {condition}, {temperature}, {date}... are filled in. Empty = a default. */
   prompt: string;
   feedUrl: string;
+  latitude: number | null;
+  longitude: number | null;
   /** How many generated pictures to keep; 0 = keep them all. */
   keep: number;
   /** Panel resolution to generate for, "shortxlong" (e.g. "1200x1600"). Null = follow the first frame showing the collection. */
@@ -28,15 +31,19 @@ export const DEFAULT_KEEP = 20;
 
 export const DEFAULT_PROMPTS: Record<Exclude<AiSource, 'prompt'>, string> = {
   rss: 'A witty, friendly editorial cartoon about this news headline: "{title}". {description} Clean line art with a few flat colours, no text or lettering.',
+  weather: 'A charming illustration of {condition} weather, {temperature} degrees Celsius, {daypart}, {season}. Soft colours, no text or lettering.',
 };
 
 export function collectionConfig(c: Collection): AiCollectionConfig {
   const raw = c.config as Partial<AiCollectionConfig>;
+  const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : null);
   const keep = Number(raw.keep);
   return {
     source: (aiSources as readonly string[]).includes(raw.source ?? '') ? (raw.source as AiSource) : 'prompt',
     prompt: typeof raw.prompt === 'string' ? raw.prompt : '',
     feedUrl: typeof raw.feedUrl === 'string' ? raw.feedUrl.trim() : '',
+    latitude: num(raw.latitude),
+    longitude: num(raw.longitude),
     keep: Number.isInteger(keep) && keep >= 0 ? keep : DEFAULT_KEEP,
     panel: typeof raw.panel === 'string' && /^\d{2,5}x\d{2,5}$/.test(raw.panel) ? raw.panel : null,
     orientation: raw.orientation === 'landscape' ? 'landscape' : 'portrait',
@@ -54,6 +61,8 @@ export function sizeFor(cfg: AiCollectionConfig, frame: Pick<Frame, 'width' | 'h
 export function validateCollectionConfig(cfg: AiCollectionConfig) {
   if (cfg.source === 'prompt' && !cfg.prompt.trim()) throw new AiError('A prompt is required');
   if (cfg.source === 'rss' && !/^https?:\/\//i.test(cfg.feedUrl)) throw new AiError('A feed address (http or https) is required');
+  if (cfg.source === 'weather' && (cfg.latitude === null || cfg.longitude === null || Math.abs(cfg.latitude) > 90 || Math.abs(cfg.longitude) > 180))
+    throw new AiError('A location (latitude and longitude) is required');
 }
 
 // --- Per-collection state that must survive edits of the config ---------------------------
@@ -86,10 +95,11 @@ export function forgetState(db: DB, id: number) {
 // --- Prompt ---------------------------------------------------------------------------------
 
 /** The prompt for the next picture, plus the feed item it is about (to remember it afterwards). */
-export async function buildPrompt(cfg: AiCollectionConfig, seen: string[]): Promise<{ prompt: string; itemId?: string }> {
+export async function buildPrompt(cfg: AiCollectionConfig, seen: string[], weather: WeatherConfig = { provider: DEFAULT_WEATHER_PROVIDER, apiKey: '' }): Promise<{ prompt: string; itemId?: string }> {
   const vars: PromptVars = commonVars();
   if (cfg.source === 'prompt') return { prompt: fillTemplate(cfg.prompt, vars) };
   const template = cfg.prompt.trim() || DEFAULT_PROMPTS[cfg.source];
+  if (cfg.source === 'weather') return { prompt: fillTemplate(template, { ...vars, ...(await fetchWeatherVars(cfg.latitude!, cfg.longitude!, weather)) }) };
   const items = await fetchFeed(cfg.feedUrl);
   // Everything illustrated already? Start over with the newest rather than showing nothing new.
   const item = nextFeedItem(items, seen) ?? items[0];
@@ -150,7 +160,7 @@ export async function generateFor(ctx: Ctx, collectionId: number): Promise<boole
     const cfg = collectionConfig(c);
     validateCollectionConfig(cfg);
     const state = aiState(ctx.db, c.id);
-    const { prompt, itemId } = await buildPrompt(cfg, state.seen);
+    const { prompt, itemId } = await buildPrompt(cfg, state.seen, weatherConfig(ctx.db));
     const buf = await generateImage(provider, prompt, sizeFor(cfg, framesOf(ctx.db, c.id)[0]));
     const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
     const img = await saveLocalUpload(ctx.db, buf, `ai-${c.id}-${stamp}.png`);
