@@ -5,13 +5,14 @@ import sharp from 'sharp';
 import { and, eq, inArray } from 'drizzle-orm';
 import { config } from '../config.js';
 import { basqueDate, hubLang, locales, yearsAgoText, type Lang } from '../i18n.js';
-import { schema, type DB } from '../db/index.js';
-import type { DisplayOptions, Frame, Image } from '../db/schema.js';
+import { getSetting, schema, type DB } from '../db/index.js';
+import type { DisplayOptions, Frame, Image, LocationMode } from '../db/schema.js';
 import { assetSize, type ImmichAsset } from '../immich/client.js';
 import { isDefaultPill, resolvePill } from '../imaging/pill.js';
 import { aspectKey, formatExt, probeImage, renderForFrame, thumbnail, type CropRect } from '../imaging/pipeline.js';
 import { renderTarget } from '../device/drivers/index.js';
 import { HttpError, immichFor, type Ctx } from './context.js';
+import { reverseGeocode } from './geo.js';
 
 const RENDER_VERSION = 1;
 
@@ -50,10 +51,30 @@ export async function saveLocalUpload(db: DB, buf: Buffer, originalName: string)
       width: meta.width,
       height: meta.height,
       takenAt: meta.takenAt ?? Date.now(),
+      // From the photo's GPS, with the offline place list; '' = no GPS or nowhere near a place.
+      ...placeOf(meta.gps),
       createdAt: Date.now(),
     })
     .returning()
     .get();
+}
+
+/** City and country for a GPS position ('' when there is none or no place near it). */
+function placeOf(gps?: { latitude: number; longitude: number }): { city: string; country: string } {
+  return (gps && reverseGeocode(gps.latitude, gps.longitude)) || { city: '', country: '' };
+}
+
+/**
+ * The location an Immich payload settles, or null when it says nothing yet: no city/country
+ * fields at all, or GPS data that Immich has not reverse-geocoded (yet). Only a photo without
+ * GPS is known to have no location ('').
+ */
+export function locationFromExif(exif: ImmichAsset['exifInfo']): { city: string; country: string } | null {
+  if (!exif || (exif.city === undefined && exif.country === undefined)) return null;
+  const city = exif.city ?? '';
+  const country = exif.country ?? '';
+  if (!city && !country && exif.latitude != null && exif.longitude != null) return null;
+  return { city, country };
 }
 
 /** Upsert Immich assets as image rows; returns ids in input order. */
@@ -70,6 +91,8 @@ export function upsertImmichAssets(db: DB, assets: ImmichAsset[]): number[] {
         ...(size ? { width: size.width, height: size.height } : {}),
         ...(Number.isFinite(taken) ? { takenAt: taken } : {}),
         ...(a.isFavorite !== undefined ? { favorite: a.isFavorite } : {}),
+        // Only when the payload settles the location; '' marks "looked up, none".
+        ...(locationFromExif(a.exifInfo) ?? {}),
       };
       const insert = tx.insert(schema.images).values({ source: 'immich', immichAssetId: a.id, createdAt: Date.now(), ...values });
       if (Object.keys(values).length) insert.onConflictDoUpdate({ target: schema.images.immichAssetId, set: values }).run();
@@ -175,6 +198,89 @@ export function yearsAgoCaption(img: Pick<Image, 'takenAt'>, lang: Lang = 'en', 
   return yearsAgoText(lang, years);
 }
 
+/**
+ * "Boechout", "Rome, Italy" … from the city/country Immich stored. The country is left out for
+ * `city` mode (unless there is no city) and for the home country when `hideHomeCountry` is set.
+ */
+export function locationText(
+  img: Pick<Image, 'city' | 'country'>,
+  mode: LocationMode | undefined,
+  opts: { hideHomeCountry?: boolean; homeCountry?: string } = {},
+): string | null {
+  if (mode !== 'city' && mode !== 'city_country') return null;
+  const city = img.city?.trim();
+  const country = img.country?.trim();
+  const home = opts.homeCountry?.trim();
+  const isHome = !!(opts.hideHomeCountry && home && country && country.localeCompare(home, undefined, { sensitivity: 'base' }) === 0);
+  const parts: string[] = [];
+  if (city) parts.push(city);
+  if (country && !isHome && (mode === 'city_country' || !city)) parts.push(country);
+  return parts.length ? parts.join(', ') : null;
+}
+
+/** The text drawn on the photo: date (or "X years ago today") and/or location, joined by " · ". */
+export function photoCaption(
+  img: Pick<Image, 'takenAt' | 'city' | 'country'>,
+  o: { lang: Lang; showDate?: boolean; memories?: boolean; location?: LocationMode; hideHomeCountry?: boolean; homeCountry?: string },
+): string | null {
+  const parts: string[] = [];
+  if (o.showDate) {
+    const date = o.memories ? yearsAgoCaption(img, o.lang) : photoDate(img, o.lang);
+    if (date) parts.push(date);
+  }
+  const place = locationText(img, o.location, o);
+  if (place) parts.push(place);
+  return parts.length ? parts.join(' · ') : null;
+}
+
+/** How long to wait before asking Immich again after a failed or unsettled lookup. */
+export const DETAILS_RETRY_MS = 30 * 60_000;
+const detailsRetryAt = new Map<string, number>();
+
+/**
+ * Fill in what the caption needs and the row doesn't have yet. Uploads from before places were
+ * read get theirs from the original's GPS. Immich photos picked by id (sent from the Immich
+ * page, manual collections) carry no date or location: ask Immich for the asset and store it.
+ * A failed lookup, or a place Immich has not geocoded yet, is retried at most every
+ * DETAILS_RETRY_MS, so renders (cache hits included) don't wait on Immich every time.
+ */
+export async function withCaptionDetails(
+  ctx: Ctx,
+  img: Image,
+  need: { date?: boolean; location?: boolean } = { location: true },
+  now = Date.now(),
+): Promise<Image> {
+  if (img.source === 'local') return withLocalPlace(ctx, img, need);
+  if (img.source !== 'immich' || !img.immichAssetId) return img;
+  const missing = (i: Image) => (need.date && i.takenAt === null) || (need.location && i.city === null && i.country === null);
+  if (!missing(img) || (detailsRetryAt.get(img.immichAssetId) ?? 0) > now) return img;
+  try {
+    upsertImmichAssets(ctx.db, [await immichFor(ctx.db).asset(img.immichAssetId)]);
+    const fresh = ctx.db.select().from(schema.images).where(eq(schema.images.id, img.id)).get() ?? img;
+    if (missing(fresh)) detailsRetryAt.set(img.immichAssetId, now + DETAILS_RETRY_MS);
+    else detailsRetryAt.delete(img.immichAssetId);
+    return fresh;
+  } catch (err) {
+    detailsRetryAt.set(img.immichAssetId, now + DETAILS_RETRY_MS);
+    ctx.log.debug({ err, asset: img.immichAssetId }, 'immich details lookup failed');
+    return img;
+  }
+}
+
+/** Uploads from before places were read: name the place from the original's GPS once. */
+async function withLocalPlace(ctx: Ctx, img: Image, need: { location?: boolean }): Promise<Image> {
+  if (!need.location || img.city !== null || img.country !== null || !img.filePath) return img;
+  try {
+    const { gps } = await probeImage(await fs.readFile(path.join(config.originalsDir, img.filePath)));
+    const place = placeOf(gps);
+    ctx.db.update(schema.images).set(place).where(eq(schema.images.id, img.id)).run();
+    return { ...img, ...place };
+  } catch (err) {
+    ctx.log.debug({ err, image: img.id }, 'reading the place of an upload failed');
+    return img;
+  }
+}
+
 export interface Rendered {
   hash: string;
   /** Path inside cacheDir. */
@@ -187,6 +293,8 @@ export interface Rendered {
 }
 
 export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: DisplayOptions = {}): Promise<Rendered> {
+  const needLocation = !!opts.showLocation && opts.showLocation !== 'off';
+  if (opts.showDate || needLocation) img = await withCaptionDetails(ctx, img, { date: opts.showDate, location: needLocation });
   const landscape = frame.orientation === 'landscape';
   const crop = opts.crop !== undefined ? opts.crop : getCrop(ctx.db, img.id, frameAspect(frame));
   const target = renderTarget(frame);
@@ -202,7 +310,14 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
     fit: crop ? 'cover' : (opts.fit ?? 'cover'),
     bg: opts.bg ?? '#ffffff',
     crop,
-    caption: opts.showDate ? (opts.memories ? yearsAgoCaption : photoDate)(img, hubLang(ctx.db)) : null,
+    caption: photoCaption(img, {
+      lang: hubLang(ctx.db),
+      showDate: opts.showDate,
+      memories: opts.memories,
+      location: opts.showLocation,
+      hideHomeCountry: opts.hideHomeCountry,
+      homeCountry: getSetting(ctx.db, 'homeCountry'),
+    }),
     // Only when not the default, so existing renders keep their hash.
     ...(isDefaultPill(pill) ? {} : { pill }),
     // Only when not the default, so existing JPEG renders keep their hash.

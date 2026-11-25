@@ -4,7 +4,7 @@ Bug reports, ideas and pull requests are welcome. The full guide is in [CONTRIBU
 
 1. Open an [issue](https://github.com/yayitazale/eink-hub/issues) for bugs or ideas.
 2. Fork, branch from `main` and open a **pull request** against `main`.
-3. Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) (`feat: …`, `fix: …`): the changelog is generated from them.
+3. Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) (`feat: …`, `fix: …`): the changelog is generated from them and credits each one to its author's GitHub account. A PR check rejects commits that don't follow the format.
 4. Make sure `npm run build` and `npm test` pass; the PR checks run them too.
 
 ## Run it locally

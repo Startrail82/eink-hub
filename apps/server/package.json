@@ -20,6 +20,7 @@
     "bonjour-service": "^1.4.4",
     "croner": "^10.0.1",
     "drizzle-orm": "^0.45.3",
+    "exif-reader": "^2.0.3",
     "fastify": "^5.12.5",
     "node-ble": "^1.13.0",
     "qrcode": "^1.5.4",

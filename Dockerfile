@@ -38,6 +38,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/apps/server/package.json ./apps/server/
 COPY --from=build /app/apps/server/dist ./apps/server/dist
+# Offline place list (GeoNames) for naming where uploaded photos were taken.
+COPY --from=build /app/apps/server/geo ./apps/server/geo
 COPY --from=build /app/apps/web/dist ./apps/web/dist
 VOLUME /data
 EXPOSE 8080

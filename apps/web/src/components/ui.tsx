@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ButtonHTMLAttributes, type PointerEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { Loader2, X } from 'lucide-react';
+import { Check, Loader2, X } from 'lucide-react';
 import { useI18n } from '../i18n';
 
 const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ');
@@ -132,6 +132,39 @@ export function Segmented<T extends string>({
   );
 }
 
+/**
+ * Pills that switch on and off independently, styled like Segmented. Leaving them all off is
+ * a valid choice, so there is no "none" option.
+ */
+export function Chips<T extends string>({
+  options,
+  className,
+}: {
+  options: { value: T; label: ReactNode; on: boolean; onChange: (v: boolean) => void }[];
+  className?: string;
+}) {
+  return (
+    <div className={cx('flex w-full gap-1.5 rounded-full border border-line/60 bg-surface-2 p-1', className)}>
+      {options.map((o) => (
+        <button
+          key={o.value}
+          type="button"
+          aria-pressed={o.on}
+          onClick={() => o.onChange(!o.on)}
+          className={cx(
+            'relative min-w-0 flex-1 truncate rounded-full px-7 py-1.5 text-center text-[13px] font-semibold whitespace-nowrap transition',
+            o.on ? 'bg-surface text-ink shadow-soft' : 'text-muted hover:text-ink',
+          )}
+        >
+          {/* Out of the flow, so the label stays put when the tick appears. */}
+          {o.on && <Check className="absolute top-1/2 left-3 size-3.5 -translate-y-1/2" />}
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 /** `group` renders a <div> instead of a <label>, for controls made of several buttons. */
 export function Field({ label, hint, children, group }: { label: string; hint?: ReactNode; children: ReactNode; group?: boolean }) {
   const Tag = group ? 'div' : 'label';
@@ -144,14 +177,27 @@ export function Field({ label, hint, children, group }: { label: string; hint?: 
   );
 }
 
-export function Toggle({ label, hint, checked, onChange }: { label: string; hint?: string; checked: boolean; onChange: (v: boolean) => void }) {
+export function Toggle({
+  label,
+  hint,
+  checked,
+  onChange,
+  nested,
+}: {
+  label: string;
+  hint?: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  /** A sub-option of the toggle above it: indented, with smaller text. */
+  nested?: boolean;
+}) {
   return (
-    <label className="flex items-center justify-between gap-3">
+    <label className={cx('flex items-center justify-between gap-3', nested && '-mt-1 ml-1 border-l-2 border-line pl-4')}>
       <span className="min-w-0">
-        <span className="block text-sm font-semibold">{label}</span>
-        {hint && <span className="block text-xs text-muted">{hint}</span>}
+        <span className={cx('block font-semibold', nested ? 'text-xs' : 'text-sm')}>{label}</span>
+        {hint && <span className={cx('block text-muted', nested ? 'text-[11px] leading-snug' : 'text-xs')}>{hint}</span>}
       </span>
-      <input type="checkbox" className="size-5 shrink-0 accent-[var(--ink)]" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <input type="checkbox" className={cx('shrink-0 accent-[var(--ink)]', nested ? 'size-4' : 'size-5')} checked={checked} onChange={(e) => onChange(e.target.checked)} />
     </label>
   );
 }
