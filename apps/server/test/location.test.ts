@@ -14,7 +14,8 @@ const { openDb, schema, setSetting } = await import('../src/db/index.js');
 const { buildApp } = await import('../src/app.js');
 const { DETAILS_RETRY_MS, saveLocalUpload, locationText, photoCaption, upsertImmichAssets, withCaptionDetails } = await import('../src/lib/images.js');
 const { readExif, renderForFrame } = await import('../src/imaging/pipeline.js');
-const { allCountries, reverseGeocode } = await import('../src/lib/geo.js');
+const { allCountries, nearestPlace, reverseGeocode, searchPlaces } = await import('../src/lib/geo.js');
+const { homeCountry, hubLocation, parsePlace } = await import('../src/lib/location.js');
 const sharp = (await import('sharp')).default;
 
 const db = (ensureDirs(), openDb(config.dbPath));
@@ -119,9 +120,6 @@ describe('looking up a missing location', () => {
       const asset: ImmichAsset = { id: req.params.id, type: 'IMAGE', exifInfo, ...(req.params.id === 'dated' ? { localDateTime: '2019-10-06T12:00:00.000Z' } : {}) };
       return asset;
     });
-    immich.get<{ Querystring: { type: string } }>('/api/search/suggestions', async (req) =>
-      req.query.type === 'country' ? ['Italy', null, 'Belgium', '', 'Italy'] : [],
-    );
     setSetting(db, 'immich.url', await immich.listen({ port: 0, host: '127.0.0.1' }));
     setSetting(db, 'immich.apiKey', 'test');
   });
@@ -141,15 +139,6 @@ describe('looking up a missing location', () => {
     await withCaptionDetails(ctx, rowOf('lookup-none'));
     expect([rowOf('lookup-none').city, rowOf('lookup-none').country]).toEqual(['', '']);
     expect(hits.filter((h) => h === 'lookup-none')).toHaveLength(1);
-  });
-  it('lists every country for the home country picker, with or without photos from it', async () => {
-    const { app } = await buildApp(db, { logger: false });
-    const list: { code?: string; name: string }[] = (await app.inject({ url: '/api/countries' })).json();
-    // Every country, including ones with no photos yet, without duplicates.
-    expect(list.length).toBeGreaterThan(200);
-    expect(list).toEqual(expect.arrayContaining([{ code: 'BE', name: 'Belgium' }, { code: 'ES', name: 'Spain' }, { code: 'NA', name: 'Namibia' }]));
-    expect(list.filter((c) => c.name === 'Italy')).toHaveLength(1);
-    await app.close();
   });
   it('fills in the date of a photo imported by bare id when the caption needs it', async () => {
     upsertImmichAssets(db, [{ id: 'dated', type: 'IMAGE' }]);
@@ -205,6 +194,29 @@ describe('offline places for uploads', () => {
     expect(reverseGeocode(NaN, 3)).toBeNull();
     expect(reverseGeocode(95, 3)).toBeNull();
   });
+  it('finds places by name, best known first, with their region', () => {
+    expect(searchPlaces('paris')[0]).toMatchObject({ name: 'Paris', country: 'France', region: 'Île-de-France' });
+    // Accents and the second name of a bilingual place.
+    expect(searchPlaces('san sebastian')[0]).toMatchObject({ name: 'Donostia / San Sebastián', region: 'Basque Country', country: 'Spain' });
+    expect(searchPlaces('donostia')[0]?.countryCode).toBe('ES');
+    expect(searchPlaces('san sebas')[0]?.name).toBe('Donostia / San Sebastián');
+    // Text after a comma narrows by region or country.
+    expect(searchPlaces('paris, texas')[0]).toMatchObject({ region: 'Texas', countryCode: 'US' });
+    expect(searchPlaces('paris, ca').every((p) => p.countryCode === 'CA')).toBe(true);
+    expect(searchPlaces('  ')).toEqual([]);
+    expect(searchPlaces('a', 5)).toHaveLength(5);
+  });
+  it('gives the nearest place with its region', () => {
+    expect(nearestPlace(43.31, -1.98)).toMatchObject({ name: 'Donostia / San Sebastián', region: 'Basque Country', countryCode: 'ES' });
+    expect(nearestPlace(35, -40)).toBeNull();
+  });
+  it('names a typed position after the nearest place, or by its coordinates at sea', () => {
+    expect(parsePlace({ latitude: '44.128', longitude: 8.257 })).toMatchObject({ name: 'Loano', country: 'Italy', countryCode: 'IT' });
+    expect(parsePlace({ latitude: 35, longitude: -40 })).toMatchObject({ name: '35, -40', country: '' });
+    expect(parsePlace({ name: 'Home', latitude: 51.16, longitude: 4.49 })).toMatchObject({ name: 'Home', country: 'Belgium' });
+    expect(parsePlace(null)).toBeNull();
+    expect(() => parsePlace({ latitude: '', longitude: 3 })).toThrow();
+  });
   it('lists every country for the picker without Immich', () => {
     const all = allCountries();
     expect(all.length).toBeGreaterThan(200);
@@ -249,10 +261,49 @@ describe('settings and assignment options', () => {
   });
   afterAll(() => app.close());
 
-  it('stores the home country', async () => {
-    expect((await app.inject({ url: '/api/settings' })).json().homeCountry).toBe('');
-    await app.inject({ method: 'PUT', url: '/api/settings', payload: { homeCountry: '  Belgium ' } });
-    expect((await app.inject({ url: '/api/settings' })).json().homeCountry).toBe('Belgium');
+  it('stores the hub location, and the home country follows it', async () => {
+    expect((await app.inject({ url: '/api/settings' })).json()).toMatchObject({ location: null, homeCountry: '' });
+    const [boechout] = searchPlaces('boechout');
+    expect((await app.inject({ method: 'PUT', url: '/api/settings', payload: { location: boechout } })).statusCode).toBe(200);
+    expect((await app.inject({ url: '/api/settings' })).json()).toMatchObject({ location: { name: 'Boechout', country: 'Belgium' }, homeCountry: 'Belgium' });
+    await app.inject({ method: 'PUT', url: '/api/settings', payload: { location: null } });
+    expect((await app.inject({ url: '/api/settings' })).json()).toMatchObject({ location: null, homeCountry: '' });
+  });
+
+  it('refuses coordinates out of range', async () => {
+    const res = await app.inject({ method: 'PUT', url: '/api/settings', payload: { location: { latitude: 91, longitude: 0 } } });
+    expect(res.statusCode).toBe(400);
+    expect((await app.inject({ method: 'GET', url: '/api/places/reverse?lat=abc&lon=1' })).statusCode).toBe(400);
+  });
+
+  it('searches and reverse-looks-up places over the API', async () => {
+    expect((await app.inject({ url: '/api/places?q=loano' })).json()[0]).toMatchObject({ name: 'Loano', country: 'Italy', countryCode: 'IT' });
+    expect((await app.inject({ url: '/api/places?q=' })).json()).toEqual([]);
+    expect((await app.inject({ url: '/api/places/reverse?lat=51.16&lon=4.49' })).json()).toMatchObject({ name: 'Boechout', country: 'Belgium' });
+    expect((await app.inject({ url: '/api/places/reverse?lat=35&lon=-40' })).json()).toBeNull();
+  });
+
+  it('gives a Canvas its own location, which wins for the home country', async () => {
+    const frame = db.insert(schema.frames).values({ name: 'Away', host: '127.0.0.1:2', upstreamToken: 'location-away', mode: 'push', createdAt: Date.now() }).returning().get();
+    const get = () => db.select().from(schema.frames).where(eq(schema.frames.id, frame.id)).get()!;
+    await app.inject({ method: 'PUT', url: '/api/settings', payload: { location: searchPlaces('boechout')[0] } });
+    expect(homeCountry(db, get())).toBe('Belgium');
+    const patch = (location: unknown) => app.inject({ method: 'PATCH', url: `/api/frames/${frame.id}`, payload: { config: { location } } });
+    expect((await patch({ latitude: 44.128, longitude: 8.257 })).statusCode).toBe(200);
+    expect(get().config.location).toMatchObject({ name: 'Loano', country: 'Italy', latitude: 44.128 });
+    expect(homeCountry(db, get())).toBe('Italy');
+    await patch(null);
+    expect(get().config.location).toBeUndefined();
+    expect(homeCountry(db, get())).toBe('Belgium');
+    await app.inject({ method: 'PUT', url: '/api/settings', payload: { location: null } });
+  });
+
+  it('keeps a home country chosen before locations existed', () => {
+    setSetting(db, 'location', '');
+    setSetting(db, 'homeCountry', 'Belgium');
+    expect(hubLocation(db)).toBeNull();
+    expect(homeCountry(db)).toBe('Belgium');
+    setSetting(db, 'homeCountry', '');
   });
 
   it('saves the location options on an assignment, and keeps them for older clients', async () => {

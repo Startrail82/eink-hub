@@ -67,5 +67,6 @@ export const it: Catalogue = {
   switchbot_public_url: 'SwitchBot scarica la foto da Internet: imposta nelle Impostazioni un indirizzo pubblico https (esterno o quello per le cornici cloud)',
   trmnl_mac_missing: 'Manca l’indirizzo MAC del dispositivo TRMNL',
   schedule_conflict: 'Un\'altra programmazione di questo Canvas ({name}) cambia già alle {time}',
+  invalid_location: 'La posizione non è valida: indica una latitudine tra -90 e 90 e una longitudine tra -180 e 180',
   assignment_not_found: 'Programmazione {id} non trovata',
 };

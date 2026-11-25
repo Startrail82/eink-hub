@@ -67,5 +67,6 @@ export const pt: Catalogue = {
   switchbot_public_url: 'O SwitchBot transfere a foto pela Internet: defina nas Definições um endereço público https (externo ou o das molduras na nuvem)',
   trmnl_mac_missing: 'Falta o endereço MAC do dispositivo TRMNL',
   schedule_conflict: 'Outra programação deste Canvas ({name}) já muda às {time}',
+  invalid_location: 'A localização não é válida: indique uma latitude entre -90 e 90 e uma longitude entre -180 e 180',
   assignment_not_found: 'Programação {id} não encontrada',
 };

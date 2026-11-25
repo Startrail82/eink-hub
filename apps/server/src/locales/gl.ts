@@ -67,5 +67,6 @@ export const gl: Catalogue = {
   switchbot_public_url: 'SwitchBot descarga a foto desde Internet: configura en Axustes un enderezo público con https (externo ou para marcos na nube)',
   trmnl_mac_missing: 'Falta o enderezo MAC do dispositivo TRMNL',
   schedule_conflict: 'Outra programación deste Canvas ({name}) xa cambia ás {time}',
+  invalid_location: 'A localización non é válida: indica unha latitude entre -90 e 90 e unha lonxitude entre -180 e 180',
   assignment_not_found: 'Non se atopou a programación {id}',
 };

@@ -40,7 +40,7 @@ A schedule can draw a small label in the bottom-left corner of each photo. Under
 
 With both on, the label reads like `6 October 2019 · Rome, Italy`. With neither, there is no label.
 
-With **Place** on, **Leave out the home country** shows only the city for photos taken in your home country. Pick the home country in *Settings*.
+With **Place** on, **Leave out the home country** shows only the city for photos taken in the country of the Canvas's location. That is the hub's location from *Settings → Location*, or the Canvas's own one if you set it under the Canvas's *Settings → Location*.
 
 ## How each frame gets the next photo
 

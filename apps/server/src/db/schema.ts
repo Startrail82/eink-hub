@@ -1,6 +1,7 @@
 import { sqliteTable, integer, text, real, primaryKey, blob } from 'drizzle-orm/sqlite-core';
 import type { Schedule } from '../lib/schedule.js';
 import type { FrameKind, ImageFormat } from '../device/drivers/types.js';
+import type { Place } from '../lib/location.js';
 
 // Mirrors DEFAULT_SCHEDULE in lib/schedule.ts (inlined to avoid an import cycle).
 const defaultSchedule = (): Schedule => ({ kind: 'days', days: 1, at: '07:00' });
@@ -23,6 +24,8 @@ export interface DisplayOptions {
 export interface FrameConfig {
   /** Colours and opacity of the date label drawn on pictures. Missing = the defaults. */
   pill?: { bg?: string; text?: string; opacity?: number };
+  /** Where this Canvas is, when not where the hub is (lib/location.ts). Missing = the hub's location. */
+  location?: Place;
   /** SwitchBot: OpenAPI token + secret and the frame's device id. */
   token?: string;
   secret?: string;

@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Bluetooth, Copy, Download, Eraser, Moon, Play, Plus, RefreshCw, RotateCcw, SkipForward, Smartphone, Trash2 } from 'lucide-react';
-import { api, thumbUrl, type Assignment, type Frame, type FrameAppearance, type HistoryEntry, type ImageFormat, type Schedule } from '../lib/api';
+import { api, thumbUrl, type Assignment, type Frame, type FrameAppearance, type HistoryEntry, type ImageFormat, type Place, type Schedule } from '../lib/api';
+import { LocationPicker } from '../components/LocationPicker';
 import { FRAME_COLORS, FRAME_STYLES, KNOWN_DIAGONALS, formatCm, frameGeometry, withDefaults } from '../lib/frameGeometry';
 import { dateTime, formatBytes, formatPercent, relativeTime } from '../lib/format';
 import { useAction, useBleStatus, useFrame, useSettings } from '../lib/hooks';
@@ -596,6 +597,36 @@ function PillSettings({ frame }: { frame: Frame }) {
   );
 }
 
+/** Where this Canvas is, when it is not where the hub is (weather, home country in captions). */
+function CanvasLocationSettings({ frame }: { frame: Frame }) {
+  const { t } = useI18n();
+  const settings = useSettings();
+  const own = frame.config.location ?? null;
+  // Off while choosing: the picker shows until a place is picked, then it is saved.
+  const [custom, setCustom] = useState(!!own);
+  useEffect(() => setCustom(!!own), [own]);
+  const save = useAction((location: Place | null) => api.patch(`/api/frames/${frame.id}`, { config: { location } }), { success: t('common.saved') });
+  const hub = settings.data?.location;
+  return (
+    <div className="border-t border-line pt-6">
+      <h4 className="mb-1 font-bold">{t('canvasSettings.location_title')}</h4>
+      <p className="mb-4 text-xs text-muted">{t('canvasSettings.location_hint')}</p>
+      <div className="mb-4">
+        <Toggle
+          label={t('canvasSettings.location_same_as_hub')}
+          hint={hub ? t('canvasSettings.location_hub', { place: hub.name }) : t('canvasSettings.location_hub_none')}
+          checked={!custom}
+          onChange={(same) => {
+            setCustom(!same);
+            if (same && own) save.mutate(null);
+          }}
+        />
+      </div>
+      {custom && <LocationPicker value={own} onChange={(p) => (p ? save.mutate(p) : (setCustom(false), save.mutate(null)))} saving={save.isPending} />}
+    </div>
+  );
+}
+
 function BluetoothSettings({ frame }: { frame: Frame }) {
   const { t } = useI18n();
   const ble = useBleStatus();
@@ -716,6 +747,7 @@ function SettingsTab({ frame }: { frame: Frame }) {
       <FrameLookSettings frame={frame} />
 
       <PillSettings frame={frame} />
+      <CanvasLocationSettings frame={frame} />
 
       {caps.bleWake && <BluetoothSettings frame={frame} />}
 

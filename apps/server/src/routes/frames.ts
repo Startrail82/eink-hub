@@ -17,6 +17,7 @@ import { wakeFrame, withWake } from '../lib/wake.js';
 import { nextRun, parseSchedule } from '../lib/schedule.js';
 import { requestLang, tr } from '../i18n.js';
 import { isDefaultPill, resolvePill, type PillStyle } from '../imaging/pill.js';
+import { parsePlace } from '../lib/location.js';
 import { forgetTestCanvas, isSimulated, remember, startTestCanvas } from '../lib/simulators.js';
 
 export async function refreshFrame(ctx: Ctx, frame: Frame, timeoutMs = 5000) {
@@ -288,7 +289,7 @@ export function frameRoutes(app: FastifyInstance, ctx: Ctx) {
     Body: Partial<Pick<Frame, 'name' | 'host' | 'orientation' | 'rotate' | 'width' | 'height' | 'bleAutoWake'>> & {
       pullSchedule?: unknown;
       bleMac?: string | null;
-      config?: Partial<Pick<FrameConfig, 'maxPollMinutes' | 'notifyUrl' | 'format' | 'token' | 'secret'>> & { pill?: unknown };
+      config?: Partial<Pick<FrameConfig, 'maxPollMinutes' | 'notifyUrl' | 'format' | 'token' | 'secret'>> & { pill?: unknown; location?: unknown };
       /** Inches; null goes back to the inferred size. */
       diagonal?: number | null;
       appearance?: Partial<FrameAppearance>;
@@ -311,6 +312,8 @@ export function frameRoutes(app: FastifyInstance, ctx: Ctx) {
           const p = resolvePill(c.pill as Partial<PillStyle> | null);
           next.pill = isDefaultPill(p) ? undefined : p;
         }
+        // Where this Canvas is; null goes back to the hub's location.
+        if (c.location !== undefined) next.location = parsePlace(c.location) ?? undefined;
         // Secrets are write-only: empty means "keep the saved one".
         if (c.token) next.token = c.token.trim();
         if (c.secret) next.secret = c.secret.trim();
