@@ -8,6 +8,7 @@ import { basqueDate, hubLang, locales, yearsAgoText, type Lang } from '../i18n.j
 import { getSetting, schema, type DB } from '../db/index.js';
 import type { DisplayOptions, Frame, Image, LocationMode } from '../db/schema.js';
 import { assetSize, type ImmichAsset } from '../immich/client.js';
+import { isDefaultPill, resolvePill } from '../imaging/pill.js';
 import { aspectKey, formatExt, probeImage, renderForFrame, thumbnail, type CropRect } from '../imaging/pipeline.js';
 import { renderTarget } from '../device/drivers/index.js';
 import { HttpError, immichFor, type Ctx } from './context.js';
@@ -298,6 +299,7 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
   const crop = opts.crop !== undefined ? opts.crop : getCrop(ctx.db, img.id, frameAspect(frame));
   const target = renderTarget(frame);
   const ext = formatExt(target.format);
+  const pill = resolvePill(frame.config?.pill);
   const params = {
     v: RENDER_VERSION,
     img: img.id,
@@ -319,7 +321,10 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
     // Only when not the default, so existing JPEG renders keep their hash.
     ...(ext === 'jpg' && !target.format.palette ? {} : { format: target.format }),
   } as const;
-  const hash = crypto.createHash('sha1').update(JSON.stringify(params)).digest('hex');
+  // The label style only matters when there is a label, and only when not the default, so
+  // pictures without a caption and existing renders keep their hash.
+  const hashed = params.caption && !isDefaultPill(pill) ? { ...params, pill } : params;
+  const hash = crypto.createHash('sha1').update(JSON.stringify(hashed)).digest('hex');
   const file = path.join(config.cacheDir, `${hash}.${ext}`);
   const deviceName = `h${img.id}_${hash.slice(0, 10)}_${landscape ? 'L' : 'P'}.${ext}`;
   if (await exists(file)) return { hash, file, deviceName, ext, buf: await fs.readFile(file) };
@@ -333,6 +338,7 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
     bg: params.bg,
     crop: params.crop,
     caption: params.caption,
+    pill,
     format: target.format,
   });
   await fs.writeFile(file, buf);

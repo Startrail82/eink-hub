@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { BatteryWarning, CalendarClock } from 'lucide-react';
+import { BatteryWarning, CalendarClock, Clock } from 'lucide-react';
 import { api, type Schedule } from '../lib/api';
-import { dateTime, weekdayName } from '../lib/format';
+import { clock, dateTime, duration, weekdayName } from '../lib/format';
 import { useI18n, type MsgKey } from '../i18n';
 import { Field, inputClass } from './ui';
 import { Select } from './Select';
@@ -73,6 +73,7 @@ export function SchedulePicker({
   activeTo,
   onValidity,
   disabled,
+  compare,
 }: {
   value: Schedule;
   onChange: (s: Schedule) => void;
@@ -82,17 +83,21 @@ export function SchedulePicker({
   onValidity?: (ok: boolean) => void;
   /** Nothing chosen yet (no collection): shown empty and greyed out, no preview. */
   disabled?: boolean;
+  /**
+   * Compare with the other schedules of this Canvas while editing: the same minute shows as an
+   * error (and makes the schedule invalid), less than 12 hours apart as a warning (like the battery one).
+   */
+  compare?: { frameId: number; assignmentId?: number; collectionId?: number; enabled: boolean };
 }) {
   const { t, lang } = useI18n();
   const debounced = useDebounced(value, value.kind === 'cron' ? 400 : 0);
   const preview = useQuery({
-    queryKey: ['schedule-preview', debounced, activeFrom, activeTo, lang],
+    queryKey: ['schedule-preview', debounced, activeFrom, activeTo, lang, compare],
     queryFn: () =>
-      api.post<{ ok: boolean; error?: string; next?: number[]; frequent?: boolean }>('/api/schedule/preview', {
-        schedule: debounced,
-        activeFrom,
-        activeTo,
-      }),
+      api.post<{ ok: boolean; error?: string; next?: number[]; frequent?: boolean; close?: { minutes: number; otherAt: number; collection: string } }>(
+        '/api/schedule/preview',
+        { schedule: debounced, activeFrom, activeTo, ...compare },
+      ),
     placeholderData: (prev) => prev,
     enabled: !disabled,
   });
@@ -189,6 +194,21 @@ export function SchedulePicker({
         <div className="flex gap-3 rounded-2xl bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-900/25 dark:text-amber-200">
           <BatteryWarning className="mt-0.5 size-5 shrink-0" />
           <p>{t('schedule.battery_warning')}</p>
+        </div>
+      )}
+
+      {preview.data?.ok && preview.data.close && (
+        // The battery note, starting with the other schedule that changes too close to this one.
+        <div className="flex gap-3 rounded-2xl bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-900/25 dark:text-amber-200">
+          <Clock className="mt-0.5 size-5 shrink-0" />
+          <p>
+            {t('schedule.close_warning', {
+              name: preview.data.close.collection,
+              time: clock(preview.data.close.otherAt),
+              gap: duration(preview.data.close.minutes),
+            })}{' '}
+            {t('schedule.battery_warning')}
+          </p>
         </div>
       )}
 

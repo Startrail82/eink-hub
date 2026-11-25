@@ -43,6 +43,14 @@ export function getAssignment(db: DB, frameId: number): Assignment | undefined {
   return nextAssignment(getAssignments(db, frameId));
 }
 
+/**
+ * The Canvas's original (oldest) schedule. The one-schedule endpoints write to this one: unlike
+ * the one that changes next, it stays the same between calls.
+ */
+export function firstAssignment(db: DB, frameId: number): Assignment | undefined {
+  return getAssignments(db, frameId)[0];
+}
+
 export function getAssignmentById(db: DB, id: number): Assignment {
   const a = db.select().from(schema.assignments).where(eq(schema.assignments.id, id)).get();
   if (!a) throw new HttpError(404, 'assignment_not_found', { id });

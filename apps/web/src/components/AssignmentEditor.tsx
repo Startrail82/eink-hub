@@ -2,11 +2,10 @@ import { useState } from 'react';
 import { History, Trash2 } from 'lucide-react';
 import { api, type FitMode, type Assignment, type Frame, type LocationMode, type OrderMode, type SavedAssignment, type Schedule } from '../lib/api';
 import { useAction, useCollections } from '../lib/hooks';
-import { clock } from '../lib/format';
 import { SchedulePicker } from './SchedulePicker';
 import { useI18n, type MsgKey } from '../i18n';
 import { BgPicker } from './BgPicker';
-import { Button, Chips, Field, Segmented, Toggle, cx, inputClass, useConfirm, useToast } from './ui';
+import { Button, Chips, Field, Segmented, Toggle, cx, inputClass, useConfirm } from './ui';
 import { Select } from './Select';
 import { TimeField } from './TimeField';
 
@@ -60,7 +59,6 @@ const DEFAULT_SCHEDULE: Schedule = { kind: 'days', days: 1, at: '07:00' };
  */
 export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }: { frame?: Frame; assignment?: Assignment; choices?: Frame[]; onSaved?: () => void }) {
   const { t } = useI18n();
-  const toast = useToast();
   const confirm = useConfirm();
   const collections = useCollections();
   const [frameId, setFrameId] = useState<number | ''>('');
@@ -115,11 +113,6 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
     },
     { success: t('assign.saved'), invalidate: [['frames']] },
   );
-  // Saved, but two changes of this Canvas are close together: say so.
-  const warn = (r: SavedAssignment) => {
-    const w = r.warnings[0];
-    if (w) toast(t('plan.warn_close', { time: clock(w.otherAt), minutes: w.minutes }), 'info');
-  };
   const remove = useAction(() => api.del(`/api/assignments/${a!.id}`), { success: t('assign.removed') });
 
   if (collections.data && collections.data.length === 0)
@@ -166,6 +159,7 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
               activeTo={hourly && windowOn ? to : null}
               onValidity={setScheduleOk}
               disabled={!ready}
+              compare={frame && collectionId !== '' ? { frameId: frame.id, assignmentId: a?.id, collectionId, enabled } : undefined}
             />
           )}
         </div>
@@ -240,7 +234,7 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
           variant="primary"
           loading={save.isPending}
           disabled={!ready || (!isMemories && !scheduleOk)}
-          onClick={() => save.mutate(undefined, { onSuccess: (r) => (warn(r), onSaved?.()) })}
+          onClick={() => save.mutate(undefined, { onSuccess: () => onSaved?.() })}
         >
           {t('common.save')}
         </Button>

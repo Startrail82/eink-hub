@@ -63,6 +63,65 @@ function CollectionCard({ c, onOpen }: { c: Collection; onOpen: () => void }) {
   );
 }
 
+/**
+ * The collection's name as the page title: click it to rename in place. Enter or leaving the
+ * field saves, Escape cancels; an empty or unchanged name changes nothing.
+ */
+function CollectionName({ collection }: { collection: Collection }) {
+  const { t } = useI18n();
+  const [draft, setDraft] = useState<string | null>(null);
+  // Escape closes the field; the blur that may follow must not save.
+  const cancelled = useRef(false);
+  const rename = useAction((name: string) => api.patch<Collection>(`/api/collections/${collection.id}`, { name }), {
+    success: t('common.saved'),
+    invalidate: [['collections']],
+  });
+  const save = () => {
+    if (cancelled.current) return;
+    const name = draft?.trim();
+    setDraft(null);
+    if (name && name !== collection.name) rename.mutate(name);
+  };
+  if (draft !== null)
+    return (
+      // A textarea that grows with the text, so a long name wraps like the title instead of scrolling.
+      <textarea
+        autoFocus
+        rows={1}
+        aria-label={t('common.name')}
+        className="-mx-2 block w-[calc(100%+1rem)] resize-none overflow-hidden rounded-xl bg-surface-2 px-2 outline-none ring-2 ring-accent/40 [field-sizing:content]"
+        value={draft}
+        maxLength={120}
+        onChange={(e) => setDraft(e.target.value.replace(/\n/g, ' '))}
+        onFocus={(e) => e.target.select()}
+        onBlur={save}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            e.currentTarget.blur();
+          }
+          if (e.key === 'Escape') {
+            cancelled.current = true;
+            setDraft(null);
+          }
+        }}
+      />
+    );
+  return (
+    <button
+      type="button"
+      title={`${t('common.edit')} · ${t('common.name')}`}
+      className="-mx-2 cursor-text rounded-xl px-2 text-left transition hover:bg-surface-2"
+      onClick={() => {
+        cancelled.current = false;
+        setDraft(rename.isPending ? (rename.variables ?? collection.name) : collection.name);
+      }}
+    >
+      {rename.isPending ? rename.variables : collection.name}
+    </button>
+  );
+}
+
 function CollectionView({ collection, onBack }: { collection: Collection; onBack: () => void }) {
   const { t, tn } = useI18n();
   const confirm = useConfirm();
@@ -123,7 +182,7 @@ function CollectionView({ collection, onBack }: { collection: Collection; onBack
         <ArrowLeft className="size-4" /> {t('nav.library')}
       </button>
       <SectionTitle
-        title={collection.name}
+        title={<CollectionName collection={collection} />}
         subtitle={
           <span className="flex flex-wrap items-center gap-2">
             {t(`collectionType.${collection.type}`)} · {tn('common.photos', collection.itemCount)}

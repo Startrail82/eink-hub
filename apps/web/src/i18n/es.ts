@@ -279,7 +279,7 @@ export const es = {
   'schedule.cron_ex3': 'el día 1 de cada mes a las 09:00',
   'schedule.cron_ex4': 'los sábados a las 09:00',
   'schedule.battery_warning':
-    'Cambios frecuentes despiertan el Canvas más a menudo y reducen mucho la duración de la batería. Para tinta electrónica se recomienda cambiar como mucho una vez al día.',
+    'Cambios frecuentes despiertan el Canvas más a menudo y reducen mucho la duración de la batería. Se recomienda cambiar como mucho una vez al día para prolongar la duración de la batería.',
   'schedule.next_changes': 'Próximos cambios: {list}',
   'schedule.desc_daily': 'Cada día a las {at}',
   'schedule.desc_days_one': 'Cada {n} día a las {at}',
@@ -565,9 +565,18 @@ export const es = {
   'week.empty_day': 'Sin cambios',
   'week.none': 'Este Canvas no tiene programaciones activas.',
   'plan.add': 'Añadir programación',
-  'plan.warn_close': 'Ojo: otra programación de este Canvas cambia a las {time}, a solo {minutes} min.',
   'assign.match_orientation': 'Solo fotos que encajen con el Canvas',
   'assign.match_orientation_hint': 'Con un Canvas vertical solo se eligen fotos verticales, y con uno horizontal solo fotos horizontales. Las cuadradas valen para ambos. Si no hay ninguna que encaje, se usan todas.',
+  'schedule.close_warning': '«{name}» cambia la foto de este Canvas a las {time}, a solo {gap}.',
+  'canvasSettings.pill_title': 'Etiqueta de fecha',
+  'canvasSettings.pill_hint': 'Colores y opacidad de la etiqueta con la fecha (y el lugar) que se dibuja sobre las imágenes de este Canvas. Por defecto es blanca y opaca; una etiqueta translúcida puede verse granulada en e-ink en color.',
+  'canvasSettings.pill_bg': 'Fondo',
+  'canvasSettings.pill_text': 'Texto',
+  'canvasSettings.pill_opacity': 'Opacidad',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Restablecer',
+  'canvasSettings.pill_auto': 'Colores automáticos',
+  'canvasSettings.pill_auto_hint': 'El Hub mira la foto donde va la etiqueta y pone un fondo claro sobre zonas oscuras y uno oscuro sobre zonas claras, en el tono de la foto. En marcos donde el Hub reduce la imagen a pocos colores, solo blanco o negro.',
 };
 
 export type Messages = Record<keyof typeof es, string>;

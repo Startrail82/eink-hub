@@ -40,7 +40,7 @@ export interface Assignment {
   lastChange: number | null;
 }
 
-/** Two changes of one Canvas that are close together (allowed, but worth a warning). */
+/** Another schedule of the Canvas changes less than 12 hours from this one (allowed, but worth a warning). */
 export interface CloseWarning {
   kind: 'close';
   minutes: number;
@@ -58,6 +58,8 @@ export interface OverviewItem {
   assignmentId: number;
   collectionId: number;
   collection: string;
+  /** Already due: it happens as soon as the Canvas responds or wakes. */
+  pending?: boolean;
 }
 export interface OverviewDay {
   /** Local date, YYYY-MM-DD. */
@@ -99,7 +101,7 @@ export interface Frame {
   id: number;
   kind: FrameKind;
   /** Per-kind settings; secrets (SwitchBot token/secret) are never sent. */
-  config: { deviceId?: string; format?: ImageFormat; notifyUrl?: string; maxPollMinutes?: number };
+  config: { deviceId?: string; format?: ImageFormat; notifyUrl?: string; maxPollMinutes?: number; pill?: { bg?: string; text?: string; opacity?: number } };
   capabilities: Capabilities;
   /** How a sleeping frame gets a new picture: ble, cloud, scheduled-pull or notify. */
   wakeModel: 'ble' | 'cloud' | 'scheduled-pull' | 'notify';
@@ -126,7 +128,7 @@ export interface Frame {
   currentImageId: number | null;
   currentRender: string | null;
   nextWake: number | null;
-  /** The first schedule (kept for older code); all of them are in `assignments`. */
+  /** The schedule that changes next (kept for older code); all of them are in `assignments`. */
   assignment: Assignment | null;
   assignments: Assignment[];
   /** A simulated Canvas running inside the hub. */

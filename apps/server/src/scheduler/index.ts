@@ -33,7 +33,12 @@ export async function tick(ctx: Ctx, now = new Date()) {
       if (!a) continue;
       await prepareCollection(ctx, a.collectionId);
       const imageId = chooseNextImage(ctx.db, frame, a);
-      if (!imageId) continue;
+      if (!imageId) {
+        // Nothing to show (empty playlist): move this schedule on, or it would stay the due one
+        // on every tick and keep the other schedules of the Canvas from ever running.
+        ctx.db.update(schema.assignments).set({ nextChange: nextRun(a.schedule, now, a)?.getTime() ?? null }).where(eq(schema.assignments.id, a.id)).run();
+        continue;
+      }
       await awake(() => pushImage(ctx, frame, getImage(ctx.db, imageId), assignmentOptions(ctx.db, a)));
       ctx.db
         .update(schema.assignments)
