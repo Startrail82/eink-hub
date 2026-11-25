@@ -40,9 +40,28 @@ const VERSION_FILES = [
 const git = (...args) =>
   execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' }).trim()
 
-const cliff = (args) => {
+/** git-cliff asks GitHub who wrote each commit, to credit contributors in the
+ *  changelog (see cliff.toml). Without a token the API's rate limit is tiny and
+ *  the credits could go missing without anyone noticing, so it's required. */
+function githubToken() {
+  if (process.env.GITHUB_TOKEN) return process.env.GITHUB_TOKEN
   try {
-    return execSync(`${GIT_CLIFF} ${args}`, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim()
+    const token = execFileSync('gh', ['auth', 'token'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
+    if (token) return token
+  } catch {
+    // gh not installed or not signed in: handled below.
+  }
+  return abort(
+    'No GitHub token: the changelog credits contributors by looking up commits on GitHub.\n' +
+    '    Run `gh auth login`, or set GITHUB_TOKEN, and try again.'
+  )
+}
+
+let cliffEnv
+const cliff = (args) => {
+  cliffEnv ??= { ...process.env, GITHUB_TOKEN: githubToken() }
+  try {
+    return execSync(`${GIT_CLIFF} ${args}`, { cwd: ROOT, encoding: 'utf8', env: cliffEnv, stdio: ['ignore', 'pipe', 'pipe'] }).trim()
   } catch (error) {
     // stderr is captured rather than inherited: git-cliff warns on every run
     // about commits that don't follow Conventional Commits and are skipped on
