@@ -234,6 +234,8 @@ export const zh: Catalogue = {
   'settings.home_country_hint': '用于在照片地点中省略国家。',
   'settings.home_country_hint_type': '用于在照片地点中省略国家。请按 Immich 显示的方式输入，通常为英文（例如 Belgium）。',
   'settings.home_country_none': '无',
+  'settings.home_country_search': '搜索你的国家…',
+  'settings.home_country_no_match': '没有匹配的国家',
   'assign.remove': '移除计划',
   'assign.pick_collection': '选择图集',
   'assign.confirm_remove': '移除“{name}”的计划？图集及其照片会保留。',

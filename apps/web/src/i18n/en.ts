@@ -234,6 +234,8 @@ export const en: Messages = {
   'settings.home_country_hint': 'Used to leave the country out of photo locations.',
   'settings.home_country_hint_type': 'Used to leave the country out of photo locations. Type it the way Immich shows it, usually in English (for example Belgium).',
   'settings.home_country_none': 'None',
+  'settings.home_country_search': 'Search for your country…',
+  'settings.home_country_no_match': 'No country matches',
   'assign.remove': 'Remove schedule',
   'assign.pick_collection': 'Choose a collection',
   'assign.confirm_remove': 'Remove the schedule from “{name}”? The collection and its photos are kept.',

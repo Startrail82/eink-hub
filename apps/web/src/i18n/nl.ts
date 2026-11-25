@@ -234,6 +234,8 @@ export const nl: Catalogue = {
   'settings.home_country_hint': 'Wordt gebruikt om het land weg te laten bij de locatie van foto’s.',
   'settings.home_country_hint_type': 'Wordt gebruikt om het land weg te laten bij de locatie van foto’s. Typ het zoals Immich het toont, meestal in het Engels (bijvoorbeeld Belgium).',
   'settings.home_country_none': 'Geen',
+  'settings.home_country_search': 'Zoek je land…',
+  'settings.home_country_no_match': 'Geen land gevonden',
   'assign.remove': 'Planning verwijderen',
   'assign.pick_collection': 'Kies een collectie',
   'assign.confirm_remove': 'Planning van ‘{name}’ verwijderen? De collectie en de foto’s blijven bewaard.',

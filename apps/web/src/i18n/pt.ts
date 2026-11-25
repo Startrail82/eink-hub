@@ -234,6 +234,8 @@ export const pt: Catalogue = {
   'settings.home_country_hint': 'Serve para omitir o país no local das fotos.',
   'settings.home_country_hint_type': 'Serve para omitir o país no local das fotos. Escreva-o como o Immich o mostra, normalmente em inglês (por exemplo Belgium).',
   'settings.home_country_none': 'Nenhum',
+  'settings.home_country_search': 'Procure o seu país…',
+  'settings.home_country_no_match': 'Nenhum país corresponde',
   'assign.remove': 'Remover agendamento',
   'assign.pick_collection': 'Escolha uma coleção',
   'assign.confirm_remove': 'Remover o agendamento de «{name}»? A coleção e as fotos mantêm-se.',

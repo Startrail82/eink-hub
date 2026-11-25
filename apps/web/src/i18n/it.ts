@@ -234,6 +234,8 @@ export const it: Catalogue = {
   'settings.home_country_hint': 'Serve a omettere il paese nel luogo delle foto.',
   'settings.home_country_hint_type': 'Serve a omettere il paese nel luogo delle foto. Scrivilo come lo mostra Immich, di solito in inglese (per esempio Belgium).',
   'settings.home_country_none': 'Nessuno',
+  'settings.home_country_search': 'Cerca il tuo paese…',
+  'settings.home_country_no_match': 'Nessun paese corrisponde',
   'assign.remove': 'Rimuovi programmazione',
   'assign.pick_collection': 'Scegli una raccolta',
   'assign.confirm_remove': 'Rimuovere la programmazione da «{name}»? La raccolta e le sue foto restano.',

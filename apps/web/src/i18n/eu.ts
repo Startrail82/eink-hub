@@ -234,6 +234,8 @@ export const eu: Messages = {
   'settings.home_country_hint': 'Argazkien kokalekuan herrialdea kentzeko erabiltzen da.',
   'settings.home_country_hint_type': 'Argazkien kokalekuan herrialdea kentzeko erabiltzen da. Idatzi Immich-ek erakusten duen bezala, normalean ingelesez (adibidez Belgium).',
   'settings.home_country_none': 'Bat ere ez',
+  'settings.home_country_search': 'Bilatu zure herrialdea…',
+  'settings.home_country_no_match': 'Ez dago bat datorren herrialderik',
   'assign.remove': 'Kendu programazioa',
   'assign.pick_collection': 'Aukeratu bilduma bat',
   'assign.confirm_remove': '«{name}»(r)en programazioa kendu? Bilduma eta bere argazkiak ez dira ezabatzen.',

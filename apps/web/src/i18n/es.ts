@@ -233,6 +233,8 @@ export const es = {
   'settings.home_country_hint': 'Sirve para omitir el país en el lugar de las fotos.',
   'settings.home_country_hint_type': 'Sirve para omitir el país en el lugar de las fotos. Escríbelo como lo muestra Immich, normalmente en inglés (por ejemplo Belgium).',
   'settings.home_country_none': 'Ninguno',
+  'settings.home_country_search': 'Busca tu país…',
+  'settings.home_country_no_match': 'Ningún país coincide',
   'assign.remove': 'Quitar programación',
   'assign.pick_collection': 'Elige una colección',
   'assign.confirm_remove': '¿Quitar la programación de «{name}»? La colección y sus fotos no se borran.',

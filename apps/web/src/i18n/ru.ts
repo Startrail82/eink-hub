@@ -242,6 +242,8 @@ export const ru: Catalogue = {
   'settings.home_country_hint': 'Нужна, чтобы не показывать страну в месте съёмки.',
   'settings.home_country_hint_type': 'Нужна, чтобы не показывать страну в месте съёмки. Введите её так, как её показывает Immich, обычно по-английски (например, Belgium).',
   'settings.home_country_none': 'Нет',
+  'settings.home_country_search': 'Найдите свою страну…',
+  'settings.home_country_no_match': 'Страна не найдена',
   'assign.remove': 'Удалить расписание',
   'assign.pick_collection': 'Выберите коллекцию',
   'assign.confirm_remove': 'Удалить расписание с «{name}»? Коллекция и её фото сохранятся.',

@@ -234,6 +234,8 @@ export const gl: Catalogue = {
   'settings.home_country_hint': 'Serve para omitir o país no lugar das fotos.',
   'settings.home_country_hint_type': 'Serve para omitir o país no lugar das fotos. Escríbeo como o mostra Immich, normalmente en inglés (por exemplo Belgium).',
   'settings.home_country_none': 'Ningún',
+  'settings.home_country_search': 'Busca o teu país…',
+  'settings.home_country_no_match': 'Ningún país coincide',
   'assign.remove': 'Eliminar programación',
   'assign.pick_collection': 'Escolle unha colección',
   'assign.confirm_remove': 'Eliminar a programación de «{name}»? A colección e as súas fotos non se borran.',

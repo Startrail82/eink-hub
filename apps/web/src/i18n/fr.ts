@@ -234,6 +234,8 @@ export const fr: Catalogue = {
   'settings.home_country_hint': 'Sert à masquer le pays dans le lieu des photos.',
   'settings.home_country_hint_type': 'Sert à masquer le pays dans le lieu des photos. Saisissez-le comme Immich l’affiche, en général en anglais (par exemple Belgium).',
   'settings.home_country_none': 'Aucun',
+  'settings.home_country_search': 'Cherchez votre pays…',
+  'settings.home_country_no_match': 'Aucun pays ne correspond',
   'assign.remove': 'Supprimer le planning',
   'assign.pick_collection': 'Choisissez une collection',
   'assign.confirm_remove': 'Supprimer le planning de « {name} » ? La collection et ses photos sont conservées.',
