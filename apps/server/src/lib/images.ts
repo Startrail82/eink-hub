@@ -55,6 +55,19 @@ export async function saveLocalUpload(db: DB, buf: Buffer, originalName: string)
     .get();
 }
 
+/**
+ * The location an Immich payload settles, or null when it says nothing yet: no city/country
+ * fields at all, or GPS data that Immich has not reverse-geocoded (yet). Only a photo without
+ * GPS is known to have no location ('').
+ */
+export function locationFromExif(exif: ImmichAsset['exifInfo']): { city: string; country: string } | null {
+  if (!exif || (exif.city === undefined && exif.country === undefined)) return null;
+  const city = exif.city ?? '';
+  const country = exif.country ?? '';
+  if (!city && !country && exif.latitude != null && exif.longitude != null) return null;
+  return { city, country };
+}
+
 /** Upsert Immich assets as image rows; returns ids in input order. */
 export function upsertImmichAssets(db: DB, assets: ImmichAsset[]): number[] {
   const photos = assets.filter((a) => a.type === 'IMAGE');
@@ -69,10 +82,8 @@ export function upsertImmichAssets(db: DB, assets: ImmichAsset[]): number[] {
         ...(size ? { width: size.width, height: size.height } : {}),
         ...(Number.isFinite(taken) ? { takenAt: taken } : {}),
         ...(a.isFavorite !== undefined ? { favorite: a.isFavorite } : {}),
-        // Only when the payload says something about the location; '' marks "looked up, none".
-        ...(a.exifInfo && (a.exifInfo.city !== undefined || a.exifInfo.country !== undefined)
-          ? { city: a.exifInfo.city ?? '', country: a.exifInfo.country ?? '' }
-          : {}),
+        // Only when the payload settles the location; '' marks "looked up, none".
+        ...(locationFromExif(a.exifInfo) ?? {}),
       };
       const insert = tx.insert(schema.images).values({ source: 'immich', immichAssetId: a.id, createdAt: Date.now(), ...values });
       if (Object.keys(values).length) insert.onConflictDoUpdate({ target: schema.images.immichAssetId, set: values }).run();
@@ -213,17 +224,29 @@ export function photoCaption(
   return parts.length ? parts.join(' · ') : null;
 }
 
-/** Immich photos picked by id carry no location yet: ask Immich once and remember the answer. */
-export async function withLocation(ctx: Ctx, img: Image): Promise<Image> {
+/** How long to wait before asking Immich again after a failed or unsettled lookup. */
+export const LOCATION_RETRY_MS = 30 * 60_000;
+const locationRetryAt = new Map<string, number>();
+
+/**
+ * Immich photos picked by id carry no location yet: ask Immich and remember the answer. A
+ * failed or not-yet-geocoded lookup is retried at most every LOCATION_RETRY_MS, so renders
+ * (cache hits included) don't wait on Immich every time.
+ */
+export async function withLocation(ctx: Ctx, img: Image, now = Date.now()): Promise<Image> {
   if (img.source !== 'immich' || !img.immichAssetId || img.city !== null || img.country !== null) return img;
+  if ((locationRetryAt.get(img.immichAssetId) ?? 0) > now) return img;
   try {
-    const asset = await immichFor(ctx.db).asset(img.immichAssetId);
-    if (!asset.exifInfo) return img;
-    const city = asset.exifInfo.city ?? '';
-    const country = asset.exifInfo.country ?? '';
-    ctx.db.update(schema.images).set({ city, country }).where(eq(schema.images.id, img.id)).run();
-    return { ...img, city, country };
+    const loc = locationFromExif((await immichFor(ctx.db).asset(img.immichAssetId)).exifInfo);
+    if (!loc) {
+      locationRetryAt.set(img.immichAssetId, now + LOCATION_RETRY_MS);
+      return img;
+    }
+    locationRetryAt.delete(img.immichAssetId);
+    ctx.db.update(schema.images).set(loc).where(eq(schema.images.id, img.id)).run();
+    return { ...img, ...loc };
   } catch (err) {
+    locationRetryAt.set(img.immichAssetId, now + LOCATION_RETRY_MS);
     ctx.log.debug({ err, asset: img.immichAssetId }, 'immich location lookup failed');
     return img;
   }

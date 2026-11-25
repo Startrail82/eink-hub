@@ -11,6 +11,8 @@ export interface ImmichAsset {
     exifImageWidth?: number | null;
     exifImageHeight?: number | null;
     orientation?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
     /** Reverse-geocoded by Immich, in English. */
     city?: string | null;
     country?: string | null;

@@ -36,7 +36,7 @@ export function LocationOptions({
           ]}
         />
       </Field>
-      {mode === 'city_country' && <Toggle label={t('assign.hide_home_country')} hint={t('assign.hide_home_country_hint')} checked={hideHome} onChange={onHideHome} />}
+      {mode !== 'off' && <Toggle label={t('assign.hide_home_country')} hint={t('assign.hide_home_country_hint')} checked={hideHome} onChange={onHideHome} />}
     </div>
   );
 }

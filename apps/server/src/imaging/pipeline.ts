@@ -115,15 +115,31 @@ const escapeMarkup = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;
  * colour e-ink; translucent gradients would turn into noise.
  */
 async function addCaption(img: Buffer, caption: string, w: number, h: number): Promise<Buffer> {
-  const size = Math.max(14, Math.round(Math.min(w, h) * 0.032));
-  const label = await sharp({
-    text: { text: `<span foreground="#1d1c1a">${escapeMarkup(caption)}</span>`, font: `Inter,Arial,DejaVu Sans,Sans Semi-Bold ${size}`, dpi: 72, rgba: true },
-  })
-    .png()
-    .toBuffer({ resolveWithObject: true });
+  const textLabel = (size: number) =>
+    sharp({
+      text: { text: `<span foreground="#1d1c1a">${escapeMarkup(caption)}</span>`, font: `Inter,Arial,DejaVu Sans,Sans Semi-Bold ${size}`, dpi: 72, rgba: true },
+    })
+      .png()
+      .toBuffer({ resolveWithObject: true });
+  const margin = Math.round(Math.min(w, h) * 0.04);
+  let size = Math.max(14, Math.round(Math.min(w, h) * 0.032));
+  let label = await textLabel(size);
+  // A long caption (date · city, country) must stay inside the pill: shrink the font to fit,
+  // and if it is still too wide at the smallest size, cut the text at the pill's edge.
+  const room = (s: number) => w - 2 * margin - 2 * Math.round(s * 0.75);
+  if (label.info.width > room(size)) {
+    const smaller = Math.max(10, Math.floor((size * room(size)) / label.info.width));
+    if (smaller < size) {
+      size = smaller;
+      label = await textLabel(size);
+    }
+  }
+  if (label.info.width > room(size)) {
+    const width = Math.max(1, room(size));
+    label = await sharp(label.data).extract({ left: 0, top: 0, width, height: label.info.height }).png().toBuffer({ resolveWithObject: true });
+  }
   const padX = Math.round(size * 0.75);
   const padY = Math.round(size * 0.45);
-  const margin = Math.round(Math.min(w, h) * 0.04);
   const pillW = Math.min(w - 2 * margin, label.info.width + 2 * padX);
   const pillH = label.info.height + 2 * padY;
   const pill = Buffer.from(

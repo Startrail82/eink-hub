@@ -11,7 +11,9 @@ process.env.AUTH_DISABLED = 'true';
 const { ensureDirs, config } = await import('../src/config.js');
 const { openDb, schema, setSetting } = await import('../src/db/index.js');
 const { buildApp } = await import('../src/app.js');
-const { locationText, photoCaption, upsertImmichAssets, withLocation } = await import('../src/lib/images.js');
+const { LOCATION_RETRY_MS, locationText, photoCaption, upsertImmichAssets, withLocation } = await import('../src/lib/images.js');
+const { renderForFrame } = await import('../src/imaging/pipeline.js');
+const sharp = (await import('sharp')).default;
 
 const db = (ensureDirs(), openDb(config.dbPath));
 const at = (y: number, m: number, d: number) => ({ takenAt: Date.UTC(y, m - 1, d, 12) });
@@ -87,6 +89,10 @@ describe('storing the location from Immich', () => {
     expect([rowOf('bare').city, rowOf('bare').country]).toEqual([null, null]);
     expect([rowOf('sizes-only').city, rowOf('sizes-only').country]).toEqual([null, null]);
   });
+  it('leaves the location unknown while Immich has GPS but no place yet', () => {
+    upsertImmichAssets(db, [{ id: 'gps-pending', type: 'IMAGE', exifInfo: { city: null, country: null, latitude: 51.1, longitude: 4.5 } }]);
+    expect([rowOf('gps-pending').city, rowOf('gps-pending').country]).toEqual([null, null]);
+  });
   it('does not wipe a known location when an asset is re-imported by bare id', () => {
     upsertImmichAssets(db, [{ id: 'rome', type: 'IMAGE' }]);
     expect([rowOf('rome').city, rowOf('rome').country]).toEqual(['Rome', 'Italy']);
@@ -102,7 +108,13 @@ describe('looking up a missing location', () => {
     immich.get<{ Params: { id: string } }>('/api/assets/:id', async (req, reply) => {
       hits.push(req.params.id);
       if (req.params.id === 'broken') return reply.code(500).send({ message: 'boom' });
-      const asset: ImmichAsset = { id: req.params.id, type: 'IMAGE', exifInfo: req.params.id === 'lookup-none' ? { city: null, country: null } : { city: 'Ghent', country: 'Belgium' } };
+      const exifInfo =
+        req.params.id === 'lookup-none'
+          ? { city: null, country: null }
+          : req.params.id === 'lookup-pending'
+            ? { city: null, country: null, latitude: 51.1, longitude: 4.5 }
+            : { city: 'Ghent', country: 'Belgium' };
+      const asset: ImmichAsset = { id: req.params.id, type: 'IMAGE', exifInfo };
       return asset;
     });
     setSetting(db, 'immich.url', await immich.listen({ port: 0, host: '127.0.0.1' }));
@@ -129,11 +141,33 @@ describe('looking up a missing location', () => {
     const local = db.insert(schema.images).values({ source: 'local', createdAt: Date.now() }).returning().get();
     expect(await withLocation(ctx, local)).toBe(local);
   });
-  it('keeps going when Immich is unreachable, and retries next time', async () => {
+  it('keeps going when Immich is unreachable, and retries later, not on every render', async () => {
     upsertImmichAssets(db, [{ id: 'broken', type: 'IMAGE' }]);
-    const img = await withLocation(ctx, rowOf('broken'));
+    const t0 = Date.now();
+    const img = await withLocation(ctx, rowOf('broken'), t0);
     expect([img.city, img.country]).toEqual([null, null]);
     expect([rowOf('broken').city, rowOf('broken').country]).toEqual([null, null]);
+    await withLocation(ctx, rowOf('broken'), t0 + 1000);
+    expect(hits.filter((h) => h === 'broken')).toHaveLength(1);
+    await withLocation(ctx, rowOf('broken'), t0 + LOCATION_RETRY_MS + 1);
+    expect(hits.filter((h) => h === 'broken')).toHaveLength(2);
+  });
+  it('does not remember "no location" while Immich has not geocoded the GPS yet', async () => {
+    upsertImmichAssets(db, [{ id: 'lookup-pending', type: 'IMAGE' }]);
+    const t0 = Date.now();
+    await withLocation(ctx, rowOf('lookup-pending'), t0);
+    expect([rowOf('lookup-pending').city, rowOf('lookup-pending').country]).toEqual([null, null]);
+    await withLocation(ctx, rowOf('lookup-pending'), t0 + LOCATION_RETRY_MS + 1);
+    expect(hits.filter((h) => h === 'lookup-pending')).toHaveLength(2);
+  });
+});
+
+describe('long captions', () => {
+  it('fit inside a narrow frame', async () => {
+    const src = await sharp({ create: { width: 600, height: 1000, channels: 3, background: '#808080' } }).jpeg().toBuffer();
+    const caption = '6 October 2019 · Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch, United Kingdom of Great Britain';
+    const out = await renderForFrame(src, { width: 480, height: 800, landscape: false, rotate: 0, fit: 'cover', bg: '#ffffff', caption });
+    expect((await sharp(out).metadata()).width).toBe(480);
   });
 });
 
@@ -160,5 +194,6 @@ describe('settings and assignment options', () => {
     expect(await put({ showLocation: 'city_country', hideHomeCountry: true })).toMatchObject({ showLocation: 'city_country', hideHomeCountry: true });
     expect(await put({ fit: 'contain' })).toMatchObject({ showLocation: 'city_country', hideHomeCountry: true });
     expect(await put({ showLocation: 'nonsense' })).toMatchObject({ showLocation: 'city_country' });
+    expect(await put({ hideHomeCountry: 'false' })).toMatchObject({ hideHomeCountry: true });
   });
 });

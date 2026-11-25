@@ -209,7 +209,7 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
       showDate: b.showDate ?? isMemories,
       // Clients that predate the location options leave them out: keep what was set.
       showLocation: locationModes.includes(b.showLocation!) ? b.showLocation! : (prev?.showLocation ?? 'off'),
-      hideHomeCountry: b.hideHomeCountry ?? prev?.hideHomeCountry ?? false,
+      hideHomeCountry: typeof b.hideHomeCountry === 'boolean' ? b.hideHomeCountry : (prev?.hideHomeCountry ?? false),
       enabled: b.enabled ?? true,
     };
     return db
