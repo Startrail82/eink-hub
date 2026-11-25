@@ -16,9 +16,10 @@ const DAYS = 7;
 /**
  * The coming week of one or more Canvases, a day per card: when the picture changes and to which
  * collection. With `showFrame` (the Schedule page, every Canvas at once) each change also names its Canvas.
- * Built for a phone first (one column); wider screens get two.
+ * Built for a phone first (one column); wider screens get two. `compact` (inside a Canvas, where it
+ * sits under the schedules) uses smaller cards and rows, two days side by side from small screens on.
  */
-export function WeekOverview({ frames, showFrame = false }: { frames: Frame[]; showFrame?: boolean }) {
+export function WeekOverview({ frames, showFrame = false, compact = false }: { frames: Frame[]; showFrame?: boolean; compact?: boolean }) {
   const { t } = useI18n();
   const overviews = useQueries({
     queries: frames.map((frame) => ({
@@ -49,24 +50,24 @@ export function WeekOverview({ frames, showFrame = false }: { frames: Frame[]; s
 
   return (
     // grid-cols-1 (minmax(0, 1fr)): without it a long collection name widens the column past the screen.
-    <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+    <div className={cx('grid grid-cols-1', compact ? 'gap-2 sm:grid-cols-2' : 'gap-3 lg:grid-cols-2')}>
       {days.map((day) => {
         const title = dayTitle(day.date);
         const label = day.date === today ? t('week.today') : day.date === tomorrow ? t('week.tomorrow') : title.weekday;
         return (
-          <Card key={day.date} className={cx('p-4', day.date === today && 'ring-1 ring-accent/40')}>
+          <Card key={day.date} className={cx(compact ? 'rounded-2xl p-3' : 'p-4', day.date === today && 'ring-1 ring-accent/40')}>
             <div className="flex items-baseline justify-between gap-3">
-              <h3 className="font-bold first-letter:uppercase">{label}</h3>
+              <h3 className={cx('font-bold first-letter:uppercase', compact && 'text-sm')}>{label}</h3>
               <span className="text-xs text-muted first-letter:uppercase">{day.date === today || day.date === tomorrow ? `${title.weekday} ${title.rest}` : title.rest}</span>
             </div>
             {day.items.length ? (
-              <ol className="mt-3 space-y-2">
+              <ol className={compact ? 'mt-2 space-y-1' : 'mt-3 space-y-2'}>
                 {day.items.map((i) => (
-                  <li key={`${i.assignmentId}-${i.at}`} className="flex items-center gap-3 rounded-xl bg-surface-2 px-3 py-2">
-                    <span className={cx('min-w-12 shrink-0 text-sm font-bold tabular-nums', i.pending && 'text-warn')}>{i.pending ? t('detail.pending') : clock(i.at)}</span>
-                    <span className={cx('size-2.5 shrink-0 rounded-full', dot(i.collectionId))} aria-hidden />
+                  <li key={`${i.assignmentId}-${i.at}`} className={cx('flex items-center rounded-xl bg-surface-2', compact ? 'gap-2 px-2.5 py-1' : 'gap-3 px-3 py-2')}>
+                    <span className={cx('shrink-0 font-bold tabular-nums', compact ? 'min-w-10 text-xs' : 'min-w-12 text-sm', i.pending && 'text-warn')}>{i.pending ? t('detail.pending') : clock(i.at)}</span>
+                    <span className={cx('shrink-0 rounded-full', compact ? 'size-2' : 'size-2.5', dot(i.collectionId))} aria-hidden />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium text-ink-2">{i.collection}</span>
+                      <span className={cx('block truncate font-medium text-ink-2', compact ? 'text-xs' : 'text-sm')}>{i.collection}</span>
                       {showFrame && (
                         <span className="flex min-w-0 items-center gap-1 text-xs text-muted">
                           <FrameIcon className="size-3 shrink-0" aria-hidden />
@@ -78,8 +79,8 @@ export function WeekOverview({ frames, showFrame = false }: { frames: Frame[]; s
                 ))}
               </ol>
             ) : (
-              <p className="mt-3 flex items-center gap-2 text-sm text-muted">
-                <Moon className="size-4" /> {t('week.empty_day')}
+              <p className={cx('flex items-center gap-2 text-muted', compact ? 'mt-2 text-xs' : 'mt-3 text-sm')}>
+                <Moon className={compact ? 'size-3.5' : 'size-4'} /> {t('week.empty_day')}
               </p>
             )}
           </Card>

@@ -80,7 +80,7 @@ function PlansTab({ frame: f }: { frame: Frame }) {
           </div>
           <div className="space-y-3">
             <h2 className="text-[13px] font-semibold text-muted">{t('scheduleView.tab_week')}</h2>
-            <WeekOverview frames={[f]} />
+            <WeekOverview frames={[f]} compact />
           </div>
         </>
       )}
