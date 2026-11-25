@@ -5,32 +5,49 @@ import { useAction, useCollections } from '../lib/hooks';
 import { SchedulePicker } from './SchedulePicker';
 import { useI18n, type MsgKey } from '../i18n';
 import { BgPicker } from './BgPicker';
-import { Button, Field, Segmented, Toggle, cx, inputClass, useConfirm } from './ui';
+import { Button, Chips, Field, Segmented, Toggle, cx, inputClass, useConfirm } from './ui';
 import { Select } from './Select';
 import { TimeField } from './TimeField';
 
 /**
- * Where the photo was taken (from Immich), as a checkbox like the date: city and country,
- * and once it is on, "leave out the home country".
+ * The label drawn on the photo: date and/or place (from Immich) as two chips, none = no label.
+ * With the place on, "leave out the home country" shows under it.
  */
-export function LocationOptions({
-  mode,
-  onMode,
+export function CaptionOptions({
+  showDate,
+  onShowDate,
+  location,
+  onLocation,
   hideHome,
   onHideHome,
+  memories,
 }: {
-  mode: LocationMode;
-  onMode: (m: LocationMode) => void;
+  showDate: boolean;
+  onShowDate: (v: boolean) => void;
+  location: LocationMode;
+  onLocation: (m: LocationMode) => void;
   hideHome: boolean;
   onHideHome: (v: boolean) => void;
+  /** "On this day": the date reads "5 years ago today". */
+  memories?: boolean;
 }) {
   const { t } = useI18n();
-  const on = mode !== 'off';
+  const place = location !== 'off';
   return (
-    <>
-      <Toggle label={t('assign.location')} hint={t('assign.location_hint')} checked={on} onChange={(v) => onMode(v ? 'city_country' : 'off')} />
-      {on && <Toggle nested label={t('assign.hide_home_country')} hint={t('assign.hide_home_country_hint')} checked={hideHome} onChange={onHideHome} />}
-    </>
+    <Field label={t('assign.caption')} group>
+      <p className="mb-2 text-xs text-muted">{t(memories ? 'assign.caption_hint_memories' : 'assign.caption_hint')}</p>
+      <Chips
+        options={[
+          { value: 'date', label: t('assign.caption_date'), on: showDate, onChange: onShowDate },
+          { value: 'place', label: t('assign.caption_place'), on: place, onChange: (v) => onLocation(v ? 'city_country' : 'off') },
+        ]}
+      />
+      {place && (
+        <div className="mt-3">
+          <Toggle nested label={t('assign.hide_home_country')} hint={t('assign.hide_home_country_hint')} checked={hideHome} onChange={onHideHome} />
+        </div>
+      )}
+    </Field>
   );
 }
 
@@ -176,12 +193,17 @@ export function AssignmentEditor({ frame: fixed, choices, onSaved }: { frame?: F
             )}
           </Field>
 
+          <CaptionOptions
+            showDate={showDate}
+            onShowDate={setShowDate}
+            location={showLocation}
+            onLocation={setShowLocation}
+            hideHome={hideHome}
+            onHideHome={setHideHome}
+            memories={isMemories}
+          />
+
           <div className="space-y-4 rounded-2xl bg-surface-2 p-4">
-            <Toggle
-              label={t('assign.show_date')}
-              hint={t(isMemories ? 'assign.show_date_hint_memories' : 'assign.show_date_hint')}
-              checked={showDate} onChange={setShowDate} />
-            <LocationOptions mode={showLocation} onMode={setShowLocation} hideHome={hideHome} onHideHome={setHideHome} />
             {hourly && (
               <div>
                 <Toggle label={t('assign.window')} hint={t('assign.window_hint')} checked={windowOn} onChange={setWindowOn} />

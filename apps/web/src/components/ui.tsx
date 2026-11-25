@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ButtonHTMLAttributes, type PointerEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { Loader2, X } from 'lucide-react';
+import { Check, Loader2, X } from 'lucide-react';
 import { useI18n } from '../i18n';
 
 const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ');
@@ -125,6 +125,38 @@ export function Segmented<T extends string>({
             value === o.value ? 'bg-surface text-ink shadow-soft' : 'text-muted hover:text-ink',
           )}
         >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Pills that switch on and off independently, styled like Segmented. Leaving them all off is
+ * a valid choice, so there is no "none" option.
+ */
+export function Chips<T extends string>({
+  options,
+  className,
+}: {
+  options: { value: T; label: ReactNode; on: boolean; onChange: (v: boolean) => void }[];
+  className?: string;
+}) {
+  return (
+    <div className={cx('flex w-full gap-1.5 rounded-full border border-line/60 bg-surface-2 p-1', className)}>
+      {options.map((o) => (
+        <button
+          key={o.value}
+          type="button"
+          aria-pressed={o.on}
+          onClick={() => o.onChange(!o.on)}
+          className={cx(
+            'flex min-w-0 flex-1 items-center justify-center gap-1.5 truncate rounded-full px-2 py-1.5 text-[13px] font-semibold whitespace-nowrap transition',
+            o.on ? 'bg-surface text-ink shadow-soft' : 'text-muted hover:text-ink',
+          )}
+        >
+          {o.on && <Check className="size-3.5 shrink-0" />}
           {o.label}
         </button>
       ))}

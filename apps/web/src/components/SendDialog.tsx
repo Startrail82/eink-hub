@@ -6,8 +6,8 @@ import { useAction, useFrames } from '../lib/hooks';
 import { FrameMockup } from './FrameMockup';
 import { useI18n, type MsgKey } from '../i18n';
 import { BgPicker } from './BgPicker';
-import { LocationOptions } from './AssignmentEditor';
-import { Button, Modal, Segmented, Spinner, Toggle, cx } from './ui';
+import { CaptionOptions } from './AssignmentEditor';
+import { Button, Modal, Segmented, Spinner, cx } from './ui';
 
 type Mode = 'auto' | 'crop' | 'contain' | 'blur';
 
@@ -152,10 +152,14 @@ export function SendDialog({ imageId, open, onClose, defaultFrameId }: { imageId
             {mode === 'contain' && (
               <BgPicker value={bg} onChange={setBg} />
             )}
-            <div className="space-y-4 rounded-2xl bg-surface-2 p-4">
-              <Toggle label={t('assign.show_date')} hint={t('assign.show_date_hint')} checked={showDate} onChange={setShowDate} />
-              <LocationOptions mode={showLocation} onMode={setShowLocation} hideHome={hideHome} onHideHome={setHideHome} />
-            </div>
+            <CaptionOptions
+              showDate={showDate}
+              onShowDate={setShowDate}
+              location={showLocation}
+              onLocation={setShowLocation}
+              hideHome={hideHome}
+              onHideHome={setHideHome}
+            />
           </div>
 
           <div className="flex min-w-0 flex-col gap-4">

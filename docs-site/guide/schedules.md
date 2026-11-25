@@ -18,13 +18,16 @@ Each frame gets one collection and a schedule:
 
 More than one change a day costs battery on battery-powered frames; the UI warns you.
 
-## Captions
+## Label on the photo
 
-A schedule can draw a small label in the bottom-left corner of each photo:
+A schedule can draw a small label in the bottom-left corner of each photo. Under **Label on the photo**, switch on either or both:
 
-- **Show the photo's date**: the date it was taken ("X years ago today" for *On this day*).
-- **Show the photo's location**: the city and country, as [Immich](/guide/immich) reverse-geocoded it from the photo's GPS data. It is drawn next to the date, or alone when the date is off. Photos you upload to the hub directly have no location.
-- **Leave out the home country** (shown once the location is on): photos taken in your home country show only the city. Pick the home country in *Settings*: the list shows the countries in your Immich photos. If Immich can't be reached, type it the way Immich shows it, usually in English (for example `Belgium`).
+- **Date**: the date it was taken ("X years ago today" for *On this day*).
+- **Place**: the city and country, as [Immich](/guide/immich) reverse-geocoded it from the photo's GPS data. Photos you upload to the hub directly have no place.
+
+With both on, the label reads like `6 October 2019 · Rome, Italy`. With neither, there is no label.
+
+With **Place** on, **Leave out the home country** shows only the city for photos taken in your home country. Pick the home country in *Settings*: the list shows the countries in your Immich photos. If Immich can't be reached, type it the way Immich shows it, usually in English (for example `Belgium`).
 
 ## How each frame gets the next photo
 
