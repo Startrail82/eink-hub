@@ -3,3 +3,6 @@
 # them to CRLF, and "#!/bin/sh\r" is not a valid shebang).
 *.sh text eol=lf
 Dockerfile text eol=lf
+# Data files read inside the container: a CRLF checkout left "\r" on the last
+# column (country names came out as "Italy\r").
+*.tsv text eol=lf
