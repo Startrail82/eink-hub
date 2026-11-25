@@ -1,16 +1,25 @@
 import { useQueries } from '@tanstack/react-query';
-import { Frame as FrameIcon, Moon } from 'lucide-react';
-import { api, type Frame, type OverviewDay } from '../lib/api';
+import { Frame as FrameIcon, Images, Moon } from 'lucide-react';
+import { api, thumbUrl, type Frame, type OverviewDay } from '../lib/api';
+import { useCollections } from '../lib/hooks';
 import { clock, dayTitle } from '../lib/format';
 import { useI18n } from '../i18n';
 import { Card, Spinner, cx } from './ui';
 
 /**
- * A calm set of dots to tell collections apart: the colour comes from the collection's id, so
- * the same collection always gets the same one (it has no colour of its own).
+ * The collection's cover as a small thumbnail, to tell collections apart at a glance (colours
+ * would read as good/bad). Without a cover, a neutral placeholder.
  */
-const DOTS = ['bg-accent', 'bg-leaf', 'bg-warn', 'bg-ink-2', 'bg-accent/50', 'bg-leaf/50'];
-const dot = (collectionId: number) => DOTS[collectionId % DOTS.length];
+function Cover({ imageId, compact }: { imageId: number | null | undefined; compact: boolean }) {
+  const size = compact ? 'size-4 rounded' : 'size-5 rounded-md';
+  return imageId ? (
+    <img src={thumbUrl(imageId)} alt="" loading="lazy" className={cx(size, 'object-cover')} />
+  ) : (
+    <span className={cx(size, 'flex items-center justify-center bg-line text-muted')} aria-hidden>
+      <Images className="size-3" />
+    </span>
+  );
+}
 
 const localKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
@@ -24,6 +33,8 @@ const DAYS = 7;
  */
 export function WeekOverview({ frames, showFrame = false, compact = false }: { frames: Frame[]; showFrame?: boolean; compact?: boolean }) {
   const { t } = useI18n();
+  const collections = useCollections();
+  const covers = new Map(collections.data?.map((c) => [c.id, c.coverImageId]));
   const overviews = useQueries({
     queries: frames.map((frame) => ({
       queryKey: ['frames', frame.id, 'overview', frame.assignments.map((a) => `${a.id}:${a.enabled}:${a.collectionId}:${JSON.stringify(a.schedule)}`).join('|')],
@@ -64,13 +75,13 @@ export function WeekOverview({ frames, showFrame = false, compact = false }: { f
               <span className="text-xs text-muted first-letter:uppercase">{day.date === today || day.date === tomorrow ? `${title.weekday} ${title.rest}` : title.rest}</span>
             </div>
             {day.items.length ? (
-              // One grid per day, each row a subgrid: times, dots, names and Canvases line up in
+              // One grid per day, each row a subgrid: times, covers, names and Canvases line up in
               // columns even when a row says "Pending" instead of a time.
               <ol className={cx('grid grid-cols-[auto_auto_minmax(0,1fr)_auto]', compact ? 'mt-2 gap-x-2 gap-y-1' : 'mt-3 gap-x-3 gap-y-2')}>
                 {day.items.map((i) => (
                   <li key={`${i.assignmentId}-${i.at}`} className={cx('col-span-full grid grid-cols-subgrid items-center rounded-xl bg-surface-2', compact ? 'px-2.5 py-1' : 'px-3 py-2')}>
                     <span className={cx('font-bold tabular-nums', compact ? 'text-xs' : 'text-sm', i.pending && 'text-warn')}>{i.pending ? t('detail.pending') : clock(i.at)}</span>
-                    <span className={cx('rounded-full', compact ? 'size-2' : 'size-2.5', dot(i.collectionId))} aria-hidden />
+                    <Cover imageId={covers.get(i.collectionId)} compact={compact} />
                     <span className={cx('truncate font-medium text-ink-2', compact ? 'text-xs' : 'text-sm')}>{i.collection}</span>
                     {showFrame ? (
                       <span className="flex max-w-24 min-w-0 items-center justify-end sm:max-w-40 gap-1 text-xs text-muted">
