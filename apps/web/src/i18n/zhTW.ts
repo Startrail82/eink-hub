@@ -566,4 +566,6 @@ export const zhTW: Catalogue = {
   'canvasSettings.pill_opacity': '不透明度',
   'canvasSettings.pill_sample': '2026年11月21日',
   'canvasSettings.pill_reset': '重設',
+  'canvasSettings.pill_auto': '自動顏色',
+  'canvasSettings.pill_auto_hint': 'Hub 會查看標籤所在位置的照片：暗處用淺色背景，亮處用深色背景，並沿用照片的色調。在 Hub 將圖片減少為少數幾種顏色的相框上，只用白色或黑色。',
 };

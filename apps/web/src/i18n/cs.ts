@@ -582,4 +582,6 @@ export const cs: Catalogue = {
   'canvasSettings.pill_opacity': 'Krytí',
   'canvasSettings.pill_sample': '21. 11. 2026',
   'canvasSettings.pill_reset': 'Obnovit',
+  'canvasSettings.pill_auto': 'Automatické barvy',
+  'canvasSettings.pill_auto_hint': 'Hub se podívá na fotku v místě štítku: světlé pozadí na tmavých místech, tmavé na světlých, v odstínu fotky. U rámečků, pro které Hub zmenšuje obrázek na pár barev, jen bílá nebo černá.',
 };

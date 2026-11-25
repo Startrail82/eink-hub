@@ -566,4 +566,6 @@ export const eu: Messages = {
   'canvasSettings.pill_opacity': 'Opakotasuna',
   'canvasSettings.pill_sample': '2026ko aza. 21',
   'canvasSettings.pill_reset': 'Berrezarri',
+  'canvasSettings.pill_auto': 'Kolore automatikoak',
+  'canvasSettings.pill_auto_hint': 'Hub-ak etiketa doan argazkiaren zatiari begiratzen dio: atzealde argia zati ilunen gainean eta iluna zati argien gainean, argazkiaren tonuan. Hub-ak irudia kolore gutxitara murrizten duen markoetan, zuria edo beltza bakarrik.',
 };

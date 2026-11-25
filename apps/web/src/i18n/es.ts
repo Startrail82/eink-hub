@@ -565,6 +565,8 @@ export const es = {
   'canvasSettings.pill_opacity': 'Opacidad',
   'canvasSettings.pill_sample': '21 nov 2026',
   'canvasSettings.pill_reset': 'Restablecer',
+  'canvasSettings.pill_auto': 'Colores automáticos',
+  'canvasSettings.pill_auto_hint': 'El Hub mira la foto donde va la etiqueta y pone un fondo claro sobre zonas oscuras y uno oscuro sobre zonas claras, en el tono de la foto. En marcos donde el Hub reduce la imagen a pocos colores, solo blanco o negro.',
 };
 
 export type Messages = Record<keyof typeof es, string>;

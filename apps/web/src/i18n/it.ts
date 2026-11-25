@@ -566,4 +566,6 @@ export const it: Catalogue = {
   'canvasSettings.pill_opacity': 'Opacità',
   'canvasSettings.pill_sample': '21 nov 2026',
   'canvasSettings.pill_reset': 'Ripristina',
+  'canvasSettings.pill_auto': 'Colori automatici',
+  'canvasSettings.pill_auto_hint': 'L\'Hub guarda la foto dove va l\'etichetta: sfondo chiaro sulle zone scure e scuro su quelle chiare, nella tonalità della foto. Sulle cornici in cui l\'Hub riduce l\'immagine a pochi colori, solo bianco o nero.',
 };

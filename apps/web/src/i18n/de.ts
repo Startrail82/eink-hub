@@ -566,4 +566,6 @@ export const de: Catalogue = {
   'canvasSettings.pill_opacity': 'Deckkraft',
   'canvasSettings.pill_sample': '21. Nov. 2026',
   'canvasSettings.pill_reset': 'Zurücksetzen',
+  'canvasSettings.pill_auto': 'Automatische Farben',
+  'canvasSettings.pill_auto_hint': 'Der Hub prüft das Foto dort, wo das Etikett hinkommt: heller Hintergrund auf dunklen Stellen, dunkler auf hellen, im Farbton des Fotos. Bei Rahmen, für die der Hub das Bild auf wenige Farben reduziert, nur Weiß oder Schwarz.',
 };

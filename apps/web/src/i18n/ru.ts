@@ -582,4 +582,6 @@ export const ru: Catalogue = {
   'canvasSettings.pill_opacity': 'Непрозрачность',
   'canvasSettings.pill_sample': '21 нояб. 2026',
   'canvasSettings.pill_reset': 'Сбросить',
+  'canvasSettings.pill_auto': 'Автоматические цвета',
+  'canvasSettings.pill_auto_hint': 'Hub смотрит на фото там, где будет плашка: светлый фон на тёмных участках и тёмный на светлых, в оттенке фото. Для рамок, где Hub сводит картинку к нескольким цветам, только белый или чёрный.',
 };

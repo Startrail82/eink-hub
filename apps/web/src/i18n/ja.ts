@@ -566,4 +566,6 @@ export const ja: Catalogue = {
   'canvasSettings.pill_opacity': '不透明度',
   'canvasSettings.pill_sample': '2026年11月21日',
   'canvasSettings.pill_reset': 'リセット',
+  'canvasSettings.pill_auto': '自動の色',
+  'canvasSettings.pill_auto_hint': 'Hub がラベルの位置の写真を見て、暗い部分には明るい背景、明るい部分には暗い背景を写真の色味で使います。Hub が画像を少数の色に減らすフレームでは白か黒のみです。',
 };

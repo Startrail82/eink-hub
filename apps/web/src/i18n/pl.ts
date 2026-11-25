@@ -582,4 +582,6 @@ export const pl: Catalogue = {
   'canvasSettings.pill_opacity': 'Krycie',
   'canvasSettings.pill_sample': '21 lis 2026',
   'canvasSettings.pill_reset': 'Przywróć',
+  'canvasSettings.pill_auto': 'Automatyczne kolory',
+  'canvasSettings.pill_auto_hint': 'Hub sprawdza zdjęcie w miejscu etykiety: jasne tło na ciemnych obszarach, ciemne na jasnych, w odcieniu zdjęcia. W ramkach, dla których Hub redukuje obraz do kilku kolorów, tylko biel lub czerń.',
 };

@@ -566,4 +566,6 @@ export const en: Messages = {
   'canvasSettings.pill_opacity': 'Opacity',
   'canvasSettings.pill_sample': '21 Nov 2026',
   'canvasSettings.pill_reset': 'Reset',
+  'canvasSettings.pill_auto': 'Automatic colours',
+  'canvasSettings.pill_auto_hint': 'The Hub looks at the photo where the label goes and uses a light background over dark areas and a dark one over light areas, in the photo\'s own tone. On frames where the Hub reduces the picture to a few colours, only white or black.',
 };

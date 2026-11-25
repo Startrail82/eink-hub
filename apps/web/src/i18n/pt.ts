@@ -566,4 +566,6 @@ export const pt: Catalogue = {
   'canvasSettings.pill_opacity': 'Opacidade',
   'canvasSettings.pill_sample': '21 nov 2026',
   'canvasSettings.pill_reset': 'Repor',
+  'canvasSettings.pill_auto': 'Cores automáticas',
+  'canvasSettings.pill_auto_hint': 'O Hub olha para a foto onde fica a etiqueta: fundo claro sobre zonas escuras e escuro sobre zonas claras, no tom da foto. Nas molduras em que o Hub reduz a imagem a poucas cores, só branco ou preto.',
 };
