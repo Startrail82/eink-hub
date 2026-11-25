@@ -70,5 +70,6 @@ export const ru: Catalogue = {
   switchbot_public_url: 'SwitchBot скачивает фото через интернет: задайте в Настройках публичный адрес https (внешний или для облачных рамок)',
   trmnl_mac_missing: 'Не указан MAC-адрес устройства TRMNL',
   schedule_conflict: 'Другое расписание этого Canvas ({name}) уже меняет картинку в {time}',
+  invalid_location: 'Неверное местоположение: укажите широту от -90 до 90 и долготу от -180 до 180',
   assignment_not_found: 'Расписание {id} не найдено',
 };

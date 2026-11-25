@@ -19,7 +19,7 @@ When you create the key, tick these permissions (or pick **All**):
 | Testing the connection and showing your user | `user.read` |
 | Listing albums | `album.read` |
 | Listing people and their faces | `person.read` |
-| Searching photos (filters and smart search), photo locations and the home country list | `asset.read` |
+| Searching photos (filters and smart search), and photo locations | `asset.read` |
 | "On this day" memories | `memory.read` |
 | Showing thumbnails in the hub | `asset.view` |
 | Downloading the original to send it to a frame | `asset.download` |

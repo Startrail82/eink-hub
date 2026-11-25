@@ -52,6 +52,12 @@ Upload photos in **Library** (or connect [Immich](/guide/immich)), open one and 
 
 If the frame is asleep, the photo is queued and shown the next time it wakes.
 
+## Set the hub's location
+
+Under **Settings → Location**, search for your town or city, enter coordinates, or press **Use my location** (only offered when the hub is opened over https). The search runs on the hub, in a built-in list of places with at least 1000 people ([GeoNames](https://www.geonames.org), CC BY 4.0): nothing is sent to an outside service. The country of that place is the home country that photo labels can leave out. A Canvas that hangs somewhere else can have its own location, under the Canvas's **Settings → Location**.
+
+Hubs that only had a home country keep it until you pick a location.
+
 ## Rotate photos automatically
 
 Give each frame a collection and a schedule under **Schedule**. See [Collections & schedules](/guide/schedules).

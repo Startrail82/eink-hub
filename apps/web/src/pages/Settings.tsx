@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { CheckCircle2, Images, ScrollText, ShieldCheck, SlidersHorizontal, Users, XCircle } from 'lucide-react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { api } from '../lib/api';
+import { useQueryClient } from '@tanstack/react-query';
+import { api, type Place } from '../lib/api';
+import { LocationPicker } from '../components/LocationPicker';
 import { useAction, useSettings } from '../lib/hooks';
 import { AboutLinks, UpdateNotice } from '../components/About';
 import { languages, useI18n, type Lang, type MsgKey } from '../i18n';
@@ -48,79 +49,18 @@ function LanguageSettings() {
   );
 }
 
-/** The country photos are mostly taken in: assignments can leave it out of the location caption. */
-function HomeCountrySettings() {
-  const { t, lang } = useI18n();
+/** Where the hub is: for the weather, and to leave the home country out of photo locations. */
+function HubLocationSettings() {
+  const { t } = useI18n();
   const settings = useSettings();
-  // Every country, by the English name Immich and the built-in place list store in each photo.
-  const countries = useQuery({
-    queryKey: ['countries'],
-    queryFn: () => api.get<{ code?: string; name: string }[]>('/api/countries'),
-    retry: false,
-    staleTime: 5 * 60_000,
-  });
-  const [country, setCountry] = useState('');
-  useEffect(() => {
-    if (settings.data) setCountry(settings.data.homeCountry ?? '');
-  }, [settings.data]);
-  const save = useAction((homeCountry: string) => api.put('/api/settings', { homeCountry }), { success: t('common.saved'), invalidate: [['settings']] });
-  const list = countries.data?.length ? countries.data : null;
-  // Shown in the UI language ("España"), with the stored English name next to it; both can be searched.
-  const options = useMemo(() => {
-    if (!list) return [];
-    const locale = languages.find((l) => l.code === lang)?.locale ?? lang;
-    let names: Intl.DisplayNames | null = null;
-    try {
-      names = new Intl.DisplayNames([locale, 'en'], { type: 'region' });
-    } catch {
-      // No region names in this browser: English only.
-    }
-    const items = (country && !list.some((c) => c.name === country) ? [{ name: country }, ...list] : list).map((c: { code?: string; name: string }) => {
-      const local = (c.code && names?.of(c.code)) || c.name;
-      return {
-        value: c.name,
-        text: `${local} ${c.name}`,
-        sort: local,
-        label:
-          local === c.name ? (
-            c.name
-          ) : (
-            <>
-              {local} <span className="text-muted">· {c.name}</span>
-            </>
-          ),
-      };
-    });
-    items.sort((a, b) => a.sort.localeCompare(b.sort, locale));
-    return [{ value: '', label: t('settings.home_country_none'), text: t('settings.home_country_none') }, ...items.map(({ sort: _, ...o }) => o)];
-  }, [list, lang, country, t]);
+  const save = useAction((location: Place | null) => api.put('/api/settings', { location }), { success: t('common.saved'), invalidate: [['settings']] });
+  const legacy = !settings.data?.location && settings.data?.homeCountry;
   return (
     <Card className="p-6">
-      <h2 className="text-lg font-bold">{t('settings.home_country')}</h2>
-      <p className="mt-1 text-sm text-muted">{t(list ? 'settings.home_country_hint' : 'settings.home_country_hint_type')}</p>
-      <div className="mt-5 space-y-4 sm:max-w-xs">
-        {countries.isLoading ? (
-          <Spinner />
-        ) : list ? (
-          <Select
-            aria-label={t('settings.home_country')}
-            search={{ placeholder: t('settings.home_country_search'), empty: t('settings.home_country_no_match') }}
-            value={country}
-            onChange={(v) => {
-              setCountry(v);
-              save.mutate(v);
-            }}
-            options={options}
-          />
-        ) : (
-          <>
-            <input className={inputClass} aria-label={t('settings.home_country')} placeholder="Belgium" value={country} onChange={(e) => setCountry(e.target.value)} />
-            <Button variant="primary" loading={save.isPending} onClick={() => save.mutate(country)}>
-              {t('common.save')}
-            </Button>
-          </>
-        )}
-      </div>
+      <h2 className="text-lg font-bold">{t('settings.location')}</h2>
+      <p className="mt-1 mb-5 text-sm text-muted">{t('settings.location_hint')}</p>
+      {legacy && <p className="mb-4 rounded-2xl bg-surface-2 p-4 text-sm">{t('settings.location_legacy', { country: settings.data!.homeCountry })}</p>}
+      <LocationPicker value={settings.data?.location ?? null} onChange={(p) => save.mutate(p)} saving={save.isPending} />
     </Card>
   );
 }
@@ -306,7 +246,7 @@ export function SettingsPage() {
           <LanguageSettings />
           {admin && (
             <>
-              <HomeCountrySettings />
+              <HubLocationSettings />
               <HubSettings />
               <StatsSettings />
             </>

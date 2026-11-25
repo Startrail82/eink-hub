@@ -67,5 +67,6 @@ export const nl: Catalogue = {
   switchbot_public_url: 'SwitchBot downloadt de foto via internet: stel bij Instellingen een openbaar https-adres in (extern, of dat voor cloudlijsten)',
   trmnl_mac_missing: 'Het MAC-adres van het TRMNL-apparaat ontbreekt',
   schedule_conflict: 'Een andere planning van dit Canvas ({name}) wisselt al om {time}',
+  invalid_location: 'De locatie is ongeldig: geef een breedtegraad tussen -90 en 90 en een lengtegraad tussen -180 en 180',
   assignment_not_found: 'Planning {id} niet gevonden',
 };

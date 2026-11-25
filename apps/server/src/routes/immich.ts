@@ -7,7 +7,8 @@ import { addItems, memoriesDay } from '../lib/collections.js';
 import { HttpError, cloudUrlSetting, configuredExternalUrl, detectLocalUrl, externalUrlSetting, externalUrlSource, immichConfig, immichFor, type Ctx } from '../lib/context.js';
 import { displayImage } from '../lib/display.js';
 import { upsertImmichAssets } from '../lib/images.js';
-import { allCountries } from '../lib/geo.js';
+import { nearestPlace, searchPlaces } from '../lib/geo.js';
+import { hubLocation, parsePlace, setHubLocation } from '../lib/location.js';
 
 const slimAsset = (a: ImmichAsset) => ({
   id: a.id,
@@ -51,23 +52,13 @@ export function immichRoutes(app: FastifyInstance, ctx: Ctx) {
     (await immichFor(db).people()).map((p) => ({ id: p.id, name: p.name })).sort((a, b) => (a.name ? 0 : 1) - (b.name ? 0 : 1) || a.name.localeCompare(b.name)),
   );
 
-  /**
-   * For the home country picker: every country, whether or not there are photos from it yet
-   * (or Immich at all). Immich's own names are added in case one is spelled differently.
-   */
-  app.get('/api/countries', async () => {
-    // The code lets the UI show each name in the user's language; the name is what is stored.
-    const list: { code?: string; name: string }[] = allCountries();
-    const { url, apiKey } = immichConfig(db);
-    if (url && apiKey) {
-      try {
-        const known = new Set(list.map((c) => c.name));
-        for (const name of await immichFor(db).countries()) if (!known.has(name)) list.push({ name });
-      } catch (err) {
-        ctx.log.debug({ err }, 'immich countries failed');
-      }
-    }
-    return list.sort((a, b) => a.name.localeCompare(b.name));
+  /** For the location pickers: places from the offline list (no Immich and no internet needed). */
+  app.get<{ Querystring: { q?: string } }>('/api/places', async (req) => searchPlaces(String(req.query.q ?? '').slice(0, 100)));
+
+  /** The listed place nearest to coordinates typed by hand or given by the browser, or null. */
+  app.get<{ Querystring: { lat?: string; lon?: string } }>('/api/places/reverse', async (req) => {
+    const place = parsePlace({ latitude: req.query.lat, longitude: req.query.lon });
+    return nearestPlace(place!.latitude, place!.longitude);
   });
 
   app.get<{ Params: { id: string } }>('/api/immich/people/:id/thumbnail', async (req, reply) =>
@@ -145,16 +136,18 @@ export function immichRoutes(app: FastifyInstance, ctx: Ctx) {
       cloudUrl: getSetting(db, 'cloudUrl') ?? '',
       cloudUrlEffective: cloudUrlSetting(db),
       language: getSetting(db, 'language') ?? null,
+      location: hubLocation(db),
+      // The country of the location, or the one chosen before locations existed.
       homeCountry: getSetting(db, 'homeCountry') ?? '',
       defaultFit: getSetting(db, 'defaultFit') ?? 'cover',
       statsEnabled: statsEnabled(db),
     };
   });
 
-  app.put<{ Body: { immichUrl?: string; immichApiKey?: string; localUrl?: string; externalUrl?: string; cloudUrl?: string; defaultFit?: string; language?: string; homeCountry?: string; statsEnabled?: boolean } }>('/api/settings', async (req) => {
+  app.put<{ Body: { immichUrl?: string; immichApiKey?: string; localUrl?: string; externalUrl?: string; cloudUrl?: string; defaultFit?: string; language?: string; location?: unknown; statsEnabled?: boolean } }>('/api/settings', async (req) => {
     const b = req.body ?? {};
     if (isLang(b.language)) setSetting(db, 'language', b.language);
-    if (typeof b.homeCountry === 'string') setSetting(db, 'homeCountry', b.homeCountry.trim().slice(0, 80));
+    if (b.location !== undefined) setHubLocation(db, parsePlace(b.location));
     if (b.immichUrl !== undefined) setSetting(db, 'immich.url', b.immichUrl.trim());
     if (b.immichApiKey) setSetting(db, 'immich.apiKey', b.immichApiKey.trim());
     if (b.externalUrl !== undefined) setSetting(db, 'externalUrl', b.externalUrl.trim().replace(/\/+$/, ''));

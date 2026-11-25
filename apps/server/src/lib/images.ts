@@ -5,7 +5,7 @@ import sharp from 'sharp';
 import { and, eq, inArray } from 'drizzle-orm';
 import { config } from '../config.js';
 import { basqueDate, hubLang, locales, yearsAgoText, type Lang } from '../i18n.js';
-import { getSetting, schema, type DB } from '../db/index.js';
+import { schema, type DB } from '../db/index.js';
 import type { DisplayOptions, Frame, Image, LocationMode } from '../db/schema.js';
 import { assetSize, type ImmichAsset } from '../immich/client.js';
 import { isDefaultPill, resolvePill } from '../imaging/pill.js';
@@ -13,6 +13,7 @@ import { aspectKey, formatExt, probeImage, renderForFrame, thumbnail, type CropR
 import { renderTarget } from '../device/drivers/index.js';
 import { HttpError, immichFor, type Ctx } from './context.js';
 import { reverseGeocode } from './geo.js';
+import { homeCountry } from './location.js';
 
 const RENDER_VERSION = 1;
 
@@ -316,7 +317,7 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
       memories: opts.memories,
       location: opts.showLocation,
       hideHomeCountry: opts.hideHomeCountry,
-      homeCountry: getSetting(ctx.db, 'homeCountry'),
+      homeCountry: homeCountry(ctx.db, frame),
     }),
     // Only when not the default, so existing JPEG renders keep their hash.
     ...(ext === 'jpg' && !target.format.palette ? {} : { format: target.format }),

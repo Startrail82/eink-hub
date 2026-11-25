@@ -20,6 +20,18 @@ export interface Crop {
 
 export type LocationMode = 'off' | 'city' | 'city_country';
 
+/** A place with coordinates (apps/server/src/lib/location.ts). */
+export interface Place {
+  name: string;
+  /** First-level region ("Basque Country"), '' when unknown. */
+  region: string;
+  /** English name, '' when unknown. */
+  country: string;
+  countryCode: string;
+  latitude: number;
+  longitude: number;
+}
+
 export interface Assignment {
   id: number;
   frameId: number;
@@ -99,7 +111,7 @@ export interface Frame {
   id: number;
   kind: FrameKind;
   /** Per-kind settings; secrets (SwitchBot token/secret) are never sent. */
-  config: { deviceId?: string; format?: ImageFormat; notifyUrl?: string; maxPollMinutes?: number; pill?: { bg?: string; text?: string; opacity?: number } };
+  config: { deviceId?: string; format?: ImageFormat; notifyUrl?: string; maxPollMinutes?: number; pill?: { bg?: string; text?: string; opacity?: number }; location?: Place };
   capabilities: Capabilities;
   /** How a sleeping frame gets a new picture: ble, cloud, scheduled-pull or notify. */
   wakeModel: 'ble' | 'cloud' | 'scheduled-pull' | 'notify';
@@ -223,7 +235,9 @@ export interface Settings {
   /** What is actually used: cloudUrl, else externalUrl. */
   cloudUrlEffective: string;
   language: 'es' | 'eu' | 'en' | null;
-  /** Country left out of photo locations when "leave out the home country" is on. */
+  /** Where the hub is; null until one is picked. */
+  location: Place | null;
+  /** Country left out of photo locations when "leave out the home country" is on: the location's, or one chosen before locations existed. */
   homeCountry: string;
   defaultFit: FitMode;
   /** Per-Canvas statistics tab on, and battery samples recorded. */

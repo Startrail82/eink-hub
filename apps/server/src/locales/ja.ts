@@ -67,5 +67,6 @@ export const ja: Catalogue = {
   switchbot_public_url: 'SwitchBotはインターネット経由で写真をダウンロードします。設定で公開httpsアドレス（外部用、またはクラウドフレーム用）を設定してください',
   trmnl_mac_missing: 'TRMNLデバイスのMACアドレスがありません',
   schedule_conflict: 'このCanvasの別のスケジュール({name})が既に {time} に切り替わります',
+  invalid_location: '場所が正しくありません。緯度は -90〜90、経度は -180〜180 で指定してください',
   assignment_not_found: 'スケジュール {id} が見つかりません',
 };
