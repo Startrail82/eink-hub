@@ -565,7 +565,7 @@ export const es = {
   'week.empty_day': 'Sin cambios',
   'week.none': 'Este Canvas no tiene programaciones activas.',
   'plan.add': 'Añadir programación',
-  'plan.warn_close': 'Ojo: otra programación de este Canvas cambia a las {time}, a solo {minutes} min.',
+  'schedule.close_warning': '«{name}» cambia la foto de este Canvas a las {time}, a solo {minutes} min. Cada cambio despierta el Canvas y gasta batería.',
   'canvasSettings.pill_title': 'Etiqueta de fecha',
   'canvasSettings.pill_hint': 'Colores y opacidad de la etiqueta con la fecha (y el lugar) que se dibuja sobre las imágenes de este Canvas. Por defecto es blanca y opaca; una etiqueta translúcida puede verse granulada en e-ink en color.',
   'canvasSettings.pill_bg': 'Fondo',

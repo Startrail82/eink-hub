@@ -566,7 +566,7 @@ export const gl: Catalogue = {
   'week.empty_day': 'Sen cambios',
   'week.none': 'Este Canvas non ten programacións activas.',
   'plan.add': 'Engadir programación',
-  'plan.warn_close': 'Ollo: outra programación deste Canvas cambia ás {time}, a só {minutes} min.',
+  'schedule.close_warning': '«{name}» cambia a foto deste Canvas ás {time}, a só {minutes} min. Cada cambio esperta o Canvas e gasta batería.',
   'canvasSettings.pill_title': 'Etiqueta de data',
   'canvasSettings.pill_hint': 'Cores e opacidade da etiqueta coa data (e o lugar) que se debuxa sobre as imaxes deste Canvas. Por defecto é branca e opaca; unha etiqueta translúcida pode verse granulada en e-ink en cor.',
   'canvasSettings.pill_bg': 'Fondo',

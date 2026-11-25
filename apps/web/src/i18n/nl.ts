@@ -566,7 +566,7 @@ export const nl: Catalogue = {
   'week.empty_day': 'Geen wissels',
   'week.none': 'Dit Canvas heeft geen actieve planningen.',
   'plan.add': 'Planning toevoegen',
-  'plan.warn_close': 'Let op: een andere planning van dit Canvas wisselt om {time}, slechts {minutes} min verschil.',
+  'schedule.close_warning': '‘{name}’ wisselt de foto van dit Canvas om {time}, slechts {minutes} min verschil. Elke wissel wekt het Canvas en kost batterij.',
   'canvasSettings.pill_title': 'Datumlabel',
   'canvasSettings.pill_hint': 'Kleuren en dekking van het datum- (en plaats)label op de afbeeldingen van dit Canvas. Standaard is het wit en ondoorzichtig; een doorzichtig label kan er korrelig uitzien op kleuren-e-ink.',
   'canvasSettings.pill_bg': 'Achtergrond',

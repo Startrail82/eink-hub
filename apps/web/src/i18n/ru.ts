@@ -582,7 +582,7 @@ export const ru: Catalogue = {
   'week.empty_day': 'Без смен',
   'week.none': 'У этого Canvas нет активных расписаний.',
   'plan.add': 'Добавить расписание',
-  'plan.warn_close': 'Внимание: другое расписание этого Canvas меняет картинку в {time}, всего в {minutes} мин.',
+  'schedule.close_warning': '«{name}» меняет фото этого Canvas в {time}, всего в {minutes} мин. Каждая смена будит Canvas и расходует батарею.',
   'canvasSettings.pill_title': 'Плашка с датой',
   'canvasSettings.pill_hint': 'Цвета и непрозрачность плашки с датой (и местом) на картинках этого Canvas. По умолчанию она белая и непрозрачная; полупрозрачная плашка может выглядеть зернистой на цветном e-ink.',
   'canvasSettings.pill_bg': 'Фон',

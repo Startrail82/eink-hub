@@ -566,7 +566,7 @@ export const de: Catalogue = {
   'week.empty_day': 'Keine Wechsel',
   'week.none': 'Dieses Canvas hat keine aktiven Zeitpläne.',
   'plan.add': 'Zeitplan hinzufügen',
-  'plan.warn_close': 'Achtung: Ein anderer Zeitplan dieses Canvas wechselt um {time}, nur {minutes} Min. entfernt.',
+  'schedule.close_warning': '„{name}“ wechselt das Bild dieses Canvas um {time}, nur {minutes} Min. entfernt. Jeder Wechsel weckt den Canvas und kostet Akku.',
   'canvasSettings.pill_title': 'Datumsetikett',
   'canvasSettings.pill_hint': 'Farben und Deckkraft des Datums- (und Orts-)Etiketts auf den Bildern dieses Canvas. Standard ist weiß und deckend; ein durchscheinendes Etikett kann auf Farb-E-Ink körnig wirken.',
   'canvasSettings.pill_bg': 'Hintergrund',

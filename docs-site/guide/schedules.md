@@ -22,8 +22,8 @@ More than one change a day costs battery on battery-powered frames; the UI warns
 
 Add as many schedules as you like to a frame, for example one collection in the morning and another in the evening. Every schedule changes the picture on its own, at its own time, with its own collection, order, fit and active hours. Nothing has to be "active" at a given moment: whichever schedule comes up changes the picture, and the picture stays until the next change of any schedule.
 
-- Two schedules of the same frame can't change at exactly the same minute (for example `0 20 * * *` twice). The hub tells you which schedule it clashes with.
-- Two changes less than 30 minutes apart are allowed but you get a warning: an e-ink refresh takes a while and costs battery. `0 20 * * *` and `5 20 * * *` are fine, just unusual.
+- Two schedules of the same frame can't change at exactly the same minute (for example `0 20 * * *` twice). The form says which schedule it clashes with while you pick the time, and Save stays off until you change it.
+- Two changes less than 30 minutes apart are allowed, but the form shows a warning as you pick the time: an e-ink refresh takes a while and costs battery. `0 20 * * *` and `5 20 * * *` are fine, just unusual.
 - Paused schedules don't take part in the comparison. Resuming one that would clash is refused.
 - Hourly schedules are compared by their projected times, so for those the check is approximate.
 

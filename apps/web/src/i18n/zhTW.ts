@@ -566,7 +566,7 @@ export const zhTW: Catalogue = {
   'week.empty_day': '無切換',
   'week.none': '此 Canvas 沒有啟用的排程。',
   'plan.add': '新增排程',
-  'plan.warn_close': '注意：此 Canvas 的另一個排程在 {time} 切換，僅相差 {minutes} 分鐘。',
+  'schedule.close_warning': '「{name}」在 {time} 切換此 Canvas 的照片，僅相差 {minutes} 分鐘。每次切換都會喚醒 Canvas 並消耗電量。',
   'canvasSettings.pill_title': '日期標籤',
   'canvasSettings.pill_hint': '此 Canvas 圖片上繪製的日期（與地點）標籤的顏色與不透明度。預設為白色不透明；半透明標籤在彩色電子紙上可能顯得有顆粒感。',
   'canvasSettings.pill_bg': '背景',

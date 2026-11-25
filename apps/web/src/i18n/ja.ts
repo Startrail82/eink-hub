@@ -566,7 +566,7 @@ export const ja: Catalogue = {
   'week.empty_day': '切り替えなし',
   'week.none': 'このCanvasには有効なスケジュールがありません。',
   'plan.add': 'スケジュールを追加',
-  'plan.warn_close': '注意：このCanvasの別のスケジュールが{time}に切り替わります（わずか{minutes}分差）。',
+  'schedule.close_warning': '「{name}」がこのCanvasの写真を{time}に切り替えます（わずか{minutes}分差）。切り替えのたびにCanvasが起動し、バッテリーを消費します。',
   'canvasSettings.pill_title': '日付ラベル',
   'canvasSettings.pill_hint': 'この Canvas の画像に描かれる日付（と場所）ラベルの色と不透明度。初期設定は白の不透明です。半透明にするとカラー e-ink ではざらついて見えることがあります。',
   'canvasSettings.pill_bg': '背景',

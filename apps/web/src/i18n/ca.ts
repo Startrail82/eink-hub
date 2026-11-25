@@ -566,7 +566,7 @@ export const ca: Catalogue = {
   'week.empty_day': 'Sense canvis',
   'week.none': 'Aquest Canvas no té programacions actives.',
   'plan.add': 'Afegeix programació',
-  'plan.warn_close': 'Atenció: una altra programació d\'aquest Canvas canvia a les {time}, a només {minutes} min.',
+  'schedule.close_warning': '«{name}» canvia la foto d’aquest Canvas a les {time}, a només {minutes} min. Cada canvi desperta el Canvas i gasta bateria.',
   'canvasSettings.pill_title': 'Etiqueta de data',
   'canvasSettings.pill_hint': 'Colors i opacitat de l\'etiqueta amb la data (i el lloc) que es dibuixa sobre les imatges d\'aquest Canvas. Per defecte és blanca i opaca; una etiqueta translúcida pot veure\'s granulada en e-ink en color.',
   'canvasSettings.pill_bg': 'Fons',

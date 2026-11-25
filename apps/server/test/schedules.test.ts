@@ -238,6 +238,29 @@ describe('a pull Canvas with several schedules', () => {
   });
 });
 
+describe('the schedule preview while editing', () => {
+  it('compares with the other schedules of the Canvas: same minute is an error, close is a warning', async () => {
+    const frame = await newFrame('Preview');
+    const a = await newCollection('Photos P');
+    const b = await newCollection('AI P');
+    const first = (await post(frame, { collectionId: a, schedule: cron('0 7 * * *') })).json().assignment;
+    const preview = (body: object) => app.inject({ method: 'POST', url: '/api/schedule/preview', payload: body }).then((r) => r.json());
+
+    const clash = await preview({ schedule: { kind: 'days', days: 1, at: '07:00' }, frameId: frame, collectionId: b, enabled: true });
+    expect(clash.ok).toBe(false);
+    expect(clash.error).toContain('Photos P');
+
+    const close = await preview({ schedule: { kind: 'days', days: 1, at: '07:15' }, frameId: frame, collectionId: b, enabled: true });
+    expect(close).toMatchObject({ ok: true, close: { minutes: 15, collection: 'Photos P' } });
+
+    // Editing the schedule itself: no comparison with itself. Paused: no comparison at all.
+    expect((await preview({ schedule: cron('0 7 * * *'), frameId: frame, assignmentId: first.id, collectionId: a, enabled: true })).close).toBeUndefined();
+    expect((await preview({ schedule: cron('0 7 * * *'), frameId: frame, collectionId: b, enabled: false })).ok).toBe(true);
+    // Without a Canvas it only validates, as before.
+    expect((await preview({ schedule: cron('0 7 * * *') })).ok).toBe(true);
+  });
+});
+
 describe('clients that know one schedule per Canvas', () => {
   it('always work on the oldest schedule, and only remove that one', async () => {
     const frame = await newFrame('Legacy');

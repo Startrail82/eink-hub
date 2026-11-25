@@ -566,7 +566,7 @@ export const ko: Catalogue = {
   'week.empty_day': '변경 없음',
   'week.none': '이 Canvas에는 활성 일정이 없습니다.',
   'plan.add': '일정 추가',
-  'plan.warn_close': '주의: 이 Canvas의 다른 일정이 {time}에 바뀝니다. 불과 {minutes}분 차이입니다.',
+  'schedule.close_warning': '「{name}」이(가) 이 Canvas의 사진을 {time}에 바꿉니다. 불과 {minutes}분 차이입니다. 바뀔 때마다 Canvas가 깨어나 배터리를 사용합니다.',
   'canvasSettings.pill_title': '날짜 라벨',
   'canvasSettings.pill_hint': '이 Canvas의 이미지에 그려지는 날짜(및 장소) 라벨의 색과 불투명도입니다. 기본값은 흰색 불투명이며, 반투명 라벨은 컬러 e-ink에서 거칠게 보일 수 있습니다.',
   'canvasSettings.pill_bg': '배경',

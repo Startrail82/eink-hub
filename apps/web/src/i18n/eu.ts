@@ -566,7 +566,7 @@ export const eu: Messages = {
   'week.empty_day': 'Aldaketarik ez',
   'week.none': 'Canvas honek ez du programazio aktiborik.',
   'plan.add': 'Gehitu programazioa',
-  'plan.warn_close': 'Kontuz: Canvas honen beste programazio batek {time}etan aldatzen du, {minutes} min besterik gabe.',
+  'schedule.close_warning': '«{name}»(e)k Canvas honen argazkia {time}etan aldatzen du, {minutes} min besterik ez. Aldaketa bakoitzak Canvasa esnatzen du eta bateria kontsumitzen du.',
   'canvasSettings.pill_title': 'Data etiketa',
   'canvasSettings.pill_hint': 'Canvas honetako irudien gainean marrazten den data (eta lekua) etiketaren koloreak eta opakotasuna. Lehenespenez zuria eta opakoa da; etiketa gardena koloretako e-inkean ale-ale ager daiteke.',
   'canvasSettings.pill_bg': 'Atzealdea',

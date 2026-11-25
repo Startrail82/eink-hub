@@ -566,7 +566,7 @@ export const fr: Catalogue = {
   'week.empty_day': 'Aucun changement',
   'week.none': 'Ce Canvas n\'a aucune programmation active.',
   'plan.add': 'Ajouter une programmation',
-  'plan.warn_close': 'Attention : une autre programmation de ce Canvas change à {time}, à seulement {minutes} min.',
+  'schedule.close_warning': '« {name} » change l’image de ce Canvas à {time}, à seulement {minutes} min. Chaque changement réveille le Canvas et consomme de la batterie.',
   'canvasSettings.pill_title': 'Étiquette de date',
   'canvasSettings.pill_hint': 'Couleurs et opacité de l\'étiquette de date (et de lieu) dessinée sur les images de ce Canvas. Par défaut elle est blanche et opaque ; une étiquette translucide peut paraître granuleuse sur e-ink couleur.',
   'canvasSettings.pill_bg': 'Fond',

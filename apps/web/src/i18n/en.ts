@@ -566,7 +566,7 @@ export const en: Messages = {
   'week.empty_day': 'No changes',
   'week.none': 'This Canvas has no active schedules.',
   'plan.add': 'Add schedule',
-  'plan.warn_close': 'Note: another schedule of this Canvas changes at {time}, only {minutes} min apart.',
+  'schedule.close_warning': '"{name}" changes this Canvas’s picture at {time}, only {minutes} min apart. Every change wakes the Canvas and uses battery.',
   'canvasSettings.pill_title': 'Date label',
   'canvasSettings.pill_hint': 'Colours and opacity of the date (and place) label drawn on this Canvas\'s pictures. By default it is white and solid; a see-through label can look grainy on colour e-ink.',
   'canvasSettings.pill_bg': 'Background',
