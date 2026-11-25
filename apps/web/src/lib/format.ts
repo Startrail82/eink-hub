@@ -77,3 +77,30 @@ export function formatBytes(bytes: number): string {
 export function formatPercent(part: number, whole: number): string {
   return new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 0 }).format(part / whole);
 }
+
+/** A gap in minutes, e.g. "20 min" or "5 h 20 min" (in the active locale where the browser can). */
+export function duration(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  const DF = (Intl as unknown as { DurationFormat?: new (l: string, o: object) => { format(d: object): string } }).DurationFormat;
+  if (DF && !basqueFallback()) return new DF(locale, { style: 'short' }).format(h ? (m ? { hours: h, minutes: m } : { hours: h }) : { minutes: m });
+  return h ? (m ? `${h} h ${m} min` : `${h} h`) : `${m} min`;
+}
+
+/** Clock time in the active locale, e.g. "20:00". */
+export function clock(ms: number): string {
+  const d = new Date(ms);
+  if (basqueFallback()) return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+}
+
+/** "YYYY-MM-DD" (a local day) as a long weekday and date, e.g. "Saturday 21 November". */
+export function dayTitle(date: string): { weekday: string; rest: string } {
+  const [y, m, d] = date.split('-').map(Number);
+  const day = new Date(y, m - 1, d);
+  if (basqueFallback()) return { weekday: EU_WEEKDAYS[day.getDay()], rest: `${y}/${pad(m)}/${pad(d)}` };
+  return {
+    weekday: new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(day),
+    rest: new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long' }).format(day),
+  };
+}

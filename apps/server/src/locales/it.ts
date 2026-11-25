@@ -66,4 +66,6 @@ export const it: Catalogue = {
   switchbot_not_configured: 'Mancano il token, il secret o il dispositivo SwitchBot',
   switchbot_public_url: 'SwitchBot scarica la foto da Internet: imposta nelle Impostazioni un indirizzo pubblico https (esterno o quello per le cornici cloud)',
   trmnl_mac_missing: 'Manca l’indirizzo MAC del dispositivo TRMNL',
+  schedule_conflict: 'Un\'altra programmazione di questo Canvas ({name}) cambia già alle {time}',
+  assignment_not_found: 'Programmazione {id} non trovata',
 };

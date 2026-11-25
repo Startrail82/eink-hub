@@ -66,4 +66,6 @@ export const fr: Catalogue = {
   switchbot_not_configured: 'Le token, le secret ou l’appareil SwitchBot est manquant',
   switchbot_public_url: 'SwitchBot télécharge la photo via Internet : définissez dans les Réglages une adresse publique en https (externe, ou celle des cadres cloud)',
   trmnl_mac_missing: 'L’adresse MAC de l’appareil TRMNL est manquante',
+  schedule_conflict: 'Une autre programmation de ce Canvas ({name}) change déjà à {time}',
+  assignment_not_found: 'Programmation {id} introuvable',
 };

@@ -6,7 +6,7 @@ import { describeKind } from '../device/drivers/index.js';
 import { purgeSessions } from '../auth/index.js';
 import { needsSync, prepareCollection, syncCollection } from '../lib/collections.js';
 import type { Ctx } from '../lib/context.js';
-import { assignmentOptions, chooseNextImage, deliverQueued, getAssignment, markOnline, pushImage } from '../lib/display.js';
+import { assignmentOptions, chooseNextImage, deliverQueued, dueAssignment, getAssignments, markOnline, pushImage } from '../lib/display.js';
 import { getImage } from '../lib/images.js';
 import { isDue, nextRun } from '../lib/schedule.js';
 import { pruneBatterySamples } from '../lib/stats.js';
@@ -28,17 +28,28 @@ export async function tick(ctx: Ctx, now = new Date()) {
         await deliverQueued(ctx, frame, awake);
         continue;
       }
-      const a = getAssignment(ctx.db, frame.id);
-      if (!a?.enabled || !isDue(a.nextChange, now, a.schedule, a)) continue;
+      // Each schedule of the Canvas runs on its own; one that is due now changes the picture.
+      const a = dueAssignment(ctx.db, frame.id, now);
+      if (!a) continue;
       await prepareCollection(ctx, a.collectionId);
       const imageId = chooseNextImage(ctx.db, frame, a);
-      if (!imageId) continue;
+      if (!imageId) {
+        // Nothing to show (empty playlist): move this schedule on, or it would stay the due one
+        // on every tick and keep the other schedules of the Canvas from ever running.
+        ctx.db.update(schema.assignments).set({ nextChange: nextRun(a.schedule, now, a)?.getTime() ?? null }).where(eq(schema.assignments.id, a.id)).run();
+        continue;
+      }
       await awake(() => pushImage(ctx, frame, getImage(ctx.db, imageId), assignmentOptions(ctx.db, a)));
       ctx.db
         .update(schema.assignments)
         .set({ lastChange: now.getTime(), nextChange: nextRun(a.schedule, now, a)?.getTime() ?? null })
         .where(eq(schema.assignments.id, a.id))
         .run();
+      // A schedule that was also due but older is skipped: its picture would only replace this one a minute later.
+      for (const o of getAssignments(ctx.db, frame.id)) {
+        if (o.id === a.id || !o.enabled || !isDue(o.nextChange, now, o.schedule, o)) continue;
+        ctx.db.update(schema.assignments).set({ nextChange: nextRun(o.schedule, now, o)?.getTime() ?? null }).where(eq(schema.assignments.id, o.id)).run();
+      }
     } catch (err) {
       if (err instanceof DeviceError && err.offline) markOnline(ctx.db, frame.id, false);
       else ctx.log.warn({ err, frame: frame.id }, 'push rotation failed');

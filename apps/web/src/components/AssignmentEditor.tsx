@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { History, Trash2 } from 'lucide-react';
-import { api, type Assignment, type FitMode, type Frame, type LocationMode, type OrderMode, type Schedule } from '../lib/api';
+import { api, type FitMode, type Assignment, type Frame, type LocationMode, type OrderMode, type SavedAssignment, type Schedule } from '../lib/api';
 import { useAction, useCollections } from '../lib/hooks';
 import { SchedulePicker } from './SchedulePicker';
 import { useI18n, type MsgKey } from '../i18n';
@@ -54,16 +54,16 @@ export function CaptionOptions({
 const DEFAULT_SCHEDULE: Schedule = { kind: 'days', days: 1, at: '07:00' };
 
 /**
- * Edits one Canvas's schedule. For a new schedule from the Schedule page, pass `choices`
- * instead of `frame`: the Canvas is picked first.
+ * Edits one schedule of a Canvas: pass `assignment` to change it, or only `frame` to add one.
+ * To add one from the Schedule page, pass `choices` instead of `frame`: the Canvas is picked first.
  */
-export function AssignmentEditor({ frame: fixed, choices, onSaved }: { frame?: Frame; choices?: Frame[]; onSaved?: () => void }) {
+export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }: { frame?: Frame; assignment?: Assignment; choices?: Frame[]; onSaved?: () => void }) {
   const { t } = useI18n();
   const confirm = useConfirm();
   const collections = useCollections();
   const [frameId, setFrameId] = useState<number | ''>('');
   const frame = fixed ?? choices?.find((f) => f.id === frameId);
-  const a = fixed?.assignment;
+  const a = assignment;
   const [collectionId, setCollectionId] = useState<number | ''>(a?.collectionId ?? '');
   const [orderMode, setOrderMode] = useState<OrderMode>(a?.orderMode ?? 'random');
   const [schedule, setSchedule] = useState<Schedule>(a?.schedule ?? DEFAULT_SCHEDULE);
@@ -91,8 +91,8 @@ export function AssignmentEditor({ frame: fixed, choices, onSaved }: { frame?: F
   };
 
   const save = useAction(
-    () =>
-      api.put<Assignment>(`/api/frames/${frame!.id}/assignment`, {
+    () => {
+      const body = {
         collectionId,
         orderMode,
         schedule,
@@ -104,10 +104,14 @@ export function AssignmentEditor({ frame: fixed, choices, onSaved }: { frame?: F
         showLocation,
         hideHomeCountry: hideHome,
         enabled,
-      }),
+      };
+      return a
+        ? api.put<SavedAssignment>(`/api/assignments/${a.id}`, body)
+        : api.post<SavedAssignment>(`/api/frames/${frame!.id}/assignments`, body);
+    },
     { success: t('assign.saved'), invalidate: [['frames']] },
   );
-  const remove = useAction(() => api.del(`/api/frames/${frame!.id}/assignment`), { success: t('assign.removed') });
+  const remove = useAction(() => api.del(`/api/assignments/${a!.id}`), { success: t('assign.removed') });
 
   if (collections.data && collections.data.length === 0)
     return <p className="text-sm text-muted">{t('assign.no_collections')}</p>;
@@ -153,6 +157,7 @@ export function AssignmentEditor({ frame: fixed, choices, onSaved }: { frame?: F
               activeTo={hourly && windowOn ? to : null}
               onValidity={setScheduleOk}
               disabled={!ready}
+              compare={frame && collectionId !== '' ? { frameId: frame.id, assignmentId: a?.id, collectionId, enabled } : undefined}
             />
           )}
         </div>
@@ -226,7 +231,7 @@ export function AssignmentEditor({ frame: fixed, choices, onSaved }: { frame?: F
           variant="primary"
           loading={save.isPending}
           disabled={!ready || (!isMemories && !scheduleOk)}
-          onClick={() => save.mutate(undefined, { onSuccess: onSaved })}
+          onClick={() => save.mutate(undefined, { onSuccess: () => onSaved?.() })}
         >
           {t('common.save')}
         </Button>

@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { asc, desc, eq } from 'drizzle-orm';
 import { schema, type DB } from '../db/index.js';
 import type { Assignment, DisplayOptions, Frame, Image } from '../db/schema.js';
 import { DeviceError } from '../device/client.js';
@@ -12,6 +12,7 @@ import { hubLang, tr } from '../i18n.js';
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { isDue } from './schedule.js';
 import { pickNext } from './selection.js';
 import { recordBattery } from './stats.js';
 import { withWake } from './wake.js';
@@ -24,8 +25,50 @@ export function getFrame(db: DB, id: number): Frame {
   return f;
 }
 
+/** Every schedule of a Canvas, oldest first. */
+export function getAssignments(db: DB, frameId: number): Assignment[] {
+  return db.select().from(schema.assignments).where(eq(schema.assignments.frameId, frameId)).orderBy(asc(schema.assignments.id)).all();
+}
+
+/**
+ * The schedule that changes the picture next: the enabled one with the earliest change
+ * (one without a time yet counts as right now). Falls back to the first, paused or not.
+ */
+export function nextAssignment(list: Assignment[]): Assignment | undefined {
+  const enabled = list.filter((a) => a.enabled);
+  return [...enabled].sort((x, y) => (x.nextChange ?? 0) - (y.nextChange ?? 0))[0] ?? list[0];
+}
+
 export function getAssignment(db: DB, frameId: number): Assignment | undefined {
-  return db.select().from(schema.assignments).where(eq(schema.assignments.frameId, frameId)).get();
+  return nextAssignment(getAssignments(db, frameId));
+}
+
+/**
+ * The Canvas's original (oldest) schedule. The one-schedule endpoints write to this one: unlike
+ * the one that changes next, it stays the same between calls.
+ */
+export function firstAssignment(db: DB, frameId: number): Assignment | undefined {
+  return getAssignments(db, frameId)[0];
+}
+
+export function getAssignmentById(db: DB, id: number): Assignment {
+  const a = db.select().from(schema.assignments).where(eq(schema.assignments.id, id)).get();
+  if (!a) throw new HttpError(404, 'assignment_not_found', { id });
+  return a;
+}
+
+/**
+ * Of the schedules that are due, the one that was due most recently. A frame that slept through
+ * the 07:00 change and wakes at 12:00 should show the 12:00 picture, not the stale 07:00 one.
+ */
+export function latestDue<T extends Assignment>(plans: T[], now: Date): T | undefined {
+  const due = plans.filter((a) => a.enabled && isDue(a.nextChange, now, a.schedule, a));
+  return due.reduce<T | undefined>((best, a) => (!best || (a.nextChange ?? now.getTime()) > (best.nextChange ?? now.getTime()) ? a : best), undefined);
+}
+
+/** The enabled schedule of a Canvas whose change is due now, if any. */
+export function dueAssignment(db: DB, frameId: number, now = new Date()): Assignment | undefined {
+  return latestDue(getAssignments(db, frameId), now);
 }
 
 export function markOnline(db: DB, frameId: number, online: boolean, extra: Partial<Frame> = {}) {

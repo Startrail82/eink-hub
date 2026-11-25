@@ -69,4 +69,6 @@ export const cs: Catalogue = {
   switchbot_not_configured: 'Chybí token, secret nebo zařízení SwitchBot',
   switchbot_public_url: 'SwitchBot stahuje fotku přes internet: nastavte v Nastavení veřejnou adresu https (externí, nebo tu pro cloudové rámečky)',
   trmnl_mac_missing: 'Chybí adresa MAC zařízení TRMNL',
+  schedule_conflict: 'Jiný plán tohoto Canvasu ({name}) mění obrázek už v {time}',
+  assignment_not_found: 'Plán {id} nebyl nalezen',
 };

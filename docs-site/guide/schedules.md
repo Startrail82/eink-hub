@@ -10,13 +10,26 @@ A collection is a set of photos a frame rotates through:
 
 ## Schedules
 
-Each frame gets one collection and a schedule:
+A frame can have one or more schedules. Each one has its own collection and timing:
 
 - **Every N hours** (1, 3, 6 or 12), optionally only between active hours (e.g. 08:00 to 22:00).
 - **Every N days / weeks** at a time, **monthly** on a day, or a **cron** expression.
 - **Order**: random (avoiding recent repeats), sequential or newest first.
 
-More than one change a day costs battery on battery-powered frames; the UI warns you.
+Changes less than 12 hours apart cost battery on battery-powered frames; the form warns you. Twice a day, 12 hours apart, is fine.
+
+### Several schedules on one frame
+
+Add as many schedules as you like to a frame, for example one collection in the morning and another in the evening. Every schedule changes the picture on its own, at its own time, with its own collection, order, fit and active hours. Nothing has to be "active" at a given moment: whichever schedule comes up changes the picture, and the picture stays until the next change of any schedule.
+
+- Two schedules of the same frame can't change at exactly the same minute (for example `0 20 * * *` twice). The form says which schedule it clashes with while you pick the time, and Save stays off until you change it.
+- Two schedules that change less than 12 hours apart are allowed, but the form shows the same battery warning as you pick the time, naming the other schedule. `0 7 * * *` and `0 19 * * *` get no warning; `0 7 * * *` and `20 7 * * *` do.
+- Paused schedules don't take part in the comparison. Resuming one that would clash is refused.
+- Hourly schedules are compared by their projected times, so for those the check is approximate.
+
+### Week overview
+
+The **Schedule** page has a **Week view** next to the list of schedules (and every frame's page shows it below its schedules). It lists, per day, at what time the frame changes and to which collection, for the coming seven days.
 
 ## Label on the photo
 
