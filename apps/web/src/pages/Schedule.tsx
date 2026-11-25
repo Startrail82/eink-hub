@@ -6,7 +6,6 @@ import { useFrames } from '../lib/hooks';
 import { AssignmentEditor } from '../components/AssignmentEditor';
 import { PlanCard, isPending, nextChangeOf } from '../components/PlanCard';
 import { WeekOverview } from '../components/WeekOverview';
-import { Select } from '../components/Select';
 import { Button, Empty, Modal, Segmented, SectionTitle, Spinner } from '../components/ui';
 
 type Plan = { frame: Frame; a: Assignment };
@@ -18,7 +17,6 @@ export function Schedule() {
   const [view, setView] = useState<View>('plans');
   // A schedule to change, or 'new' to create one (the Canvas is picked in the editor).
   const [editing, setEditing] = useState<Plan | 'new' | null>(null);
-  const [weekFrameId, setWeekFrameId] = useState<number | ''>('');
 
   if (frames.isLoading) return <Spinner />;
   // Every schedule of every Canvas gets a card, soonest change first (paused ones last).
@@ -28,7 +26,6 @@ export function Schedule() {
   const active = plans.filter((p) => p.a.enabled);
   const paused = plans.filter((p) => !p.a.enabled);
   const scheduledFrames = (frames.data ?? []).filter((f) => f.assignments.some((a) => a.enabled));
-  const weekFrame = scheduledFrames.find((f) => f.id === weekFrameId) ?? scheduledFrames[0];
 
   const create = (
     <Button variant="primary" icon={<Plus className="size-4" />} onClick={() => setEditing('new')}>
@@ -72,18 +69,9 @@ export function Schedule() {
                 </>
               )}
             </>
-          ) : weekFrame ? (
-            <>
-              {scheduledFrames.length > 1 && (
-                <Select
-                  aria-label={t('nav.canvas')}
-                  value={weekFrame.id}
-                  onChange={setWeekFrameId}
-                  options={scheduledFrames.map((f) => ({ value: f.id, label: f.name }))}
-                />
-              )}
-              <WeekOverview frame={weekFrame} />
-            </>
+          ) : scheduledFrames.length ? (
+            // Every Canvas in one week, each change naming its Canvas.
+            <WeekOverview frames={scheduledFrames} showFrame />
           ) : (
             <p className="text-sm text-muted">{t('week.none')}</p>
           )}
