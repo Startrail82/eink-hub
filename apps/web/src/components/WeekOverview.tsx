@@ -41,7 +41,8 @@ export function WeekOverview({ frame }: { frame: Frame }) {
   const tomorrow = dayAt(1);
 
   return (
-    <div className="grid gap-3 lg:grid-cols-2">
+    // grid-cols-1 (minmax(0, 1fr)): without it a long collection name widens the column past the screen.
+    <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
       {days.map((day) => {
         const title = dayTitle(day.date);
         const label = day.date === today ? t('week.today') : day.date === tomorrow ? t('week.tomorrow') : title.weekday;
