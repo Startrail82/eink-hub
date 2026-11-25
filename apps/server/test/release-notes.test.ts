@@ -38,6 +38,19 @@ describe('release notes', () => {
     expect(releaseNotes(changelog, 'v0.3.0')).toContain('See [Full changelog]');
   });
 
+  it('turns linked credits into plain @mentions for the Release page', () => {
+    const credited = changelog.replace(
+      '- New thing',
+      '- New thing ([abcd1234](https://github.com/yayitazale/eink-hub/commit/abcd1234)) by [@some-one](https://github.com/some-one)\r\n\r\n' +
+        '### New contributors\r\n\r\n' +
+        '- [@some-one](https://github.com/some-one) made their first contribution in [#15](https://github.com/yayitazale/eink-hub/pull/15)',
+    );
+    const notes = releaseNotes(credited, 'v0.5.0');
+    expect(notes).toContain('by @some-one\n');
+    expect(notes).toContain('- @some-one made their first contribution in [#15](https://github.com/yayitazale/eink-hub/pull/15)');
+    expect(notes).toContain('[abcd1234](https://github.com/yayitazale/eink-hub/commit/abcd1234)');
+  });
+
   it('finds every released version in the real CHANGELOG.md', () => {
     const real = fs.readFileSync(path.resolve(import.meta.dirname, '../../../CHANGELOG.md'), 'utf8');
     const versions = [...real.matchAll(/^## \[(\d+\.\d+\.\d+)\]/gm)].map((m) => m[1]);
