@@ -31,11 +31,12 @@ const cellKey = (lat: number, lon: number) => (Math.floor(lat) + 90) * 360 + (((
 function load(): Places {
   if (places) return places;
   const countries = new Map<string, string>();
-  for (const line of fs.readFileSync(path.join(GEO_DIR, 'countries.tsv'), 'utf8').split('\n')) {
+  // \r?\n: a CRLF checkout (Windows, autocrlf) must not leave "\r" on the last column.
+  for (const line of fs.readFileSync(path.join(GEO_DIR, 'countries.tsv'), 'utf8').split(/\r?\n/)) {
     const [code, name] = line.split('\t');
     if (code && name) countries.set(code, name);
   }
-  const lines = zlib.gunzipSync(fs.readFileSync(path.join(GEO_DIR, 'cities.tsv.gz'))).toString('utf8').split('\n');
+  const lines = zlib.gunzipSync(fs.readFileSync(path.join(GEO_DIR, 'cities.tsv.gz'))).toString('utf8').split(/\r?\n/);
   const names: string[] = [];
   const countryCodes: string[] = [];
   const lat = new Float32Array(lines.length);
