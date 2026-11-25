@@ -50,6 +50,19 @@ jobs:
           node-version: 22
       - run: npm audit --audit-level=high
 
+  # Blocking: pull requests are merged with a merge commit, so their commits
+  # land in main as they are, and the changelog (with its contributor credits)
+  # only lists Conventional Commits. One that isn't would vanish from it.
+  commit-messages:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - run: node scripts/check-commits.mjs "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+
   # Same build as a release, thrown away afterwards.
   docker-build:
     if: github.event_name == 'pull_request'

@@ -24,13 +24,18 @@ pull), and the relevant container logs (`docker compose logs eink-hub`).
    fix(pull): queue photos sent while the frame is asleep
    ```
 
-   The changelog is generated from these prefixes; commits that don't follow
-   the format are left out of it. The full table of prefixes is in
+   The changelog is generated from these commits, and each of yours is
+   credited to your GitHub account (`by @you`), with a "New contributors"
+   mention for your first merged PR. Pull requests are merged with a merge
+   commit, so your commits land as they are: a PR check rejects any commit
+   that doesn't follow the format, since it would be left out of the
+   changelog. The full table of prefixes is in
    [docs-site/development/versioning.md](docs-site/development/versioning.md#commit-message-format).
 4. Check that it builds and the tests pass (see below).
 5. Open a **pull request against `main`**. Describe what changes and why,
    and how you tested it (real frame model, or the Test Canvas / simulator).
-   The PR checks (build, tests, `npm audit` and the Docker build) must be green.
+   The PR checks (commit messages, build, tests, `npm audit` and the Docker
+   build) must be green.
 
 Please **don't** bump version numbers or edit `CHANGELOG.md`: releases are cut
 by the maintainer with `scripts/release.mjs`, which does both.

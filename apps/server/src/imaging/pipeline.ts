@@ -1,4 +1,5 @@
 import sharp, { type Sharp } from 'sharp';
+import exifReader from 'exif-reader';
 import type { FitMode } from '../db/schema.js';
 import type { ImageFormat } from '../device/drivers/types.js';
 import { PALETTES, ditherToPalette, encodeBmp, indicesToRgb } from './dither.js';
@@ -115,15 +116,31 @@ const escapeMarkup = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;
  * colour e-ink; translucent gradients would turn into noise.
  */
 async function addCaption(img: Buffer, caption: string, w: number, h: number): Promise<Buffer> {
-  const size = Math.max(14, Math.round(Math.min(w, h) * 0.032));
-  const label = await sharp({
-    text: { text: `<span foreground="#1d1c1a">${escapeMarkup(caption)}</span>`, font: `Inter,Arial,DejaVu Sans,Sans Semi-Bold ${size}`, dpi: 72, rgba: true },
-  })
-    .png()
-    .toBuffer({ resolveWithObject: true });
+  const textLabel = (size: number) =>
+    sharp({
+      text: { text: `<span foreground="#1d1c1a">${escapeMarkup(caption)}</span>`, font: `Inter,Arial,DejaVu Sans,Sans Semi-Bold ${size}`, dpi: 72, rgba: true },
+    })
+      .png()
+      .toBuffer({ resolveWithObject: true });
+  const margin = Math.round(Math.min(w, h) * 0.04);
+  let size = Math.max(14, Math.round(Math.min(w, h) * 0.032));
+  let label = await textLabel(size);
+  // A long caption (date · city, country) must stay inside the pill: shrink the font to fit,
+  // and if it is still too wide at the smallest size, cut the text at the pill's edge.
+  const room = (s: number) => w - 2 * margin - 2 * Math.round(s * 0.75);
+  if (label.info.width > room(size)) {
+    const smaller = Math.max(10, Math.floor((size * room(size)) / label.info.width));
+    if (smaller < size) {
+      size = smaller;
+      label = await textLabel(size);
+    }
+  }
+  if (label.info.width > room(size)) {
+    const width = Math.max(1, room(size));
+    label = await sharp(label.data).extract({ left: 0, top: 0, width, height: label.info.height }).png().toBuffer({ resolveWithObject: true });
+  }
   const padX = Math.round(size * 0.75);
   const padY = Math.round(size * 0.45);
-  const margin = Math.round(Math.min(w, h) * 0.04);
   const pillW = Math.min(w - 2 * margin, label.info.width + 2 * padX);
   const pillH = label.info.height + 2 * padY;
   const pill = Buffer.from(
@@ -145,16 +162,30 @@ export function thumbnail(src: Buffer, size = 480) {
 
 export async function probeImage(src: Buffer) {
   const m = await sharp(src, { failOn: 'none' }).autoOrient().metadata();
-  const taken = m.exif ? exifDate(m.exif) : undefined;
-  return { width: m.autoOrient?.width ?? m.width, height: m.autoOrient?.height ?? m.height, takenAt: taken };
+  const exif = m.exif ? readExif(m.exif) : {};
+  return { width: m.autoOrient?.width ?? m.width, height: m.autoOrient?.height ?? m.height, ...exif };
 }
 
-/** Pull DateTimeOriginal out of the raw EXIF block without a full EXIF parser. */
-function exifDate(exif: Buffer): number | undefined {
-  const m = exif.toString('latin1').match(/(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2})/);
-  if (!m) return undefined;
-  const t = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]);
-  return Number.isFinite(t) ? t : undefined;
+/**
+ * When the photo was taken and where, from its EXIF block. The date is the original capture
+ * time (not the last edit) read as wall-clock time, like Immich's localDateTime.
+ */
+export function readExif(raw: Buffer): { takenAt?: number; gps?: { latitude: number; longitude: number } } {
+  let tags: ReturnType<typeof exifReader>;
+  try {
+    tags = exifReader(raw);
+  } catch {
+    return {};
+  }
+  const date = tags.Photo?.DateTimeOriginal ?? tags.Photo?.DateTimeDigitized ?? tags.Image?.DateTime;
+  const takenAt = date instanceof Date && Number.isFinite(date.getTime()) ? date.getTime() : undefined;
+  const g = tags.GPSInfo;
+  const deg = (v: unknown) => (Array.isArray(v) && v.length === 3 && v.every(Number.isFinite) ? v[0] + v[1] / 60 + v[2] / 3600 : NaN);
+  const latitude = deg(g?.GPSLatitude) * (g?.GPSLatitudeRef === 'S' ? -1 : 1);
+  const longitude = deg(g?.GPSLongitude) * (g?.GPSLongitudeRef === 'W' ? -1 : 1);
+  // 0,0 is what some apps write when they have no fix.
+  const gps = Number.isFinite(latitude) && Number.isFinite(longitude) && (latitude !== 0 || longitude !== 0) ? { latitude, longitude } : undefined;
+  return { ...(takenAt !== undefined ? { takenAt } : {}), ...(gps ? { gps } : {}) };
 }
 
 /** True if the JPEG uses a baseline (SOF0/SOF1) frame rather than progressive (SOF2). */
