@@ -198,6 +198,14 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
                 <BgPicker value={bg} onChange={setBg} />
               </div>
             )}
+            {/* Same heading style as the fields around it, not the bolder toggle style. */}
+            <label className="mt-4 flex items-center justify-between gap-3">
+              <span className="min-w-0">
+                <span className="mb-1.5 block text-[13px] font-semibold text-ink-2">{t('assign.match_orientation')}</span>
+                <span className="block text-xs text-muted">{t('assign.match_orientation_hint')}</span>
+              </span>
+              <input type="checkbox" className="size-5 shrink-0 accent-[var(--ink)]" checked={matchOrientation} onChange={(e) => setMatchOrientation(e.target.checked)} />
+            </label>
           </Field>
 
           <CaptionOptions
@@ -211,7 +219,6 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
           />
 
           <div className="space-y-4 rounded-2xl bg-surface-2 p-4">
-            <Toggle label={t('assign.match_orientation')} hint={t('assign.match_orientation_hint')} checked={matchOrientation} onChange={setMatchOrientation} />
             {hourly && (
               <div>
                 <Toggle label={t('assign.window')} hint={t('assign.window_hint')} checked={windowOn} onChange={setWindowOn} />
