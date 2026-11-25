@@ -14,6 +14,8 @@ each package's `node_modules` folder.
 | [sharp](https://sharp.pixelplumbing.com/) / libvips | Apache-2.0 / LGPL-3.0-or-later | Image processing |
 | [Lucide](https://lucide.dev/) (`lucide-react`) | ISC | Icons |
 | [node-ble](https://github.com/chrvadala/node-ble) with [`@jellybrick/dbus-next`](https://github.com/JellyBrick/node-dbus-next) | MIT | Bluetooth wake through BlueZ |
+| [GeoNames](https://www.geonames.org/) place names (`apps/server/geo`, built by `apps/server/scripts/build-geo.mjs`) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | Naming where uploaded photos were taken; reduced to name, position and country |
+| [exif-reader](https://github.com/devongovett/exif-reader) | MIT | Reading the date and GPS position of uploaded photos |
 | [Node.js](https://nodejs.org/) and Debian base image | MIT and various | Runtime |
 
 ## Project website (`docs-site/`)
