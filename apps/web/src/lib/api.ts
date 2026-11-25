@@ -72,7 +72,7 @@ export interface Frame {
   id: number;
   kind: FrameKind;
   /** Per-kind settings; secrets (SwitchBot token/secret) are never sent. */
-  config: { deviceId?: string; format?: ImageFormat; notifyUrl?: string; maxPollMinutes?: number };
+  config: { deviceId?: string; format?: ImageFormat; notifyUrl?: string; maxPollMinutes?: number; pill?: { bg?: string; text?: string; opacity?: number } };
   capabilities: Capabilities;
   /** How a sleeping frame gets a new picture: ble, cloud, scheduled-pull or notify. */
   wakeModel: 'ble' | 'cloud' | 'scheduled-pull' | 'notify';

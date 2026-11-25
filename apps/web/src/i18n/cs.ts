@@ -575,4 +575,13 @@ export const cs: Catalogue = {
   'settings.passkey_never': 'nepoužit',
   'settings.passkey_https_only': 'Přístupové klíče fungují jen tehdy, když Hub otevřete přes HTTPS (Tailscale, reverzní proxy) nebo na localhost.',
   'settings.passkey_guide': 'Jak to nastavit',
+  'canvasSettings.pill_title': 'Štítek s datem',
+  'canvasSettings.pill_hint': 'Barvy a krytí štítku s datem (a místem), který se kreslí na obrázky tohoto Canvasu. Výchozí je bílý a nepropustný; průhledný štítek může na barevném e-inku působit zrnitě.',
+  'canvasSettings.pill_bg': 'Pozadí',
+  'canvasSettings.pill_text': 'Text',
+  'canvasSettings.pill_opacity': 'Krytí',
+  'canvasSettings.pill_sample': '21. 11. 2026',
+  'canvasSettings.pill_reset': 'Obnovit',
+  'canvasSettings.pill_auto': 'Automatické barvy',
+  'canvasSettings.pill_auto_hint': 'Hub se podívá na fotku v místě štítku: světlé pozadí na tmavých místech, tmavé na světlých, v odstínu fotky. U rámečků, pro které Hub zmenšuje obrázek na pár barev, jen bílá nebo černá.',
 };

@@ -559,4 +559,13 @@ export const fr: Catalogue = {
   'settings.passkey_never': 'jamais utilisée',
   'settings.passkey_https_only': 'Les passkeys ne fonctionnent que si le Hub est ouvert en HTTPS (Tailscale, un proxy inverse) ou sur localhost.',
   'settings.passkey_guide': 'Comment le configurer',
+  'canvasSettings.pill_title': 'Étiquette de date',
+  'canvasSettings.pill_hint': 'Couleurs et opacité de l\'étiquette de date (et de lieu) dessinée sur les images de ce Canvas. Par défaut elle est blanche et opaque ; une étiquette translucide peut paraître granuleuse sur e-ink couleur.',
+  'canvasSettings.pill_bg': 'Fond',
+  'canvasSettings.pill_text': 'Texte',
+  'canvasSettings.pill_opacity': 'Opacité',
+  'canvasSettings.pill_sample': '21 nov. 2026',
+  'canvasSettings.pill_reset': 'Réinitialiser',
+  'canvasSettings.pill_auto': 'Couleurs automatiques',
+  'canvasSettings.pill_auto_hint': 'Le Hub regarde la photo là où va l\'étiquette : fond clair sur les zones sombres, fond sombre sur les zones claires, dans la teinte de la photo. Sur les cadres où le Hub réduit l\'image à quelques couleurs, uniquement blanc ou noir.',
 };

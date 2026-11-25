@@ -559,4 +559,13 @@ export const pt: Catalogue = {
   'settings.passkey_never': 'nunca usada',
   'settings.passkey_https_only': 'As passkeys só funcionam se abrires o Hub por HTTPS (Tailscale, um proxy inverso) ou em localhost.',
   'settings.passkey_guide': 'Como configurar',
+  'canvasSettings.pill_title': 'Etiqueta de data',
+  'canvasSettings.pill_hint': 'Cores e opacidade da etiqueta com a data (e o local) desenhada nas imagens deste Canvas. Por defeito é branca e opaca; uma etiqueta translúcida pode ficar granulada em e-ink a cores.',
+  'canvasSettings.pill_bg': 'Fundo',
+  'canvasSettings.pill_text': 'Texto',
+  'canvasSettings.pill_opacity': 'Opacidade',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Repor',
+  'canvasSettings.pill_auto': 'Cores automáticas',
+  'canvasSettings.pill_auto_hint': 'O Hub olha para a foto onde fica a etiqueta: fundo claro sobre zonas escuras e escuro sobre zonas claras, no tom da foto. Nas molduras em que o Hub reduz a imagem a poucas cores, só branco ou preto.',
 };

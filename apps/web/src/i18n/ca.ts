@@ -559,4 +559,13 @@ export const ca: Catalogue = {
   'settings.passkey_never': 'sense ús',
   'settings.passkey_https_only': 'Les passkeys només funcionen si obres el Hub per HTTPS (Tailscale, un servidor intermediari invers) o a localhost.',
   'settings.passkey_guide': 'Com configurar-ho',
+  'canvasSettings.pill_title': 'Etiqueta de data',
+  'canvasSettings.pill_hint': 'Colors i opacitat de l\'etiqueta amb la data (i el lloc) que es dibuixa sobre les imatges d\'aquest Canvas. Per defecte és blanca i opaca; una etiqueta translúcida pot veure\'s granulada en e-ink en color.',
+  'canvasSettings.pill_bg': 'Fons',
+  'canvasSettings.pill_text': 'Text',
+  'canvasSettings.pill_opacity': 'Opacitat',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Restableix',
+  'canvasSettings.pill_auto': 'Colors automàtics',
+  'canvasSettings.pill_auto_hint': 'El Hub mira la foto on va l\'etiqueta i posa un fons clar sobre zones fosques i un de fosc sobre zones clares, en el to de la foto. En marcs on el Hub redueix la imatge a pocs colors, només blanc o negre.',
 };

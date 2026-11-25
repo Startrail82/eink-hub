@@ -21,6 +21,8 @@ export interface DisplayOptions {
 
 /** Per-kind settings that don't deserve a column. */
 export interface FrameConfig {
+  /** Colours and opacity of the date label drawn on pictures. Missing = the defaults. */
+  pill?: { bg?: string; text?: string; opacity?: number };
   /** SwitchBot: OpenAPI token + secret and the frame's device id. */
   token?: string;
   secret?: string;

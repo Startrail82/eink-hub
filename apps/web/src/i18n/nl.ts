@@ -559,4 +559,13 @@ export const nl: Catalogue = {
   'settings.passkey_never': 'nooit gebruikt',
   'settings.passkey_https_only': 'Passkeys werken alleen als de Hub via HTTPS (Tailscale, een reverse proxy) of op localhost wordt geopend.',
   'settings.passkey_guide': 'Zo stel je het in',
+  'canvasSettings.pill_title': 'Datumlabel',
+  'canvasSettings.pill_hint': 'Kleuren en dekking van het datum- (en plaats)label op de afbeeldingen van dit Canvas. Standaard is het wit en ondoorzichtig; een doorzichtig label kan er korrelig uitzien op kleuren-e-ink.',
+  'canvasSettings.pill_bg': 'Achtergrond',
+  'canvasSettings.pill_text': 'Tekst',
+  'canvasSettings.pill_opacity': 'Dekking',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Standaard',
+  'canvasSettings.pill_auto': 'Automatische kleuren',
+  'canvasSettings.pill_auto_hint': 'De Hub kijkt naar de foto waar het label komt: een lichte achtergrond op donkere stukken en een donkere op lichte, in de tint van de foto. Bij lijsten waarvoor de Hub het beeld tot een paar kleuren terugbrengt, alleen wit of zwart.',
 };

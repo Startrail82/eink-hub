@@ -464,6 +464,102 @@ function FrameLookSettings({ frame }: { frame: Frame }) {
   );
 }
 
+/** Same as DEFAULT_PILL in apps/server/src/imaging/pill.ts: keep them in sync. */
+const PILL_DEFAULT = { bg: '#ffffff', text: '#1d1c1a', opacity: 100 };
+
+/** Preview of automatic mode, as autoPill() in apps/server/src/imaging/pill.ts colours these two areas. */
+const PILL_AUTO_SAMPLES = [
+  { photo: '#2b4a73', bg: '#e9edf1', text: '#1c232c' },
+  { photo: '#e8c170', bg: '#3b311c', text: '#f8f6f1' },
+];
+
+const withAlpha =(hex: string, percent: number) => {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${percent / 100})`;
+};
+
+/** Colours and see-through-ness of the date label drawn on this Canvas's pictures. */
+function PillSettings({ frame }: { frame: Frame }) {
+  const { t } = useI18n();
+  const saved = frame.config.pill;
+  const savedAuto = saved?.bg === 'auto';
+  // In automatic mode the hub picks the colours per picture; the pickers keep the last manual ones.
+  const [auto, setAuto] = useState(savedAuto);
+  const [bg, setBg] = useState(!savedAuto && saved?.bg ? saved.bg : PILL_DEFAULT.bg);
+  const [text, setText] = useState(saved?.text ?? PILL_DEFAULT.text);
+  const [opacity, setOpacity] = useState(saved?.opacity ?? PILL_DEFAULT.opacity);
+  // Follow what is saved when it changes elsewhere (another tab, a refetch after saving).
+  useEffect(() => {
+    setAuto(savedAuto);
+    if (!savedAuto) setBg(saved?.bg ?? PILL_DEFAULT.bg);
+    setText(saved?.text ?? PILL_DEFAULT.text);
+    setOpacity(saved?.opacity ?? PILL_DEFAULT.opacity);
+  }, [savedAuto, saved?.bg, saved?.text, saved?.opacity]);
+  const save = useAction(() => api.patch(`/api/frames/${frame.id}`, { config: { pill: { bg: auto ? 'auto' : bg, text, opacity } } }), { success: t('common.saved') });
+  const reset = useAction(
+    async () => {
+      await api.patch(`/api/frames/${frame.id}`, { config: { pill: null } });
+      setAuto(false);
+      setBg(PILL_DEFAULT.bg);
+      setText(PILL_DEFAULT.text);
+      setOpacity(PILL_DEFAULT.opacity);
+    },
+    { success: t('common.saved') },
+  );
+  const swatch = 'h-10 w-16 cursor-pointer rounded-xl border border-line bg-transparent p-1';
+
+  return (
+    <div className="border-t border-line pt-6">
+      <h4 className="mb-1 font-bold">{t('canvasSettings.pill_title')}</h4>
+      <p className="mb-4 text-xs text-muted">{t('canvasSettings.pill_hint')}</p>
+      <div className="mb-4">
+        <Toggle label={t('canvasSettings.pill_auto')} hint={t('canvasSettings.pill_auto_hint')} checked={auto} onChange={setAuto} />
+      </div>
+      <div className="grid gap-6 sm:grid-cols-[1fr_220px]">
+        <div className="space-y-4">
+          <div className={cx('flex flex-wrap gap-6', auto && 'pointer-events-none opacity-40')} aria-disabled={auto}>
+            <Field label={t('canvasSettings.pill_bg')}>
+              <input type="color" className={swatch} value={bg} disabled={auto} onChange={(e) => setBg(e.target.value)} />
+            </Field>
+            <Field label={t('canvasSettings.pill_text')}>
+              <input type="color" className={swatch} value={text} disabled={auto} onChange={(e) => setText(e.target.value)} />
+            </Field>
+          </div>
+          <Field label={`${t('canvasSettings.pill_opacity')}: ${opacity}%`}>
+            <input type="range" className="w-full max-w-xs accent-accent" min={10} max={100} step={1} value={opacity} onChange={(e) => setOpacity(Number(e.target.value))} />
+          </Field>
+        </div>
+        {auto ? (
+          // What automatic does: a light chip over the dark half of a picture, a dark one over the light half.
+          <div className="grid h-28 grid-rows-2 overflow-hidden rounded-2xl">
+            {PILL_AUTO_SAMPLES.map((s) => (
+              <div key={s.photo} className="flex items-center px-3" style={{ background: s.photo }}>
+                <span className="whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold" style={{ background: withAlpha(s.bg, opacity), color: s.text }}>
+                  {t('canvasSettings.pill_sample')}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex h-28 items-end rounded-2xl p-3" style={{ background: 'linear-gradient(135deg, #3f6fa3 0%, #7fb069 55%, #e8c170 100%)' }}>
+            <span className="rounded-full px-4 py-1.5 text-sm font-semibold" style={{ background: withAlpha(bg, opacity), color: text }}>
+              {t('canvasSettings.pill_sample')}
+            </span>
+          </div>
+        )}
+      </div>
+      <div className="mt-4 flex gap-2">
+        <Button loading={save.isPending} onClick={() => save.mutate()}>
+          {t('common.save')}
+        </Button>
+        <Button variant="secondary" loading={reset.isPending} onClick={() => reset.mutate()}>
+          {t('canvasSettings.pill_reset')}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function BluetoothSettings({ frame }: { frame: Frame }) {
   const { t } = useI18n();
   const ble = useBleStatus();
@@ -582,6 +678,8 @@ function SettingsTab({ frame }: { frame: Frame }) {
       )}
 
       <FrameLookSettings frame={frame} />
+
+      <PillSettings frame={frame} />
 
       {caps.bleWake && <BluetoothSettings frame={frame} />}
 

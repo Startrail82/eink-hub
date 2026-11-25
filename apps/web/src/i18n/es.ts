@@ -558,6 +558,15 @@ export const es = {
   'settings.passkey_never': 'sin usar',
   'settings.passkey_https_only': 'Las passkeys solo funcionan si abres el Hub por HTTPS (Tailscale, un proxy inverso) o en localhost.',
   'settings.passkey_guide': 'Cómo configurarlo',
+  'canvasSettings.pill_title': 'Etiqueta de fecha',
+  'canvasSettings.pill_hint': 'Colores y opacidad de la etiqueta con la fecha (y el lugar) que se dibuja sobre las imágenes de este Canvas. Por defecto es blanca y opaca; una etiqueta translúcida puede verse granulada en e-ink en color.',
+  'canvasSettings.pill_bg': 'Fondo',
+  'canvasSettings.pill_text': 'Texto',
+  'canvasSettings.pill_opacity': 'Opacidad',
+  'canvasSettings.pill_sample': '21 nov 2026',
+  'canvasSettings.pill_reset': 'Restablecer',
+  'canvasSettings.pill_auto': 'Colores automáticos',
+  'canvasSettings.pill_auto_hint': 'El Hub mira la foto donde va la etiqueta y pone un fondo claro sobre zonas oscuras y uno oscuro sobre zonas claras, en el tono de la foto. En marcos donde el Hub reduce la imagen a pocos colores, solo blanco o negro.',
 };
 
 export type Messages = Record<keyof typeof es, string>;

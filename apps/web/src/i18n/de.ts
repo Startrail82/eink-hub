@@ -559,4 +559,13 @@ export const de: Catalogue = {
   'settings.passkey_never': 'nie verwendet',
   'settings.passkey_https_only': 'Passkeys funktionieren nur, wenn der Hub über HTTPS (Tailscale, ein Reverse Proxy) oder auf localhost geöffnet wird.',
   'settings.passkey_guide': 'So richtest du es ein',
+  'canvasSettings.pill_title': 'Datumsetikett',
+  'canvasSettings.pill_hint': 'Farben und Deckkraft des Datums- (und Orts-)Etiketts auf den Bildern dieses Canvas. Standard ist weiß und deckend; ein durchscheinendes Etikett kann auf Farb-E-Ink körnig wirken.',
+  'canvasSettings.pill_bg': 'Hintergrund',
+  'canvasSettings.pill_text': 'Text',
+  'canvasSettings.pill_opacity': 'Deckkraft',
+  'canvasSettings.pill_sample': '21. Nov. 2026',
+  'canvasSettings.pill_reset': 'Zurücksetzen',
+  'canvasSettings.pill_auto': 'Automatische Farben',
+  'canvasSettings.pill_auto_hint': 'Der Hub prüft das Foto dort, wo das Etikett hinkommt: heller Hintergrund auf dunklen Stellen, dunkler auf hellen, im Farbton des Fotos. Bei Rahmen, für die der Hub das Bild auf wenige Farben reduziert, nur Weiß oder Schwarz.',
 };
