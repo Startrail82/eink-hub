@@ -727,6 +727,8 @@ function SettingsTab({ frame }: { frame: Frame }) {
         {t('common.save')}
       </Button>
 
+      <CanvasLocationSettings frame={frame} />
+
       {caps.deviceSettings && (
       <div className="border-t border-line pt-6">
         <h4 className="mb-3 font-bold">{t('canvasSettings.device')}</h4>
@@ -747,7 +749,6 @@ function SettingsTab({ frame }: { frame: Frame }) {
       <FrameLookSettings frame={frame} />
 
       <PillSettings frame={frame} />
-      <CanvasLocationSettings frame={frame} />
 
       {caps.bleWake && <BluetoothSettings frame={frame} />}
 
