@@ -14,6 +14,7 @@ import { fetchDayForecast } from './ai/sources.js';
 import { isDefaultPill, resolvePill } from '../imaging/pill.js';
 import { skyLabel } from '../imaging/sky.js';
 import { HttpError, immichFor, type Ctx } from './context.js';
+import { reverseGeocode } from './geo.js';
 
 const RENDER_VERSION = 1;
 
@@ -52,10 +53,30 @@ export async function saveLocalUpload(db: DB, buf: Buffer, originalName: string)
       width: meta.width,
       height: meta.height,
       takenAt: meta.takenAt ?? Date.now(),
+      // From the photo's GPS, with the offline place list; '' = no GPS or nowhere near a place.
+      ...placeOf(meta.gps),
       createdAt: Date.now(),
     })
     .returning()
     .get();
+}
+
+/** City and country for a GPS position ('' when there is none or no place near it). */
+function placeOf(gps?: { latitude: number; longitude: number }): { city: string; country: string } {
+  return (gps && reverseGeocode(gps.latitude, gps.longitude)) || { city: '', country: '' };
+}
+
+/**
+ * The location an Immich payload settles, or null when it says nothing yet: no city/country
+ * fields at all, or GPS data that Immich has not reverse-geocoded (yet). Only a photo without
+ * GPS is known to have no location ('').
+ */
+export function locationFromExif(exif: ImmichAsset['exifInfo']): { city: string; country: string } | null {
+  if (!exif || (exif.city === undefined && exif.country === undefined)) return null;
+  const city = exif.city ?? '';
+  const country = exif.country ?? '';
+  if (!city && !country && exif.latitude != null && exif.longitude != null) return null;
+  return { city, country };
 }
 
 /** Upsert Immich assets as image rows; returns ids in input order. */
@@ -72,10 +93,8 @@ export function upsertImmichAssets(db: DB, assets: ImmichAsset[]): number[] {
         ...(size ? { width: size.width, height: size.height } : {}),
         ...(Number.isFinite(taken) ? { takenAt: taken } : {}),
         ...(a.isFavorite !== undefined ? { favorite: a.isFavorite } : {}),
-        // Only when the payload says something about the location; '' marks "looked up, none".
-        ...(a.exifInfo && (a.exifInfo.city !== undefined || a.exifInfo.country !== undefined)
-          ? { city: a.exifInfo.city ?? '', country: a.exifInfo.country ?? '' }
-          : {}),
+        // Only when the payload settles the location; '' marks "looked up, none".
+        ...(locationFromExif(a.exifInfo) ?? {}),
       };
       const insert = tx.insert(schema.images).values({ source: 'immich', immichAssetId: a.id, createdAt: Date.now(), ...values });
       if (Object.keys(values).length) insert.onConflictDoUpdate({ target: schema.images.immichAssetId, set: values }).run();
@@ -216,18 +235,50 @@ export function photoCaption(
   return parts.length ? parts.join(' · ') : null;
 }
 
-/** Immich photos picked by id carry no location yet: ask Immich once and remember the answer. */
-export async function withLocation(ctx: Ctx, img: Image): Promise<Image> {
-  if (img.source !== 'immich' || !img.immichAssetId || img.city !== null || img.country !== null) return img;
+/** How long to wait before asking Immich again after a failed or unsettled lookup. */
+export const DETAILS_RETRY_MS = 30 * 60_000;
+const detailsRetryAt = new Map<string, number>();
+
+/**
+ * Fill in what the caption needs and the row doesn't have yet. Uploads from before places were
+ * read get theirs from the original's GPS. Immich photos picked by id (sent from the Immich
+ * page, manual collections) carry no date or location: ask Immich for the asset and store it.
+ * A failed lookup, or a place Immich has not geocoded yet, is retried at most every
+ * DETAILS_RETRY_MS, so renders (cache hits included) don't wait on Immich every time.
+ */
+export async function withCaptionDetails(
+  ctx: Ctx,
+  img: Image,
+  need: { date?: boolean; location?: boolean } = { location: true },
+  now = Date.now(),
+): Promise<Image> {
+  if (img.source === 'local') return withLocalPlace(ctx, img, need);
+  if (img.source !== 'immich' || !img.immichAssetId) return img;
+  const missing = (i: Image) => (need.date && i.takenAt === null) || (need.location && i.city === null && i.country === null);
+  if (!missing(img) || (detailsRetryAt.get(img.immichAssetId) ?? 0) > now) return img;
   try {
-    const asset = await immichFor(ctx.db).asset(img.immichAssetId);
-    if (!asset.exifInfo) return img;
-    const city = asset.exifInfo.city ?? '';
-    const country = asset.exifInfo.country ?? '';
-    ctx.db.update(schema.images).set({ city, country }).where(eq(schema.images.id, img.id)).run();
-    return { ...img, city, country };
+    upsertImmichAssets(ctx.db, [await immichFor(ctx.db).asset(img.immichAssetId)]);
+    const fresh = ctx.db.select().from(schema.images).where(eq(schema.images.id, img.id)).get() ?? img;
+    if (missing(fresh)) detailsRetryAt.set(img.immichAssetId, now + DETAILS_RETRY_MS);
+    else detailsRetryAt.delete(img.immichAssetId);
+    return fresh;
   } catch (err) {
-    ctx.log.debug({ err, asset: img.immichAssetId }, 'immich location lookup failed');
+    detailsRetryAt.set(img.immichAssetId, now + DETAILS_RETRY_MS);
+    ctx.log.debug({ err, asset: img.immichAssetId }, 'immich details lookup failed');
+    return img;
+  }
+}
+
+/** Uploads from before places were read: name the place from the original's GPS once. */
+async function withLocalPlace(ctx: Ctx, img: Image, need: { location?: boolean }): Promise<Image> {
+  if (!need.location || img.city !== null || img.country !== null || !img.filePath) return img;
+  try {
+    const { gps } = await probeImage(await fs.readFile(path.join(config.originalsDir, img.filePath)));
+    const place = placeOf(gps);
+    ctx.db.update(schema.images).set(place).where(eq(schema.images.id, img.id)).run();
+    return { ...img, ...place };
+  } catch (err) {
+    ctx.log.debug({ err, image: img.id }, 'reading the place of an upload failed');
     return img;
   }
 }
@@ -244,7 +295,8 @@ export interface Rendered {
 }
 
 export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: DisplayOptions = {}): Promise<Rendered> {
-  if (opts.showLocation && opts.showLocation !== 'off') img = await withLocation(ctx, img);
+  const needLocation = !!opts.showLocation && opts.showLocation !== 'off';
+  if (opts.showDate || needLocation) img = await withCaptionDetails(ctx, img, { date: opts.showDate, location: needLocation });
   const landscape = frame.orientation === 'landscape';
   const forecast = opts.weatherBar ? await fetchDayForecast(opts.weatherBar.latitude, opts.weatherBar.longitude, Date.now(), opts.weatherBar.offset).catch((err) => (ctx.log.warn({ err }, 'weather bar: no forecast, picture shown without it'), null)) : null;
   // The word is in the hub's language, so it is part of the render's identity.

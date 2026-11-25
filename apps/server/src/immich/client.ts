@@ -11,6 +11,8 @@ export interface ImmichAsset {
     exifImageWidth?: number | null;
     exifImageHeight?: number | null;
     orientation?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
     /** Reverse-geocoded by Immich, in English. */
     city?: string | null;
     country?: string | null;
@@ -154,6 +156,12 @@ export class ImmichClient {
   }
   personThumbnail(id: string) {
     return this.raw(`/people/${id}/thumbnail`, { headers: { accept: 'image/*' } });
+  }
+
+  /** Countries that appear in the library, as Immich reverse-geocoded them (needs `asset.read`). */
+  async countries() {
+    const list = await this.json<(string | null)[]>('/search/suggestions?type=country');
+    return list.filter((c): c is string => typeof c === 'string' && c.trim() !== '');
   }
 
   searchMetadata(q: MetadataQuery, page = 1, size = 100) {

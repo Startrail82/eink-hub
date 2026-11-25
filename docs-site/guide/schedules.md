@@ -32,13 +32,16 @@ Add as many schedules as you like to a frame, for example one collection in the 
 
 The **Schedule** page has a **Week view** next to the list of schedules (and every frame's page shows it below its schedules). It lists, per day, at what time the frame changes and to which collection, for the coming seven days.
 
-## Captions
+## Label on the photo
 
-A schedule can draw a small label in the bottom-left corner of each photo:
+A schedule can draw a small label in the bottom-left corner of each photo. Under **Label on the photo**, switch on either or both:
 
-- **Show the photo's date**: the date it was taken ("X years ago today" for *On this day*).
-- **Show the photo's location**: the city, or the city and country, as [Immich](/guide/immich) reverse-geocoded it from the photo's GPS data. It is drawn next to the date, or alone when the date is off. Photos you upload to the hub directly have no location.
-- **Leave out the home country**: photos taken in your home country show only the city. Set the home country in *Settings* and type it the way Immich shows it, usually in English (for example `Belgium`).
+- **Date**: the date it was taken ("X years ago today" for *On this day*).
+- **Place**: the city and country where it was taken, from the photo's GPS data. For [Immich](/guide/immich) photos it is the place Immich shows. For photos uploaded to the hub, the hub looks up the nearest town in a built-in list of places ([GeoNames](https://www.geonames.org), CC BY 4.0), with no Immich or internet needed. Photos without GPS data have no place.
+
+With both on, the label reads like `6 October 2019 · Rome, Italy`. With neither, there is no label.
+
+With **Place** on, **Leave out the home country** shows only the city for photos taken in your home country. Pick the home country in *Settings*.
 
 ## How each frame gets the next photo
 

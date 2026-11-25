@@ -7,6 +7,7 @@ import { addItems, memoriesDay } from '../lib/collections.js';
 import { HttpError, cloudUrlSetting, configuredExternalUrl, detectLocalUrl, externalUrlSetting, externalUrlSource, immichConfig, immichFor, type Ctx } from '../lib/context.js';
 import { displayImage } from '../lib/display.js';
 import { upsertImmichAssets } from '../lib/images.js';
+import { allCountries } from '../lib/geo.js';
 
 const slimAsset = (a: ImmichAsset) => ({
   id: a.id,
@@ -49,6 +50,23 @@ export function immichRoutes(app: FastifyInstance, ctx: Ctx) {
   app.get('/api/immich/people', async () =>
     (await immichFor(db).people()).map((p) => ({ id: p.id, name: p.name })).sort((a, b) => (a.name ? 0 : 1) - (b.name ? 0 : 1) || a.name.localeCompare(b.name)),
   );
+
+  /**
+   * For the home country picker: every country, whether or not there are photos from it yet
+   * (or Immich at all). Immich's own names are added in case one is spelled differently.
+   */
+  app.get('/api/countries', async () => {
+    const names = new Set(allCountries());
+    const { url, apiKey } = immichConfig(db);
+    if (url && apiKey) {
+      try {
+        for (const c of await immichFor(db).countries()) names.add(c);
+      } catch (err) {
+        ctx.log.debug({ err }, 'immich countries failed');
+      }
+    }
+    return [...names].sort((a, b) => a.localeCompare(b));
+  });
 
   app.get<{ Params: { id: string } }>('/api/immich/people/:id/thumbnail', async (req, reply) =>
     pipeImage(reply, await immichFor(db).personThumbnail(req.params.id)),
