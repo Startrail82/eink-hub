@@ -7,7 +7,7 @@ import { purgeSessions } from '../auth/index.js';
 import { needsSync, prepareCollection, syncCollection } from '../lib/collections.js';
 import type { Ctx } from '../lib/context.js';
 import { assignmentOptions, chooseNextImage, deliverQueued, dueAssignment, getAssignments, markOnline, pushImage } from '../lib/display.js';
-import { getImage } from '../lib/images.js';
+import { fillImmichSizes, getImage } from '../lib/images.js';
 import { isDue, nextRun } from '../lib/schedule.js';
 import { pruneBatterySamples } from '../lib/stats.js';
 import { withWake } from '../lib/wake.js';
@@ -61,6 +61,8 @@ export async function housekeeping(ctx: Ctx) {
   for (const c of ctx.db.select().from(schema.collections).all()) {
     if (needsSync(c)) await syncCollection(ctx, c);
   }
+  // Photos imported by bare id before sizes were looked up: a few hundred small JSON requests at most.
+  await fillImmichSizes(ctx, { max: 200 });
   purgeSessions(ctx.db);
   pruneBatterySamples(ctx.db);
 }
