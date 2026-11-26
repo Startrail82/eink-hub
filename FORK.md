@@ -8,9 +8,9 @@ The version in the bottom left shows `FR<n>`: the highest feature number include
 | FR1 | Photo location in the Immich caption (merged upstream) | `feat/photo-location` |
 | FR2 | AI image collections (OpenAI-compatible and ComfyUI) | `feat/ai-collections` |
 | FR3 | Several schedules per Canvas, with a weekly overview (merged upstream) | `feat/multiple-schedules` |
-| FR4 | Weather as a source, behind a provider interface | `feat/weather-source` |
-| FR5 | Weather bar on weather pictures | `feat/ai-weather-bar` |
-| FR6 | Weather of a later hour | `feat/ai-weather-offset` |
+| FR4 | Weather module with a provider interface (Settings > Weather) | `feat/weather` |
+| FR5 | Weather bar on the pictures of a schedule, per Canvas | `feat/weather-bar` |
+| FR6 | Weather placeholders for AI prompts, also for a later hour | `feat/ai-weather-prompts` |
 | FR7 | Negative prompt per ComfyUI collection | `feat/ai-negative-prompt` |
 | FR8 | Random choices in prompts | `feat/ai-random-choice` |
 | FR9 | Only pick pictures that suit the Canvas (merged upstream) | `feat/match-orientation` |
