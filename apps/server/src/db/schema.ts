@@ -14,7 +14,7 @@ export interface DisplayOptions {
   showDate?: boolean;
   /** "On this day" memories: caption reads "X years ago today" instead of the date. */
   memories?: boolean;
-  /** Overlay where the photo was taken (Immich photos only). */
+  /** Overlay where the photo was taken (Immich photos, or uploads with GPS data). */
   showLocation?: LocationMode;
   /** Leave the country out of the location when it is the hub's home country (Settings). */
   hideHomeCountry?: boolean;

@@ -8,6 +8,8 @@ A collection is a set of photos a frame rotates through:
 - **Immich album / person / favourites / smart search**: kept in sync with [Immich](/guide/immich) automatically.
 - **On this day**: Immich memories, captioned "X years ago today".
 
+To rename a collection, click its name in **Library**.
+
 ## Schedules
 
 A frame can have one or more schedules. Each one has its own collection and timing:

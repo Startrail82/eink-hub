@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: E-Ink Hub API
   version: '1'
-  summary: Device-facing protocols and the main management endpoints of E-Ink Hub.
+  summary: Device-facing protocols and every management endpoint of E-Ink Hub.
   description: |
     Two families of endpoints:
 
@@ -27,8 +27,17 @@ tags:
   - name: Pictures
   - name: Frames
     description: Management (session required).
+  - name: Schedules
+    description: When each frame changes its picture, and from which collection. A frame can have several.
+  - name: Collections
   - name: Library
     description: Management (session required).
+  - name: Immich
+  - name: BLOOMIN8 device
+    description: Galleries, playlists and pull mode stored on a BLOOMIN8. Other frames get `400`.
+  - name: Settings
+  - name: Hub
+  - name: Logs
   - name: Auth
   - name: Users
     description: Accounts and invites (admins only).
@@ -367,6 +376,7 @@ paths:
     post:
       tags: [Frames]
       summary: Add a frame
+      description: Admins only.
       security: [{ session: [] }]
       requestBody:
         content:
@@ -402,13 +412,9 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required: [imageId]
-              properties:
-                imageId: { type: integer }
-                fit: { type: string, enum: [cover, contain, blur] }
-                bg: { type: string, example: '#ffffff' }
-                showDate: { type: boolean }
+              allOf:
+                - { $ref: '#/components/schemas/DisplayOptions' }
+                - { type: object, required: [imageId], properties: { imageId: { type: integer } } }
       responses:
         '200':
           description: '`push` if it was delivered, `queued` if it waits for the frame.'
@@ -428,16 +434,1121 @@ paths:
         '200': { description: Done (or `queued` for a sleeping frame) }
         '400': { description: Not supported by this kind of frame }
   /api/images:
+    get:
+      tags: [Library]
+      summary: Photos in the library, newest first
+      security: [{ session: [] }]
+      parameters:
+        - { name: collectionId, in: query, schema: { type: integer } }
+        - { name: source, in: query, schema: { type: string, enum: [local, immich] } }
+        - { name: offset, in: query, schema: { type: integer, default: 0 } }
+        - { name: limit, in: query, schema: { type: integer, default: 120, maximum: 500 } }
+      responses:
+        '200':
+          description: A page of photos and the total
+          content:
+            application/json:
+              schema: { type: object, properties: { items: { type: array, items: { $ref: '#/components/schemas/Image' } }, total: { type: integer } } }
     post:
       tags: [Library]
       summary: Upload photos
+      description: Up to 80 MB each. The place is looked up from the photo's GPS data in the built-in list of places.
       security: [{ session: [] }]
+      parameters:
+        - { name: collectionId, in: query, schema: { type: integer }, description: Also add them to this manual collection }
       requestBody:
         content:
           multipart/form-data:
             schema: { type: object, properties: { file: { type: string, format: binary } } }
       responses:
-        '200': { description: The stored images }
+        '200': { description: The stored images, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Image' } } } } }
+
+  /api/health:
+    get:
+      tags: [Hub]
+      summary: Liveness check and version
+      description: Public.
+      responses:
+        '200':
+          description: The hub is up
+          content:
+            application/json:
+              schema: { type: object, properties: { ok: { const: true }, version: { type: string, example: 0.8.0 } } }
+
+  /api/update:
+    get:
+      tags: [Hub]
+      summary: Whether a newer release exists
+      description: Asks GitHub at most every few hours. Off with `UPDATE_CHECK=false` (then `latest` is null).
+      security: [{ session: [] }]
+      responses:
+        '200':
+          description: Update state
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  current: { type: string }
+                  latest: { type: [string, 'null'] }
+                  available: { type: boolean }
+                  repoUrl: { type: string }
+                  changelogUrl: { type: string }
+                  docsUrl: { type: string, description: The docs of the running version }
+                  latestDocsUrl: { type: string, description: Only when `available` }
+                  releaseUrl: { type: string, description: Only when `available` }
+
+  /api/settings:
+    get:
+      tags: [Settings]
+      summary: Hub settings
+      description: The Immich API key is never returned, only whether it is set.
+      security: [{ session: [] }]
+      responses:
+        '200':
+          description: Settings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  immichUrl: { type: string }
+                  immichApiKeySet: { type: boolean }
+                  localUrl: { type: string, description: Configured or detected LAN address }
+                  localUrlSource: { type: string }
+                  externalUrl: { type: string, description: Only what is configured }
+                  externalUrlEffective: { type: string }
+                  externalUrlSource: { type: string }
+                  cloudUrl: { type: string }
+                  cloudUrlEffective: { type: string }
+                  language: { type: [string, 'null'] }
+                  location: { oneOf: [{ $ref: '#/components/schemas/Place' }, { type: 'null' }] }
+                  homeCountry: { type: string, description: The country of `location`, or the one chosen before locations existed }
+                  defaultFit: { $ref: '#/components/schemas/Fit' }
+                  statsEnabled: { type: boolean }
+    put:
+      tags: [Settings]
+      summary: Change hub settings
+      description: Admins only. Every field is optional; only the ones sent change. An empty `immichApiKey` keeps the saved key.
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                immichUrl: { type: string }
+                immichApiKey: { type: string }
+                localUrl: { type: string }
+                externalUrl: { type: string }
+                cloudUrl: { type: string }
+                defaultFit: { $ref: '#/components/schemas/Fit' }
+                language: { type: string, example: es }
+                location:
+                  description: Where the hub is. `null` removes it.
+                  oneOf: [{ $ref: '#/components/schemas/Place' }, { type: 'null' }]
+                statsEnabled: { type: boolean }
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+
+  /api/settings/immich:
+    delete:
+      tags: [Settings]
+      summary: Disconnect Immich
+      description: Admins only. Stored as empty so `IMMICH_URL` / `IMMICH_API_KEY` from the environment don't come back.
+      security: [{ session: [] }]
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+
+  /api/settings/immich/test:
+    post:
+      tags: [Settings]
+      summary: Test an Immich address and key
+      description: Admins only. Without `apiKey` it uses the saved one.
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [url], properties: { url: { type: string }, apiKey: { type: string } } }
+      responses:
+        '200':
+          description: '`ok: false` with `error` when Immich refused'
+          content:
+            application/json:
+              schema: { type: object, properties: { ok: { type: boolean }, user: { type: string }, error: { type: string } } }
+
+  /api/places:
+    get:
+      tags: [Settings]
+      summary: Search the built-in list of places
+      description: |
+        Towns and cities with at least 1000 people ([GeoNames](https://www.geonames.org), CC BY 4.0), searched on the hub:
+        nothing is sent to an outside service. `Bilbao, Spain` narrows by region or country after the comma.
+      security: [{ session: [] }]
+      parameters:
+        - { name: q, in: query, schema: { type: string, maxLength: 100 } }
+      responses:
+        '200':
+          description: Up to 20 places, biggest first
+          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Place' } } } }
+
+  /api/places/reverse:
+    get:
+      tags: [Settings]
+      summary: The listed place nearest to some coordinates
+      security: [{ session: [] }]
+      parameters:
+        - { name: lat, in: query, required: true, schema: { type: number } }
+        - { name: lon, in: query, required: true, schema: { type: number } }
+      responses:
+        '200':
+          description: The place, or null
+          content: { application/json: { schema: { oneOf: [{ $ref: '#/components/schemas/Place' }, { type: 'null' }] } } }
+
+  /api/auth/setup:
+    post:
+      tags: [Auth]
+      summary: Create the first admin account (sets the session cookie)
+      description: Only while the hub has no accounts (`setupRequired` in `/api/auth/me`).
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [password], properties: { username: { type: string, default: admin }, password: { type: string, minLength: 6 } } }
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+        '400': { description: Invalid username or password }
+        '409': { description: Already set up }
+
+  /api/auth/logout:
+    post:
+      tags: [Auth]
+      summary: End the session
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+
+  /api/auth/invite/{token}/passkey/options:
+    post:
+      tags: [Auth]
+      summary: Start accepting an invite (or reset link) with a passkey
+      description: Returns WebAuthn registration options. Finish with `POST /api/auth/invite/{token}/passkey/verify`.
+      parameters:
+        - { name: token, in: path, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { username: { type: string, description: Not used by reset links } } }
+      responses:
+        '200': { description: WebAuthn registration options }
+        '410': { description: Invite used or expired }
+
+  /api/auth/invite/{token}/passkey/verify:
+    post:
+      tags: [Auth]
+      summary: Finish accepting an invite with a passkey (sets the session cookie)
+      parameters:
+        - { name: token, in: path, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [response], properties: { response: { type: object, description: RegistrationResponseJSON }, name: { type: string } } }
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+
+  /api/me/password:
+    post:
+      tags: [Auth]
+      summary: Change your password
+      description: Signs this account out everywhere else. Passkey-only accounts set their first password without `current`.
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [password], properties: { current: { type: string }, password: { type: string, minLength: 6 } } }
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+        '401': { description: Wrong current password }
+
+  /api/passkeys:
+    get:
+      tags: [Auth]
+      summary: Your passkeys
+      security: [{ session: [] }]
+      responses:
+        '200':
+          description: Passkeys
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: { type: string }
+                    name: { type: [string, 'null'] }
+                    rpId: { type: string, description: The hostname it works on }
+                    createdAt: { type: integer }
+                    lastUsedAt: { type: [integer, 'null'] }
+
+  /api/passkeys/register/options:
+    post:
+      tags: [Auth]
+      summary: Start adding a passkey to your account
+      security: [{ session: [] }]
+      responses:
+        '200': { description: WebAuthn registration options }
+
+  /api/passkeys/register/verify:
+    post:
+      tags: [Auth]
+      summary: Finish adding a passkey
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [response], properties: { response: { type: object, description: RegistrationResponseJSON }, name: { type: string } } }
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+        '400': { description: No pending challenge, or it expired }
+
+  /api/passkeys/{id}:
+    delete:
+      tags: [Auth]
+      summary: Remove one of your passkeys
+      security: [{ session: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+
+  /api/invites/{id}:
+    delete:
+      tags: [Users]
+      summary: Revoke a pending invite or reset link
+      security: [{ session: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+
+  /api/frames/{id}:
+    parameters:
+      - { $ref: '#/components/parameters/FrameId' }
+    get:
+      tags: [Frames]
+      summary: One frame
+      security: [{ session: [] }]
+      responses:
+        '200': { description: The frame, content: { application/json: { schema: { $ref: '#/components/schemas/Frame' } } } }
+        '404': { description: Unknown frame }
+    patch:
+      tags: [Frames]
+      summary: Change a frame's settings
+      description: |
+        Admins only. Every field is optional. Turning the frame while it shows the welcome picture sends that picture again,
+        drawn the right way round.
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                host: { type: string }
+                orientation: { type: string, enum: [portrait, landscape] }
+                rotate: { type: integer, enum: [90, 270], description: Which way a landscape frame is turned }
+                width: { type: integer }
+                height: { type: integer }
+                pullSchedule: { $ref: '#/components/schemas/Schedule' }
+                bleMac: { type: [string, 'null'], description: BLOOMIN8 Bluetooth address for wake-up }
+                bleAutoWake: { type: boolean }
+                diagonal: { type: [number, 'null'], minimum: 4, maximum: 60, description: Inches; null goes back to the inferred size }
+                appearance: { $ref: '#/components/schemas/FrameAppearance' }
+                config:
+                  type: object
+                  properties:
+                    maxPollMinutes: { type: integer, minimum: 1, maximum: 1440, description: DIY / TRMNL }
+                    notifyUrl: { type: string, description: DIY }
+                    format: { $ref: '#/components/schemas/ImageFormat' }
+                    token: { type: string, description: SwitchBot. Empty keeps the saved one }
+                    secret: { type: string, description: SwitchBot. Empty keeps the saved one }
+                    pill:
+                      description: Colours and opacity of the date and place label. `null` goes back to the defaults.
+                      oneOf: [{ $ref: '#/components/schemas/PillStyle' }, { type: 'null' }]
+                    location:
+                      description: Where this frame is, when not where the hub is. `null` goes back to the hub's location.
+                      oneOf: [{ $ref: '#/components/schemas/Place' }, { type: 'null' }]
+      responses:
+        '200': { description: The frame, content: { application/json: { schema: { $ref: '#/components/schemas/Frame' } } } }
+        '400': { description: Invalid Bluetooth address or diagonal }
+    delete:
+      tags: [Frames]
+      summary: Remove a frame, its schedules and history
+      description: Admins only.
+      security: [{ session: [] }]
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+
+  /api/frames/discover:
+    post:
+      tags: [Frames]
+      summary: Look for BLOOMIN8 frames on the LAN
+      description: Admins only. Frames already added are left out; one found at a new IP keeps its entry and follows the address.
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { subnet: { type: string, example: 192.168.1.0/24 }, scan: { type: boolean, description: Scan the subnet as well as mDNS } } }
+      responses:
+        '200': { description: Frames found, with their host and device info }
+
+  /api/frames/test:
+    post:
+      tags: [Frames]
+      summary: Add a simulated frame that lives inside the hub
+      description: Admins only. For trying things out without hardware.
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { name: { type: string }, orientation: { type: string, enum: [portrait, landscape] } } }
+      responses:
+        '200': { description: The new frame, content: { application/json: { schema: { $ref: '#/components/schemas/Frame' } } } }
+
+  /api/switchbot/devices:
+    post:
+      tags: [Frames]
+      summary: The SwitchBot account's Art Frames not added yet
+      description: Admins only.
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [token, secret], properties: { token: { type: string }, secret: { type: string } } }
+      responses:
+        '200': { description: Devices, each with its `deviceId` }
+
+  /api/ble/status:
+    get:
+      tags: [Frames]
+      summary: Whether the hub can wake frames over Bluetooth
+      security: [{ session: [] }]
+      parameters:
+        - { name: refresh, in: query, schema: { type: string, enum: ['1'] }, description: Probe BlueZ again }
+      responses:
+        '200': { description: Bluetooth status }
+
+  /api/frames/{id}/refresh:
+    post:
+      tags: [Frames]
+      summary: Ask the frame for its state now
+      description: If it answers, anything queued for it is delivered. Pull-only frames return what their last poll said.
+      security: [{ session: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/FrameId' }
+      responses:
+        '200': { description: The frame }
+
+  /api/frames/{id}/device-settings:
+    post:
+      tags: [Frames]
+      summary: Change settings stored on a BLOOMIN8
+      description: Admins only. Wakes the frame over Bluetooth when needed.
+      security: [{ session: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/FrameId' }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                sleep_duration: { type: integer, description: Seconds }
+                max_idle: { type: integer, description: Seconds awake after the last request }
+                idx_wake_sens: { type: integer }
+      responses:
+        '200': { description: The frame }
+        '400': { description: Not a BLOOMIN8 }
+
+  /api/frames/{id}/history:
+    get:
+      tags: [Frames]
+      summary: The last 60 pictures sent to the frame
+      security: [{ session: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/FrameId' }
+      responses:
+        '200':
+          description: Newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: { type: integer }
+                    imageId: { type: [integer, 'null'] }
+                    shownAt: { type: integer }
+                    method: { type: string }
+                    success: { type: [boolean, 'null'], description: null while unconfirmed }
+                    battery: { type: [integer, 'null'] }
+
+  /api/frames/{id}/stats:
+    get:
+      tags: [Frames]
+      summary: Statistics of one frame
+      description: Off, and not recorded, until switched on with `statsEnabled` in the settings.
+      security: [{ session: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/FrameId' }
+      responses:
+        '200':
+          description: '`{ enabled: false }`, or the statistics'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  enabled: { type: boolean }
+                  createdAt: { type: integer }
+                  lastSeen: { type: [integer, 'null'] }
+                  shown: { type: object, properties: { total: { type: integer }, last30Days: { type: integer }, failed: { type: integer } } }
+                  battery:
+                    type: object
+                    properties:
+                      samples: { type: array, items: { type: object, properties: { at: { type: integer }, level: { type: integer } } } }
+                      drainPerDay: { type: [number, 'null'] }
+                      daysLeft: { type: [number, 'null'] }
+
+  /api/frames/{id}/log:
+    get:
+      tags: [Logs]
+      summary: Everything the hub knows about one frame, as a text file
+      description: Admins only. State (without the token), the last 200 pictures shown and the frame's log lines.
+      security: [{ session: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/FrameId' }
+      responses:
+        '200': { description: The file, content: { text/plain: {} } }
+
+  /api/frames/{id}/galleries:
+    get:
+      tags: [BLOOMIN8 device]
+      summary: Galleries stored on the frame, with their pictures
+      security: [{ session: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/FrameId' }
+      responses:
+        '200':
+          description: Galleries
+          content:
+            application/json:
+              schema: { type: array, items: { type: object, properties: { name: { type: string }, total: { type: integer }, images: { type: array, items: { type: object } } } } }
+        '400': { description: Not a BLOOMIN8 }
+
+  /api/frames/{id}/galleries/{name}:
+    delete:
+      tags: [BLOOMIN8 device]
+      summary: Delete a gallery on the frame
+      security: [{ session: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/FrameId' }
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+
+  /api/frames/{id}/galleries/{name}/delete-image:
+    post:
+      tags: [BLOOMIN8 device]
+      summary: Delete one picture of a gallery on the frame
+      security: [{ session: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/FrameId' }
+        - { name: name, in: path, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [image], properties: { image: { type: string } } }
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+
+  /api/frames/{id}/play:
+    post:
+      tags: [BLOOMIN8 device]
+      summary: Show something stored on the frame
+      description: A playlist, one picture of a gallery (`gallery` + `image`) or a whole gallery as a slideshow (`gallery`, every `duration` seconds).
+      security: [{ session: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/FrameId' }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                playlist: { type: string }
+                gallery: { type: string }
+                image: { type: string }
+                duration: { type: integer, default: 3600 }
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+        '400': { description: Nothing to play }
+
+  /api/frames/{id}/playlists:
+    parameters:
+      - { $ref: '#/components/parameters/FrameId' }
+    get:
+      tags: [BLOOMIN8 device]
+      summary: Playlists stored on the frame
+      security: [{ session: [] }]
+      responses:
+        '200': { description: Playlists, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/DevicePlaylist' } } } } }
+    put:
+      tags: [BLOOMIN8 device]
+      summary: Create or replace a playlist on the frame
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DevicePlaylist' }
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+
+  /api/frames/{id}/playlists/{name}:
+    delete:
+      tags: [BLOOMIN8 device]
+      summary: Delete a playlist on the frame
+      security: [{ session: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/FrameId' }
+        - { name: name, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+
+  /api/frames/{id}/pull:
+    parameters:
+      - { $ref: '#/components/parameters/FrameId' }
+    get:
+      tags: [BLOOMIN8 device]
+      summary: The frame's pull-mode settings, as stored on it
+      security: [{ session: [] }]
+      responses:
+        '200': { description: The frame's `upstream_*` settings }
+    post:
+      tags: [BLOOMIN8 device]
+      summary: Switch pull mode on or off
+      description: |
+        Admins only. On: the frame wakes on `pullSchedule` and fetches its picture from `localUrl`
+        (default: the hub's LAN address; `localhost` is refused). Off: back to push.
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [enabled]
+              properties:
+                enabled: { type: boolean }
+                localUrl: { type: string }
+                pullSchedule: { $ref: '#/components/schemas/Schedule' }
+      responses:
+        '200': { description: The frame }
+        '400': { description: No usable address, or not a BLOOMIN8 }
+
+  /api/frames/{frameId}/assignments:
+    parameters:
+      - { $ref: '#/components/parameters/ScheduleFrameId' }
+    get:
+      tags: [Schedules]
+      summary: The frame's schedules
+      security: [{ session: [] }]
+      responses:
+        '200': { description: Schedules, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Assignment' } } } } }
+    post:
+      tags: [Schedules]
+      summary: Add a schedule to the frame
+      description: |
+        A frame can have several schedules; each one changes the picture on its own. A new one next to others starts
+        counting from now, so it doesn't replace the picture as soon as it is saved. Two enabled schedules of the same
+        frame can't change at the same minute (`409`); less than 12 hours apart is allowed and comes back as a warning.
+      security: [{ session: [] }]
+      requestBody:
+        content: { application/json: { schema: { $ref: '#/components/schemas/AssignmentInput' } } }
+      responses:
+        '200': { $ref: '#/components/responses/SavedAssignment' }
+        '409': { description: It changes at the same minute as another schedule of the frame }
+
+  /api/assignments:
+    get:
+      tags: [Schedules]
+      summary: Every schedule of every frame
+      security: [{ session: [] }]
+      responses:
+        '200': { description: Schedules, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Assignment' } } } } }
+
+  /api/assignments/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: integer } }
+    put:
+      tags: [Schedules]
+      summary: Change a schedule
+      description: |
+        Fields left out keep their value for `showLocation`, `hideHomeCountry`, `matchOrientation` and `enabled`;
+        the rest go back to their defaults. A new collection changes the picture right away, new timing starts counting
+        from now, anything else keeps the pending change time.
+      security: [{ session: [] }]
+      requestBody:
+        content: { application/json: { schema: { $ref: '#/components/schemas/AssignmentInput' } } }
+      responses:
+        '200': { $ref: '#/components/responses/SavedAssignment' }
+        '409': { description: It changes at the same minute as another schedule of the frame }
+    patch:
+      tags: [Schedules]
+      summary: Pause or resume a schedule
+      description: A change that fell due while paused starts counting again from now. Resuming one that would clash is refused.
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { enabled: { type: boolean } } }
+      responses:
+        '200': { description: The schedule, content: { application/json: { schema: { $ref: '#/components/schemas/Assignment' } } } }
+        '409': { description: It would change at the same minute as another schedule }
+    delete:
+      tags: [Schedules]
+      summary: Delete a schedule
+      security: [{ session: [] }]
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+
+  /api/frames/{frameId}/assignment:
+    parameters:
+      - { $ref: '#/components/parameters/ScheduleFrameId' }
+    put:
+      tags: [Schedules]
+      summary: Create or change the frame's oldest schedule
+      deprecated: true
+      description: For clients from before several schedules per frame. Use `/api/frames/{frameId}/assignments` and `/api/assignments/{id}`.
+      security: [{ session: [] }]
+      requestBody:
+        content: { application/json: { schema: { $ref: '#/components/schemas/AssignmentInput' } } }
+      responses:
+        '200': { description: The schedule, content: { application/json: { schema: { $ref: '#/components/schemas/Assignment' } } } }
+    patch:
+      tags: [Schedules]
+      summary: Pause or resume the frame's oldest schedule
+      deprecated: true
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { enabled: { type: boolean } } }
+      responses:
+        '200': { description: The schedule, or null if the frame has none }
+    delete:
+      tags: [Schedules]
+      summary: Delete the frame's oldest schedule (not all of them)
+      deprecated: true
+      security: [{ session: [] }]
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+
+  /api/frames/{frameId}/overview:
+    get:
+      tags: [Schedules]
+      summary: The frame's coming changes, per day (the week view)
+      security: [{ session: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/ScheduleFrameId' }
+        - { name: days, in: query, schema: { type: integer, minimum: 1, maximum: 31, default: 7 } }
+      responses:
+        '200':
+          description: One entry per day, starting today
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    date: { type: string, description: Local date, YYYY-MM-DD }
+                    items:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          at: { type: integer }
+                          assignmentId: { type: integer }
+                          collectionId: { type: integer }
+                          collection: { type: string, description: The collection's name }
+                          pending: { type: boolean, description: Already due; it happens when the frame next responds or wakes }
+
+  /api/schedule/preview:
+    post:
+      tags: [Schedules]
+      summary: Check a schedule and get its next three changes
+      description: |
+        With `frameId` (and `assignmentId` when editing one) it is also compared with the frame's other enabled schedules:
+        the same minute comes back as `ok: false` with `error`, less than 12 hours apart as `close`.
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [schedule]
+              properties:
+                schedule: { $ref: '#/components/schemas/Schedule' }
+                activeFrom: { type: [string, 'null'], example: '08:00' }
+                activeTo: { type: [string, 'null'], example: '22:00' }
+                frameId: { type: integer }
+                assignmentId: { type: integer }
+                collectionId: { type: integer }
+                enabled: { type: boolean }
+      responses:
+        '200':
+          description: The check
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  error: { type: string, description: Translated, when `ok` is false }
+                  next: { type: array, items: { type: integer } }
+                  frequent: { type: boolean, description: Changes less than 12 hours apart (battery warning) }
+                  close:
+                    type: object
+                    description: Another schedule of the frame changes less than 12 hours away
+                    properties: { minutes: { type: integer }, otherAt: { type: integer }, collection: { type: string } }
+
+  /api/collections:
+    get:
+      tags: [Collections]
+      summary: Every collection
+      security: [{ session: [] }]
+      responses:
+        '200': { description: Sorted by name, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Collection' } } } } }
+    post:
+      tags: [Collections]
+      summary: Create a collection
+      description: Immich collections are synced right away.
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, type]
+              properties:
+                name: { type: string }
+                type: { $ref: '#/components/schemas/CollectionType' }
+                config: { $ref: '#/components/schemas/CollectionConfig' }
+                imageIds: { type: array, items: { type: integer }, description: Manual collections }
+      responses:
+        '200': { description: The collection, content: { application/json: { schema: { $ref: '#/components/schemas/Collection' } } } }
+        '400': { description: Missing name or unknown type }
+
+  /api/collections/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: integer } }
+    patch:
+      tags: [Collections]
+      summary: Rename a collection or change what it follows
+      description: A new `config` re-syncs an Immich collection.
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, properties: { name: { type: string }, config: { $ref: '#/components/schemas/CollectionConfig' } } }
+      responses:
+        '200': { description: The collection, content: { application/json: { schema: { $ref: '#/components/schemas/Collection' } } } }
+    delete:
+      tags: [Collections]
+      summary: Delete a collection and the schedules that use it
+      description: The photos stay in the library.
+      security: [{ session: [] }]
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+
+  /api/collections/{id}/sync:
+    post:
+      tags: [Collections]
+      summary: Sync an Immich collection now
+      security: [{ session: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200': { description: The collection, content: { application/json: { schema: { $ref: '#/components/schemas/Collection' } } } }
+
+  /api/collections/{id}/items:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: integer } }
+    post:
+      tags: [Collections]
+      summary: Add photos to a manual collection
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [imageIds], properties: { imageIds: { type: array, items: { type: integer } } } }
+      responses:
+        '200': { description: The collection, content: { application/json: { schema: { $ref: '#/components/schemas/Collection' } } } }
+        '400': { description: Not a manual collection }
+    delete:
+      tags: [Collections]
+      summary: Take photos out of a collection
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [imageIds], properties: { imageIds: { type: array, items: { type: integer } } } }
+      responses:
+        '200': { description: The collection, content: { application/json: { schema: { $ref: '#/components/schemas/Collection' } } } }
+
+  /api/images/{id}:
+    delete:
+      tags: [Library]
+      summary: Delete a photo from the library
+      description: An uploaded file is deleted; an Immich photo is only forgotten by the hub.
+      security: [{ session: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+
+  /api/images/{id}/thumb:
+    get:
+      tags: [Library]
+      summary: Thumbnail of a photo
+      security: [{ session: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200': { description: JPEG, content: { image/jpeg: {} } }
+
+  /api/images/{id}/preview:
+    get:
+      tags: [Library]
+      summary: Large preview of a photo (up to 1600 px), for the crop editor
+      security: [{ session: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200': { description: JPEG, content: { image/jpeg: {} } }
+
+  /api/images/{id}/crop:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: integer } }
+    get:
+      tags: [Library]
+      summary: The crop saved for a frame's shape
+      security: [{ session: [] }]
+      parameters:
+        - { name: frameId, in: query, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: The frame's aspect ratio and the saved crop, or null
+          content:
+            application/json:
+              schema: { type: object, properties: { aspect: { type: number }, crop: { oneOf: [{ $ref: '#/components/schemas/Crop' }, { type: 'null' }] } } }
+    put:
+      tags: [Library]
+      summary: Save a crop for a frame's shape
+      description: Frames with the same aspect ratio share it. `null` removes it (back to smart crop).
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [frameId, crop]
+              properties:
+                frameId: { type: integer }
+                crop: { oneOf: [{ $ref: '#/components/schemas/Crop' }, { type: 'null' }] }
+      responses:
+        '200': { $ref: '#/components/responses/Ok' }
+
+  /api/render/preview:
+    post:
+      tags: [Library]
+      summary: Exactly what a frame would receive
+      description: Rendered with the frame's size, palette and label settings, shown the way the frame hangs.
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - { $ref: '#/components/schemas/DisplayOptions' }
+                - { type: object, required: [imageId, frameId], properties: { imageId: { type: integer }, frameId: { type: integer } } }
+      responses:
+        '200': { description: The picture, content: { image/jpeg: {}, image/png: {}, image/bmp: {} } }
+
+  /api/renders/{hash}:
+    get:
+      tags: [Library]
+      summary: A picture rendered earlier
+      security: [{ session: [] }]
+      parameters:
+        - { name: hash, in: path, required: true, schema: { type: string, pattern: '^[a-f0-9]{40}$' } }
+      responses:
+        '200': { description: The picture, content: { image/jpeg: {}, image/png: {}, image/bmp: {} } }
+        '404': { description: Not rendered, or cleaned up }
+
+  /api/immich/status:
+    get:
+      tags: [Immich]
+      summary: Whether Immich is set up and answering
+      security: [{ session: [] }]
+      responses:
+        '200':
+          description: Status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  configured: { type: boolean }
+                  ok: { type: boolean }
+                  user: { type: object, properties: { name: { type: string }, email: { type: string } } }
+                  version: { type: [object, 'null'], properties: { major: { type: integer }, minor: { type: integer }, patch: { type: integer } } }
+                  error: { type: string }
+
+  /api/immich/albums:
+    get:
+      tags: [Immich]
+      summary: Albums with photos, by name
+      security: [{ session: [] }]
+      responses:
+        '200':
+          description: Albums
+          content:
+            application/json:
+              schema: { type: array, items: { type: object, properties: { id: { type: string }, name: { type: string }, count: { type: integer }, thumbAssetId: { type: [string, 'null'] } } } }
+
+  /api/immich/people:
+    get:
+      tags: [Immich]
+      summary: People, named ones first
+      security: [{ session: [] }]
+      responses:
+        '200':
+          description: People
+          content: { application/json: { schema: { type: array, items: { type: object, properties: { id: { type: string }, name: { type: string } } } } } }
+
+  /api/immich/people/{id}/thumbnail:
+    get:
+      tags: [Immich]
+      summary: A person's face
+      security: [{ session: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: The picture, content: { image/jpeg: {} } }
+
+  /api/immich/assets/{id}/thumbnail:
+    get:
+      tags: [Immich]
+      summary: Thumbnail of an Immich photo
+      security: [{ session: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: size, in: query, schema: { type: string, enum: [thumbnail, preview], default: thumbnail } }
+      responses:
+        '200': { description: The picture, content: { image/jpeg: {}, image/webp: {} } }
+
+  /api/immich/search:
+    post:
+      tags: [Immich]
+      summary: Search Immich photos
+      description: '`smart` searches by meaning (`query`); `metadata` filters by album, people or favourites. `all` with an album returns the whole album at once.'
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [kind]
+              properties:
+                kind: { type: string, enum: [smart, metadata] }
+                query: { type: string }
+                albumId: { type: string }
+                personIds: { type: array, items: { type: string } }
+                favorites: { type: boolean }
+                page: { type: integer, minimum: 1, default: 1 }
+                all: { type: boolean }
+      responses:
+        '200':
+          description: 100 photos per page
+          content:
+            application/json:
+              schema: { type: object, properties: { items: { type: array, items: { $ref: '#/components/schemas/ImmichAsset' } }, nextPage: { type: [integer, 'null'] } } }
+
+  /api/immich/memories:
+    get:
+      tags: [Immich]
+      summary: Today's "On this day" memories
+      security: [{ session: [] }]
+      responses:
+        '200':
+          description: Memories
+          content:
+            application/json:
+              schema: { type: array, items: { type: object, properties: { id: { type: string }, year: { type: integer }, assets: { type: array, items: { $ref: '#/components/schemas/ImmichAsset' } } } } }
+
+  /api/immich/import:
+    post:
+      tags: [Immich]
+      summary: Bring Immich photos into the hub, and optionally into a collection or onto a frame
+      description: The hub keeps references, not copies. With `frameId`, the first photo is shown there.
+      security: [{ session: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [assetIds]
+              properties:
+                assetIds: { type: array, items: { type: string } }
+                collectionId: { type: integer }
+                frameId: { type: integer }
+                fit: { $ref: '#/components/schemas/Fit' }
+                bg: { type: string, example: '#ffffff' }
+      responses:
+        '200':
+          description: The hub's image ids, and the result of showing it
+          content:
+            application/json:
+              schema: { type: object, properties: { imageIds: { type: array, items: { type: integer } }, display: { type: object } } }
+        '400': { description: No photos }
+
+  /api/logs:
+    get:
+      tags: [Logs]
+      summary: Recent log lines of the hub
+      description: Admins only.
+      security: [{ session: [] }]
+      parameters:
+        - { name: level, in: query, schema: { type: string, enum: [debug, info, warn, error] } }
+        - { name: frame, in: query, schema: { type: integer }, description: Only this frame's lines }
+        - { name: q, in: query, schema: { type: string }, description: Text to look for }
+        - { name: limit, in: query, schema: { type: integer, default: 500, maximum: 2000 } }
+      responses:
+        '200': { description: Log entries, newest last }
+
+  /api/logs/download:
+    get:
+      tags: [Logs]
+      summary: The hub's log as a text file
+      description: Admins only.
+      security: [{ session: [] }]
+      parameters:
+        - { name: level, in: query, schema: { type: string, enum: [debug, info, warn, error], default: debug } }
+      responses:
+        '200': { description: The file, content: { text/plain: {} } }
 
 components:
   securitySchemes:
@@ -449,6 +1560,32 @@ components:
       type: apiKey
       in: cookie
       name: b8hub_session
+  parameters:
+    FrameId: { name: id, in: path, required: true, schema: { type: integer } }
+    ScheduleFrameId: { name: frameId, in: path, required: true, schema: { type: integer } }
+  responses:
+    Ok:
+      description: Done
+      content: { application/json: { schema: { type: object, properties: { ok: { const: true } } } } }
+    SavedAssignment:
+      description: The schedule, and a warning when another schedule of the frame changes less than 12 hours away
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              assignment: { $ref: '#/components/schemas/Assignment' }
+              warnings:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    kind: { const: close }
+                    minutes: { type: integer }
+                    at: { type: integer }
+                    otherAt: { type: integer }
+                    otherAssignmentId: { type: integer }
+                    otherCollectionId: { type: integer }
   schemas:
     Role:
       type: string
@@ -499,13 +1636,7 @@ components:
         orientation: { type: string, enum: [portrait, landscape] }
         diagonal: { type: [number, 'null'], description: 'Screen diagonal in inches: set by hand, or inferred from the model / resolution' }
         diagonalInferred: { type: boolean }
-        appearance:
-          type: object
-          description: How the frame looks in the app's mockups. Missing keys use the defaults (mat, black, thin).
-          properties:
-            mat: { type: boolean, description: Passe-partout }
-            color: { type: string, enum: [black, white, walnut, oak, natural] }
-            style: { type: string, enum: [thin, thick, classic] }
+        appearance: { $ref: '#/components/schemas/FrameAppearance' }
         battery: { type: [integer, 'null'] }
         online: { type: boolean }
         lastSeen: { type: [integer, 'null'] }
@@ -519,3 +1650,135 @@ components:
         config:
           type: object
           description: Per-kind settings. Secrets are never returned.
+          properties:
+            pill: { $ref: '#/components/schemas/PillStyle' }
+            location: { $ref: '#/components/schemas/Place' }
+        assignments: { type: array, items: { $ref: '#/components/schemas/Assignment' }, description: All its schedules }
+        assignment: { oneOf: [{ $ref: '#/components/schemas/Assignment' }, { type: 'null' }], description: The schedule that changes next (for clients with one schedule per frame) }
+        simulated: { type: boolean, description: A test frame living inside the hub }
+    Fit:
+      type: string
+      enum: [cover, contain, blur]
+      description: '`cover` crops (smart or saved crop), `contain` fits with a border of `bg`, `blur` fits on a blurred copy'
+    LocationMode:
+      type: string
+      enum: ['off', city, city_country]
+    Crop:
+      type: object
+      description: Fractions (0–1) of the photo
+      properties: { x: { type: number }, y: { type: number }, w: { type: number }, h: { type: number } }
+    DisplayOptions:
+      type: object
+      properties:
+        fit: { $ref: '#/components/schemas/Fit' }
+        bg: { type: string, example: '#ffffff', description: Border colour for `contain` }
+        crop: { oneOf: [{ $ref: '#/components/schemas/Crop' }, { type: 'null' }], description: 'For `cover`: this crop instead of the saved or smart one' }
+        showDate: { type: boolean, description: Label with the date the photo was taken }
+        showLocation: { $ref: '#/components/schemas/LocationMode', description: 'Label with where it was taken (Immich photos, or uploads with GPS data)' }
+        hideHomeCountry: { type: boolean, description: "Leave the country out for photos taken in the country of the frame's (or hub's) location" }
+    Place:
+      type: object
+      required: [name, latitude, longitude]
+      properties:
+        name: { type: string, example: Bilbao }
+        region: { type: string, example: Basque Country, description: "'' when unknown" }
+        country: { type: string, example: Spain, description: English name, as Immich names it }
+        countryCode: { type: string, example: ES }
+        latitude: { type: number }
+        longitude: { type: number }
+    PillStyle:
+      type: object
+      description: Colours of the date and place label. Default white and solid.
+      properties:
+        bg: { type: string, example: '#ffffff', description: '"#rrggbb", or "auto" to pick light or dark from the photo under the label' }
+        text: { type: string, example: '#1d1c1a', description: Ignored when `bg` is "auto" }
+        opacity: { type: integer, minimum: 10, maximum: 100 }
+    FrameAppearance:
+      type: object
+      description: How the frame looks in the app's mockups. Missing keys use the defaults (mat, black, thin).
+      properties:
+        mat: { type: boolean, description: Passe-partout }
+        color: { type: string, enum: [black, white, walnut, oak, natural] }
+        style: { type: string, enum: [thin, thick, classic] }
+    Schedule:
+      description: 'When a schedule changes the picture. `at` is local time, HH:MM.'
+      oneOf:
+        - { type: object, required: [kind, hours], properties: { kind: { const: interval }, hours: { enum: [1, 3, 6, 12] } } }
+        - { type: object, required: [kind, days, at], properties: { kind: { const: days }, days: { enum: [1, 2, 3] }, at: { type: string, example: '07:00' } } }
+        - { type: object, required: [kind, weeks, weekday, at], properties: { kind: { const: weeks }, weeks: { enum: [1, 2] }, weekday: { type: integer, minimum: 0, maximum: 6, description: 0 = Sunday }, at: { type: string } } }
+        - { type: object, required: [kind, day, at], properties: { kind: { const: monthly }, day: { type: integer, minimum: 1, maximum: 28 }, at: { type: string } } }
+        - { type: object, required: [kind, expr], properties: { kind: { const: cron }, expr: { type: string, example: '0 20 * * *' } } }
+    AssignmentInput:
+      type: object
+      required: [collectionId]
+      description: One schedule of a frame. "On this day" collections always change daily at midnight, in random order, with the date.
+      properties:
+        collectionId: { type: integer }
+        schedule: { $ref: '#/components/schemas/Schedule' }
+        orderMode: { type: string, enum: [random, sequential, newest], default: random }
+        activeFrom: { type: [string, 'null'], example: '08:00', description: Hourly schedules only }
+        activeTo: { type: [string, 'null'], example: '22:00', description: Hourly schedules only }
+        fit: { $ref: '#/components/schemas/Fit' }
+        bg: { type: string, default: '#ffffff' }
+        showDate: { type: boolean }
+        showLocation: { $ref: '#/components/schemas/LocationMode' }
+        hideHomeCountry: { type: boolean }
+        matchOrientation: { type: boolean, description: 'Only pick photos that suit the way the frame hangs; if none fit, all are used' }
+        enabled: { type: boolean, default: true }
+    Assignment:
+      allOf:
+        - { $ref: '#/components/schemas/AssignmentInput' }
+        - type: object
+          properties:
+            id: { type: integer }
+            frameId: { type: integer }
+            nextChange: { type: [integer, 'null'], description: 'When it changes next (ms); null = as soon as possible' }
+            lastChange: { type: [integer, 'null'] }
+    CollectionType:
+      type: string
+      enum: [manual, immich_album, immich_person, immich_favorites, immich_smart, immich_memories]
+    CollectionConfig:
+      type: object
+      description: 'What an Immich collection follows: `albumId`, `personIds`, or `query` for smart search.'
+      additionalProperties: true
+    Collection:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        type: { $ref: '#/components/schemas/CollectionType' }
+        config: { $ref: '#/components/schemas/CollectionConfig' }
+        lastSync: { type: [integer, 'null'] }
+        syncError: { type: [string, 'null'] }
+        itemCount: { type: integer }
+        createdAt: { type: integer }
+        coverImageId: { type: [integer, 'null'], description: Only in the list }
+    Image:
+      type: object
+      properties:
+        id: { type: integer }
+        source: { type: string, enum: [local, immich] }
+        immichAssetId: { type: [string, 'null'] }
+        originalName: { type: [string, 'null'] }
+        width: { type: [integer, 'null'] }
+        height: { type: [integer, 'null'] }
+        takenAt: { type: [integer, 'null'] }
+        city: { type: [string, 'null'], description: "null = not looked up yet, '' = no location" }
+        country: { type: [string, 'null'] }
+        favorite: { type: boolean }
+        createdAt: { type: integer }
+    ImmichAsset:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        takenAt: { type: string }
+        favorite: { type: boolean }
+        thumbhash: { type: [string, 'null'] }
+        orientation: { type: [string, 'null'], enum: [portrait, landscape, square, null] }
+    DevicePlaylist:
+      type: object
+      properties:
+        name: { type: string }
+        type: { type: string, example: duration }
+        list: { type: array, items: { type: object } }
