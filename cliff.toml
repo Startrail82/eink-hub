@@ -19,10 +19,13 @@ one written by hand: it summarises everything before the first release.
 #
 # Commits by anyone other than the maintainer get "by @user" (looked up on
 # GitHub, see [remote.github]), and people whose first pull request lands in
-# this version are listed under "New contributors". Bots are not credited.
+# this version are listed under "New contributors". Bots are not credited, nor
+# is the `claude` account: GitHub maps commits written by Claude Code
+# (author noreply@anthropic.com) to it, though the person who opened the pull
+# request wrote them.
 # Mentions are links because a bare @user isn't linked inside a file;
 # scripts/release-notes.mjs turns them back into @user for the Release page.
-body = """{% macro credited(user) %}{% if user and user != "yayitazale" and user is not ending_with("[bot]") %}true{% endif %}{% endmacro credited %}\
+body = """{% macro credited(user) %}{% if user and user != "yayitazale" and user != "claude" and user is not ending_with("[bot]") %}true{% endif %}{% endmacro credited %}\
 {% if version %}## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}{% else %}## [Unreleased]{% endif %}
 {% for group, commits in commits | group_by(attribute="group") %}
 ### {{ group | striptags | trim }}
