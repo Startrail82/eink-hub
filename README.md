@@ -13,7 +13,8 @@ Self-hosted control center for e-ink photo frames, with **Immich** integration. 
 
 - Exact previews with smart crop, manual crop, border or blurred background
 - Collections from uploads or Immich (albums, people, favourites, smart search, "on this day")
-- Schedules with active hours; battery-friendly pull mode; Bluetooth wake for BLOOMIN8
+- Several schedules per frame with active hours and a week view; battery-friendly pull mode; Bluetooth wake for BLOOMIN8
+- A date and place label on photos, with an offline place lookup (nothing sent to outside services)
 - An open protocol for DIY frames, with ESP32 and Raspberry Pi [examples](examples)
 
 ![My Canvases: every frame with its current photo, battery and status](docs-site/public/screenshots/canvases.webp)
