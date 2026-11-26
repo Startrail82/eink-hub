@@ -13,7 +13,7 @@ The version in the bottom left shows `FR<n>`: the highest feature number include
 | FR6 | Weather of a later hour | `feat/ai-weather-offset` |
 | FR7 | Negative prompt per ComfyUI collection | `feat/ai-negative-prompt` |
 | FR8 | Random choices in prompts | `feat/ai-random-choice` |
-| FR9 | Only pick pictures that suit the Canvas | `feat/match-orientation` |
+| FR9 | Only pick pictures that suit the Canvas (merged upstream) | `feat/match-orientation` |
 
 When a feature is merged into `deploy`, raise `FORK_FEATURE` in `apps/web/src/lib/fork.ts`.
 Changes are always made in the feature branch first and then merged into `deploy`, never directly in `deploy`.
