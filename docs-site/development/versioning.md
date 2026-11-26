@@ -164,7 +164,9 @@ Nothing needs installing: the script calls `npx git-cliff@2`.
 
 git-cliff asks GitHub who wrote each commit. Entries by anyone other than the
 maintainer end with `by @user`, and people whose first pull request is in the
-release are listed under **New contributors**. Bots aren't credited. In
+release are listed under **New contributors**. Bots aren't credited, and
+neither is the `claude` account, which GitHub gives to commits written by
+Claude Code (author `noreply@anthropic.com`). In
 `CHANGELOG.md` the mentions are links; on the GitHub Release they become plain
 `@user` mentions, so GitHub shows the contributors with their avatars.
 
