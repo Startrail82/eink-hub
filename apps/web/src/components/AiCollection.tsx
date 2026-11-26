@@ -59,7 +59,8 @@ function TagChips({ tags, onPick }: { tags: string[]; onPick: (tag: string) => v
 function configOf(c?: Collection): AiCollectionConfig {
   const raw = (c?.config ?? {}) as Partial<AiCollectionConfig>;
   return {
-    source: raw.source ?? 'prompt',
+    // Collections saved by an earlier test version with another source open as a plain prompt.
+    source: raw.source === 'rss' ? 'rss' : 'prompt',
     prompt: raw.prompt ?? '',
     weatherOffset: Math.min(47, Math.max(0, Math.floor(Number(raw.weatherOffset) || 0))),
     negative: raw.negative ?? '',
