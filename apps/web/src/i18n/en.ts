@@ -577,6 +577,8 @@ export const en: Messages = {
   'week.empty_day': 'No changes',
   'week.none': 'This Canvas has no active schedules.',
   'plan.add': 'Add schedule',
+  'assign.match_orientation': 'Only pictures that suit the Canvas',
+  'assign.match_orientation_hint': 'On a portrait Canvas only upright pictures are chosen, on a landscape Canvas only wide ones. Square ones suit both. If none fit, all pictures are used.',
   'schedule.close_warning': '"{name}" changes this Canvas’s picture at {time}, only {gap} apart.',
   'canvasSettings.pill_title': 'Date label',
   'canvasSettings.pill_hint': 'Colours and opacity of the date (and place) label drawn on this Canvas\'s pictures. By default it is white and solid; a see-through label can look grainy on colour e-ink.',

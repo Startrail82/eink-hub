@@ -577,6 +577,8 @@ export const de: Catalogue = {
   'week.empty_day': 'Keine Wechsel',
   'week.none': 'Dieses Canvas hat keine aktiven Zeitpläne.',
   'plan.add': 'Zeitplan hinzufügen',
+  'assign.match_orientation': 'Nur Bilder, die zum Canvas passen',
+  'assign.match_orientation_hint': 'Bei einem Hochformat-Canvas werden nur Hochformat-Bilder gewählt, bei einem Querformat-Canvas nur Querformat-Bilder. Quadratische passen zu beiden. Passt keines, werden alle verwendet.',
   'schedule.close_warning': '„{name}“ wechselt das Bild dieses Canvas um {time}, nur {gap} entfernt.',
   'canvasSettings.pill_title': 'Datumsetikett',
   'canvasSettings.pill_hint': 'Farben und Deckkraft des Datums- (und Orts-)Etiketts auf den Bildern dieses Canvas. Standard ist weiß und deckend; ein durchscheinendes Etikett kann auf Farb-E-Ink körnig wirken.',

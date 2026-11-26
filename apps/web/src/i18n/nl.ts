@@ -577,6 +577,8 @@ export const nl: Catalogue = {
   'week.empty_day': 'Geen wissels',
   'week.none': 'Dit Canvas heeft geen actieve planningen.',
   'plan.add': 'Planning toevoegen',
+  'assign.match_orientation': 'Alleen foto\'s die bij het Canvas passen',
+  'assign.match_orientation_hint': 'Op een staand Canvas worden alleen staande foto\'s gekozen, op een liggend Canvas alleen liggende. Vierkante passen bij beide. Past er geen enkele, dan worden ze allemaal gebruikt.',
   'schedule.close_warning': '‘{name}’ wisselt de foto van dit Canvas om {time}, slechts {gap} verschil.',
   'canvasSettings.pill_title': 'Datumlabel',
   'canvasSettings.pill_hint': 'Kleuren en dekking van het datum- (en plaats)label op de afbeeldingen van dit Canvas. Standaard is het wit en ondoorzichtig; een doorzichtig label kan er korrelig uitzien op kleuren-e-ink.',

@@ -76,6 +76,7 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
   const [showDate, setShowDate] = useState(a?.showDate ?? false);
   const [showLocation, setShowLocation] = useState<LocationMode>(a?.showLocation ?? 'off');
   const [hideHome, setHideHome] = useState(a?.hideHomeCountry ?? false);
+  const [matchOrientation, setMatchOrientation] = useState(a?.matchOrientation ?? false);
   const [enabled, setEnabled] = useState(a?.enabled ?? true);
 
   const collection = collections.data?.find((c) => c.id === collectionId);
@@ -103,6 +104,7 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
         showDate,
         showLocation,
         hideHomeCountry: hideHome,
+        matchOrientation,
         enabled,
       };
       return a
@@ -196,6 +198,14 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
                 <BgPicker value={bg} onChange={setBg} />
               </div>
             )}
+            {/* Same heading style as the fields around it, not the bolder toggle style. */}
+            <label className="mt-4 flex items-center justify-between gap-3">
+              <span className="min-w-0">
+                <span className="mb-1.5 block text-[13px] font-semibold text-ink-2">{t('assign.match_orientation')}</span>
+                <span className="block text-xs text-muted">{t('assign.match_orientation_hint')}</span>
+              </span>
+              <input type="checkbox" className="size-5 shrink-0 accent-[var(--ink)]" checked={matchOrientation} onChange={(e) => setMatchOrientation(e.target.checked)} />
+            </label>
           </Field>
 
           <CaptionOptions

@@ -577,6 +577,8 @@ export const eu: Messages = {
   'week.empty_day': 'Aldaketarik ez',
   'week.none': 'Canvas honek ez du programazio aktiborik.',
   'plan.add': 'Gehitu programazioa',
+  'assign.match_orientation': 'Canvasari egokitzen zaizkion argazkiak soilik',
+  'assign.match_orientation_hint': 'Canvas bertikal batean argazki bertikalak bakarrik hautatzen dira, eta horizontal batean horizontalak. Karratuak biei egokitzen zaizkie. Bat ere egokitzen ez bada, guztiak erabiltzen dira.',
   'schedule.close_warning': '«{name}»(e)k Canvas honen argazkia {time}etan aldatzen du, {gap} besterik ez.',
   'canvasSettings.pill_title': 'Data etiketa',
   'canvasSettings.pill_hint': 'Canvas honetako irudien gainean marrazten den data (eta lekua) etiketaren koloreak eta opakotasuna. Lehenespenez zuria eta opakoa da; etiketa gardena koloretako e-inkean ale-ale ager daiteke.',

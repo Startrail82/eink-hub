@@ -577,6 +577,8 @@ export const zh: Catalogue = {
   'week.empty_day': '无切换',
   'week.none': '此 Canvas 没有启用的计划。',
   'plan.add': '添加计划',
+  'assign.match_orientation': '仅使用适合 Canvas 的照片',
+  'assign.match_orientation_hint': '竖向 Canvas 只选竖向照片，横向 Canvas 只选横向照片。方形照片两者都适用。如果没有合适的，则使用全部照片。',
   'schedule.close_warning': '「{name}」在 {time} 切换此 Canvas 的照片，仅相差 {gap}。',
   'canvasSettings.pill_title': '日期标签',
   'canvasSettings.pill_hint': '此 Canvas 图片上绘制的日期（和地点）标签的颜色与不透明度。默认是白色不透明；半透明标签在彩色墨水屏上可能显得有颗粒感。',

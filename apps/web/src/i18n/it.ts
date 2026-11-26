@@ -577,6 +577,8 @@ export const it: Catalogue = {
   'week.empty_day': 'Nessun cambio',
   'week.none': 'Questo Canvas non ha programmazioni attive.',
   'plan.add': 'Aggiungi programmazione',
+  'assign.match_orientation': 'Solo foto adatte al Canvas',
+  'assign.match_orientation_hint': 'Su un Canvas verticale si scelgono solo foto verticali, su uno orizzontale solo foto orizzontali. Quelle quadrate vanno bene per entrambi. Se nessuna è adatta, si usano tutte.',
   'schedule.close_warning': '«{name}» cambia l’immagine di questo Canvas alle {time}, a soli {gap}.',
   'canvasSettings.pill_title': 'Etichetta della data',
   'canvasSettings.pill_hint': 'Colori e opacità dell\'etichetta con la data (e il luogo) disegnata sulle immagini di questo Canvas. Di default è bianca e opaca; un\'etichetta traslucida può apparire granulosa su e-ink a colori.',

@@ -593,6 +593,8 @@ export const cs: Catalogue = {
   'week.empty_day': 'Žádné změny',
   'week.none': 'Tento Canvas nemá žádné aktivní plány.',
   'plan.add': 'Přidat plán',
+  'assign.match_orientation': 'Jen fotky vhodné pro Canvas',
+  'assign.match_orientation_hint': 'Na Canvasu na výšku se vybírají jen fotky na výšku, na Canvasu na šířku jen fotky na šířku. Čtvercové se hodí pro oba. Pokud žádná nevyhovuje, použijí se všechny.',
   'schedule.close_warning': '„{name}“ mění obrázek tohoto Canvasu v {time}, jen {gap} od tohoto.',
   'canvasSettings.pill_title': 'Štítek s datem',
   'canvasSettings.pill_hint': 'Barvy a krytí štítku s datem (a místem), který se kreslí na obrázky tohoto Canvasu. Výchozí je bílý a nepropustný; průhledný štítek může na barevném e-inku působit zrnitě.',

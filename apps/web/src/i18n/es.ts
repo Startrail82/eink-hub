@@ -576,6 +576,8 @@ export const es = {
   'week.empty_day': 'Sin cambios',
   'week.none': 'Este Canvas no tiene programaciones activas.',
   'plan.add': 'Añadir programación',
+  'assign.match_orientation': 'Solo fotos que encajen con el Canvas',
+  'assign.match_orientation_hint': 'Con un Canvas vertical solo se eligen fotos verticales, y con uno horizontal solo fotos horizontales. Las cuadradas valen para ambos. Si no hay ninguna que encaje, se usan todas.',
   'schedule.close_warning': '«{name}» cambia la foto de este Canvas a las {time}, a solo {gap}.',
   'canvasSettings.pill_title': 'Etiqueta de fecha',
   'canvasSettings.pill_hint': 'Colores y opacidad de la etiqueta con la fecha (y el lugar) que se dibuja sobre las imágenes de este Canvas. Por defecto es blanca y opaca; una etiqueta translúcida puede verse granulada en e-ink en color.',

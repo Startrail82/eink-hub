@@ -577,6 +577,8 @@ export const ja: Catalogue = {
   'week.empty_day': '切り替えなし',
   'week.none': 'このCanvasには有効なスケジュールがありません。',
   'plan.add': 'スケジュールを追加',
+  'assign.match_orientation': 'Canvas に合う写真だけを使う',
+  'assign.match_orientation_hint': '縦向きの Canvas では縦向きの写真だけ、横向きの Canvas では横向きの写真だけを選びます。正方形はどちらにも使えます。合う写真がなければすべてを使います。',
   'schedule.close_warning': '「{name}」がこのCanvasの写真を{time}に切り替えます（わずか{gap}差）。',
   'canvasSettings.pill_title': '日付ラベル',
   'canvasSettings.pill_hint': 'この Canvas の画像に描かれる日付（と場所）ラベルの色と不透明度。初期設定は白の不透明です。半透明にするとカラー e-ink ではざらついて見えることがあります。',

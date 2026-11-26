@@ -577,6 +577,8 @@ export const ko: Catalogue = {
   'week.empty_day': '변경 없음',
   'week.none': '이 Canvas에는 활성 일정이 없습니다.',
   'plan.add': '일정 추가',
+  'assign.match_orientation': 'Canvas에 맞는 사진만 사용',
+  'assign.match_orientation_hint': '세로형 Canvas에서는 세로 사진만, 가로형 Canvas에서는 가로 사진만 고릅니다. 정사각형은 둘 다에 맞습니다. 맞는 사진이 없으면 모두 사용합니다.',
   'schedule.close_warning': '「{name}」이(가) 이 Canvas의 사진을 {time}에 바꿉니다. 불과 {gap} 차이입니다.',
   'canvasSettings.pill_title': '날짜 라벨',
   'canvasSettings.pill_hint': '이 Canvas의 이미지에 그려지는 날짜(및 장소) 라벨의 색과 불투명도입니다. 기본값은 흰색 불투명이며, 반투명 라벨은 컬러 e-ink에서 거칠게 보일 수 있습니다.',

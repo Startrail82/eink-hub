@@ -593,6 +593,8 @@ export const pl: Catalogue = {
   'week.empty_day': 'Brak zmian',
   'week.none': 'Ten Canvas nie ma aktywnych harmonogramów.',
   'plan.add': 'Dodaj harmonogram',
+  'assign.match_orientation': 'Tylko zdjęcia pasujące do Canvasa',
+  'assign.match_orientation_hint': 'Na pionowym Canvasie wybierane są tylko zdjęcia pionowe, na poziomym tylko poziome. Kwadratowe pasują do obu. Jeśli żadne nie pasuje, używane są wszystkie.',
   'schedule.close_warning': '„{name}” zmienia zdjęcie tego Canvasa o {time}, zaledwie {gap} różnicy.',
   'canvasSettings.pill_title': 'Etykieta daty',
   'canvasSettings.pill_hint': 'Kolory i krycie etykiety z datą (i miejscem) rysowanej na obrazach tego Canvasa. Domyślnie jest biała i nieprzezroczysta; półprzezroczysta etykieta może wyglądać ziarniście na kolorowym e-ink.',
