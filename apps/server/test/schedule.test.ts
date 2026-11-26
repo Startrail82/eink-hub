@@ -26,6 +26,16 @@ describe('nextRun', () => {
     expect(nextRun({ kind: 'days', days: 3, at: '07:00' }, at(11, 7))).toEqual(at(14, 7));
   });
 
+  it('an early wake just before midnight does not schedule the same midnight change again', () => {
+    // Canvas due at 00:00 on the 11th wakes at 23:55 on the 10th: next change is the 12th.
+    const midnight: Schedule = { kind: 'days', days: 1, at: '00:00' };
+    expect(nextRun(midnight, at(10, 23, 55))).toEqual(at(12, 0));
+    expect(nextRun({ kind: 'days', days: 2, at: '00:05' }, at(10, 23, 58))).toEqual(at(13, 0, 5));
+    expect(nextRun({ kind: 'weeks', weeks: 1, weekday: 4, at: '00:00' }, at(10, 23, 55))).toEqual(at(18, 0));
+    // Last day of the month, 23:55, change on the 1st at 00:00 → the 1st of the month after.
+    expect(nextRun({ kind: 'monthly', day: 1, at: '00:00' }, at(30, 23, 55))).toEqual(new Date(2026, 7, 1));
+  });
+
   it('weekly presets pick the weekday', () => {
     const monday: Schedule = { kind: 'weeks', weeks: 1, weekday: 1, at: '08:30' };
     expect(nextRun(monday, at(10, 12))).toEqual(at(15, 8, 30));

@@ -122,19 +122,22 @@ function occurrence(s: Schedule, now: Date, w: Window, skip: boolean): Date | nu
       return from && to && !inWindow(candidate, from, to) ? nextWindowStart(candidate, from) : candidate;
     }
     case 'days': {
+      // Loop, not `if`: a frame waking at 23:55 for a 00:00 change gets today's 00:00 (past),
+      // and one day later is tomorrow's 00:00 — the change it is serving right now.
       let d = atTime(now, s.at);
-      if (d <= after) d = addDays(d, 1);
+      while (d <= after) d = addDays(d, 1);
       return skip ? addDays(d, s.days - 1) : d;
     }
     case 'weeks': {
       let d = atTime(now, s.at);
       d = addDays(d, (s.weekday - d.getDay() + 7) % 7);
-      if (d <= after) d = addDays(d, 7);
+      while (d <= after) d = addDays(d, 7);
       return skip ? addDays(d, (s.weeks - 1) * 7) : d;
     }
     case 'monthly': {
-      let d = atTime(new Date(now.getFullYear(), now.getMonth(), s.day), s.at);
-      if (d <= after) d = atTime(new Date(now.getFullYear(), now.getMonth() + 1, s.day), s.at);
+      let month = now.getMonth();
+      let d = atTime(new Date(now.getFullYear(), month, s.day), s.at);
+      while (d <= after) d = atTime(new Date(now.getFullYear(), ++month, s.day), s.at);
       return d;
     }
     case 'cron':
