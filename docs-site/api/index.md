@@ -17,7 +17,7 @@ These are versioned (`/of/v1/`) or follow the device makers' protocols, so firmw
 
 ## Management endpoints
 
-Everything else under `/api/` is what the web UI uses: frames, library, collections, schedules, Immich and settings. They need a session cookie from `POST /api/auth/login`, unless the hub runs with `AUTH_DISABLED=true`.
+Everything else under `/api/` is what the web UI uses: frames, library, collections, schedules, Immich, settings and accounts. All of them are in the [reference](/api/reference), with which ones only admins can call. They need a session cookie from `POST /api/auth/login`, unless the hub runs with `AUTH_DISABLED=true`.
 
 You can script the hub with them, for example to send a photo from a Home Assistant automation:
 
