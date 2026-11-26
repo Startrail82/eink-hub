@@ -9,6 +9,74 @@ web share a single number (see `VERSION` at the repository root).
 Generated automatically from commit messages. The 0.1.0 entry is the only
 one written by hand: it summarises everything before the first release.
 
+## [0.8.0] - 2026-11-26
+
+### Added
+
+- Colours and opacity of the date label, per Canvas ([6c9cf0f1](https://github.com/yayitazale/eink-hub/commit/6c9cf0f14d5ea8064042f93b1dcbf1f08fc8ea4d))
+- **immich**: Show the photo's location in the caption ([e804173e](https://github.com/yayitazale/eink-hub/commit/e804173e5423641488f495b0e10837c7e72e1d92)) by [@Startrail82](https://github.com/Startrail82)
+- **web**: Pick the home country from the countries in the Immich library ([dd65a81d](https://github.com/yayitazale/eink-hub/commit/dd65a81d4b851dd86a676be5eaa505c68e08186e))
+- **web**: Location as a checkbox like the date, home country as a nested option ([0769484b](https://github.com/yayitazale/eink-hub/commit/0769484b38b4f57977c12694a6161dbc08c7891f))
+- **web**: "Label on the photo" with Date and Place chips ([47545702](https://github.com/yayitazale/eink-hub/commit/475457024c1a487b7e6a587ba7cbfcb6826d9bcf))
+- Place for photos uploaded to the hub, without Immich ([ab1cd710](https://github.com/yayitazale/eink-hub/commit/ab1cd7107685ea380652db3b290355101497516a))
+- Home country picker always lists every country ([df2e7d3d](https://github.com/yayitazale/eink-hub/commit/df2e7d3decde5e725f3bb0febc6fdb3a7e49bb0e))
+- **web**: Search box and local names in the home country picker ([fc91c858](https://github.com/yayitazale/eink-hub/commit/fc91c858f83801eab5c0dd317056a35195ba17a2))
+- **release**: Credit outside contributors in the changelog ([4fbf9475](https://github.com/yayitazale/eink-hub/commit/4fbf9475e3d4e1e58b133b5054ca1e836f111451))
+- Automatic colours for the date label ([67317f61](https://github.com/yayitazale/eink-hub/commit/67317f610b50e38af0867ca08db1be506fd8397b))
+- **library**: Rename a collection by clicking its name ([5140c7d7](https://github.com/yayitazale/eink-hub/commit/5140c7d714d4bade60642ed89426fd19e517d76c))
+- **schedules**: Allow several schedules per Canvas ([c52ef6f8](https://github.com/yayitazale/eink-hub/commit/c52ef6f8d0dc6739c93a5852dc62dd64eb2d4824)) by [@Startrail82](https://github.com/Startrail82)
+- **schedules**: List schedules per Canvas and show a week overview ([1e4ddac6](https://github.com/yayitazale/eink-hub/commit/1e4ddac67fa71223f01a5361d8c2b954ecaba137)) by [@Startrail82](https://github.com/Startrail82)
+- **schedules**: Name the Canvas of each change in the Schedule week view ([f600a566](https://github.com/yayitazale/eink-hub/commit/f600a566f978b321f3320afbeb3c25a58b5cdcce))
+- **schedules**: A smaller week view inside a Canvas ([b581c839](https://github.com/yayitazale/eink-hub/commit/b581c839b780b54fcca43f67801ea4358601ae90))
+- **schedules**: Canvas on the right of each change, columns aligned ([7e9a3ae7](https://github.com/yayitazale/eink-hub/commit/7e9a3ae733af1f36b82a09738523af9d43aa8075))
+- **schedules**: Collection covers instead of coloured dots in the week view ([7caaba14](https://github.com/yayitazale/eink-hub/commit/7caaba146236e3c4fc653a3a475279bb3752a420))
+- **schedules**: Warn about close or clashing schedules in the form ([72686708](https://github.com/yayitazale/eink-hub/commit/7268670822fc1b13d56f3e04da4d0437fe270997))
+- **schedules**: One 12-hour limit for both battery warnings ([6af52b89](https://github.com/yayitazale/eink-hub/commit/6af52b896a0f6b2f4fa906f955ce0c89f68995c4))
+- **location**: Hub and per-Canvas location ([4a7df904](https://github.com/yayitazale/eink-hub/commit/4a7df9042395f1ae014ae173ba5aabcd4b31997d))
+- **location**: Show the Canvas location before the device settings ([4ba8db2b](https://github.com/yayitazale/eink-hub/commit/4ba8db2bf1099868dab42eb8e022d08b4341d30e))
+- **schedules**: Only pick pictures that suit the Canvas ([87894fb1](https://github.com/yayitazale/eink-hub/commit/87894fb1ce1053bf8b4cd3ce1d640ec69c84df32))
+
+### Fixed
+
+- **web**: Show the whole content and next change on the Canvas cards ([9db275db](https://github.com/yayitazale/eink-hub/commit/9db275dbeb87f4dda979ebb1890b5a0df8ef6c24))
+- **immich**: Keep long location captions inside the label, don't cache unknown places ([fa70a9d7](https://github.com/yayitazale/eink-hub/commit/fa70a9d7f3b6e897521d9430ce0659d5be98dd9c))
+- **web**: Keep chip labels still when the tick appears ([284d95fc](https://github.com/yayitazale/eink-hub/commit/284d95fc62333db1abc3cc23f12472e5a4b62405))
+- **web**: Set the page language before the app loads ([3c2778df](https://github.com/yayitazale/eink-hub/commit/3c2778df9a80f07b2ae08aacafb5f9494dfa0ab7)) by [@Startrail82](https://github.com/Startrail82)
+- **web**: Early html lang uses the same mapping as the app ([06393f16](https://github.com/yayitazale/eink-hub/commit/06393f1614cd72e491b262fd2581d4b3da30c3e2))
+- Pill opacity, render hash and Basque sample date ([ef5b32a5](https://github.com/yayitazale/eink-hub/commit/ef5b32a5a791df10412c0cd36797c052d0457c5c))
+- Date label wording, form sync and a steadier colour test ([500f77b3](https://github.com/yayitazale/eink-hub/commit/500f77b31e4affb0a92e99e0926526b6c2a085da))
+- **server**: Country names without a trailing \r on Windows checkouts ([85644a3b](https://github.com/yayitazale/eink-hub/commit/85644a3b5812a837145606ab86101d8fffc252b8))
+- **schedules**: Serve the most recently due schedule when several are overdue ([bad52321](https://github.com/yayitazale/eink-hub/commit/bad52321e112c16cd013e957916a2800fbe7c7f0))
+- **schedules**: Fixes from review of several schedules per Canvas ([90857062](https://github.com/yayitazale/eink-hub/commit/9085706214b08d6393ebff87fdbac9441ecb94ca))
+- **schedules**: Keep the week overview inside narrow screens ([035c22ea](https://github.com/yayitazale/eink-hub/commit/035c22ea2c03d96c96b4b3058a0a05d659ad43df))
+- **schedules**: Keep the orientation option when a client leaves it out ([d74a953c](https://github.com/yayitazale/eink-hub/commit/d74a953c6357348c06b1c9849510f6d127761cc6))
+- **web**: Orientation option next to the fit, with the same heading style ([fa6d799b](https://github.com/yayitazale/eink-hub/commit/fa6d799bf68c60e5028c3960750876abf0c240c4))
+- **immich**: Fill in the size of photos imported by bare id ([4a0fc70c](https://github.com/yayitazale/eink-hub/commit/4a0fc70ce6706643c36b35084e5fe0154a79aebb))
+- **release**: Don't credit the claude account in the changelog ([84400077](https://github.com/yayitazale/eink-hub/commit/84400077389e407218137729498c39be5aa96db4))
+
+### Documentation
+
+- Contributor credits in the changelog and the commit message check ([a80368fc](https://github.com/yayitazale/eink-hub/commit/a80368fcdd6802f5dee730a76572e2a9e366d69a))
+- Document the photo label in Send and renaming collections ([f435c1a4](https://github.com/yayitazale/eink-hub/commit/f435c1a41197f654c2e84a1bbf3bea226fee891b))
+- **api**: Document every management endpoint ([f8be3cc9](https://github.com/yayitazale/eink-hub/commit/f8be3cc94bddacca41c3a6e8fd19363bd20d7a8d))
+
+### Maintenance
+
+- Reject pull request commits that aren't Conventional Commits ([ecd04f7e](https://github.com/yayitazale/eink-hub/commit/ecd04f7edfd7a4e7ca504cc3d5bd3851f712e1ab))
+- Merge main into feat/photo-location ([fdd380be](https://github.com/yayitazale/eink-hub/commit/fdd380be7749088a3094dc9b4f66ba7af88143e6))
+- Run the commit check script from the pull request's base ([0a28d5eb](https://github.com/yayitazale/eink-hub/commit/0a28d5eb5505debae43c2cfd9066efad31507d7b))
+- Merge main into fix/html-lang ([7dc9183d](https://github.com/yayitazale/eink-hub/commit/7dc9183de62bcf14a767b7feddc6829c2a89c62b))
+- Merge main into fix/canvas-card-wrap ([8f5e7b31](https://github.com/yayitazale/eink-hub/commit/8f5e7b3174e232e326c9642ee4b414a7ea000ed9))
+- Merge main into feat/pill-colors ([7b1ea971](https://github.com/yayitazale/eink-hub/commit/7b1ea9717155f17e08fed78c442d859faa2b1393))
+- Merge main into feat/multiple-schedules ([f249dbb3](https://github.com/yayitazale/eink-hub/commit/f249dbb344abecb8a57aa9c36f10818bcdeb4682))
+- **location**: Start the hub location work ([eb2733dc](https://github.com/yayitazale/eink-hub/commit/eb2733dc84572e05054b3b97131736a171140a10))
+- **geo**: Add population and region to the offline place list ([d30822b0](https://github.com/yayitazale/eink-hub/commit/d30822b0f515bd089fe1efea7b36a679dee26443))
+- Merge main into feat/match-orientation ([b085dcb3](https://github.com/yayitazale/eink-hub/commit/b085dcb39d4924f54ea98cc393e8f79885f3a646))
+
+### New contributors
+
+- [@Startrail82](https://github.com/Startrail82) made their first contribution
+
 ## [0.7.0] - 2026-10-31
 
 ### Added
