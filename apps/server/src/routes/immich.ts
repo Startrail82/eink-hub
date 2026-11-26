@@ -6,7 +6,7 @@ import { ImmichClient, assetOrientation, type ImmichAsset } from '../immich/clie
 import { addItems, memoriesDay } from '../lib/collections.js';
 import { HttpError, cloudUrlSetting, configuredExternalUrl, detectLocalUrl, externalUrlSetting, externalUrlSource, immichConfig, immichFor, type Ctx } from '../lib/context.js';
 import { displayImage } from '../lib/display.js';
-import { upsertImmichAssets } from '../lib/images.js';
+import { fillImmichSizes, upsertImmichAssets } from '../lib/images.js';
 import { nearestPlace, searchPlaces } from '../lib/geo.js';
 import { hubLocation, parsePlace, setHubLocation } from '../lib/location.js';
 
@@ -114,6 +114,8 @@ export function immichRoutes(app: FastifyInstance, ctx: Ctx) {
         assetIds.map((id) => ({ id, type: 'IMAGE' })),
       );
       if (req.body.collectionId) addItems(db, req.body.collectionId, ids);
+      // Bare ids carry no size: look it up in the background so orientation filters can use it.
+      void fillImmichSizes(ctx, { ids }).catch((err) => ctx.log.debug({ err }, 'filling Immich sizes failed'));
       let display;
       if (req.body.frameId) display = await displayImage(ctx, req.body.frameId, ids[0], { fit: req.body.fit, bg: req.body.bg });
       return { imageIds: ids, display };

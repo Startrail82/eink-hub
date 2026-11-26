@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import sharp from 'sharp';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, isNull, or } from 'drizzle-orm';
 import { config } from '../config.js';
 import { basqueDate, hubLang, locales, yearsAgoText, type Lang } from '../i18n.js';
 import { schema, type DB } from '../db/index.js';
@@ -268,6 +268,64 @@ export async function withCaptionDetails(
   }
 }
 
+const sizeRetryAt = new Map<string, number>();
+
+/**
+ * Photos imported by bare id (the Immich page, manual collections) have no width/height, so
+ * "only pictures that suit the Canvas" can't tell their orientation. Ask Immich for the asset
+ * info (a small JSON request, no original is downloaded) and store its size, EXIF rotation
+ * applied. `ids` limits it to those images; otherwise every Immich image without a size, at
+ * most `max` per call. A failed lookup, or an asset Immich has no size for, is retried at most
+ * every DETAILS_RETRY_MS. Returns how many images got a size.
+ */
+export async function fillImmichSizes(ctx: Ctx, opts: { ids?: number[]; max?: number; now?: number } = {}): Promise<number> {
+  const now = opts.now ?? Date.now();
+  let immich;
+  try {
+    immich = immichFor(ctx.db);
+  } catch {
+    return 0;
+  }
+  const sizeless = and(eq(schema.images.source, 'immich'), or(isNull(schema.images.width), isNull(schema.images.height)));
+  const rows = ctx.db
+    .select({ id: schema.images.id, assetId: schema.images.immichAssetId })
+    .from(schema.images)
+    .where(opts.ids ? and(sizeless, inArray(schema.images.id, opts.ids)) : sizeless)
+    .all()
+    .filter((r): r is { id: number; assetId: string } => !!r.assetId && (sizeRetryAt.get(r.assetId) ?? 0) <= now)
+    .slice(0, opts.max ?? 500);
+  let filled = 0;
+  const queue = [...rows];
+  const worker = async () => {
+    for (let r = queue.shift(); r; r = queue.shift()) {
+      try {
+        const asset = await immich.asset(r.assetId);
+        upsertImmichAssets(ctx.db, [asset]);
+        if (assetSize(asset)) {
+          filled++;
+          sizeRetryAt.delete(r.assetId);
+        } else sizeRetryAt.set(r.assetId, now + DETAILS_RETRY_MS);
+      } catch (err) {
+        sizeRetryAt.set(r.assetId, now + DETAILS_RETRY_MS);
+        ctx.log.debug({ err, asset: r.assetId }, 'immich size lookup failed');
+      }
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(4, queue.length) }, worker));
+  return filled;
+}
+
+/** Last resort for an image still without a size: read it from the source just decoded for a render. */
+async function storeSizeFrom(ctx: Ctx, img: Image, src: Buffer) {
+  if (img.width && img.height) return;
+  try {
+    const { width, height } = await probeImage(src);
+    if (width && height) ctx.db.update(schema.images).set({ width, height }).where(eq(schema.images.id, img.id)).run();
+  } catch (err) {
+    ctx.log.debug({ err, image: img.id }, 'reading the size of a picture failed');
+  }
+}
+
 /** Uploads from before places were read: name the place from the original's GPS once. */
 async function withLocalPlace(ctx: Ctx, img: Image, need: { location?: boolean }): Promise<Image> {
   if (!need.location || img.city !== null || img.country !== null || !img.filePath) return img;
@@ -330,7 +388,9 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
   const deviceName = `h${img.id}_${hash.slice(0, 10)}_${landscape ? 'L' : 'P'}.${ext}`;
   if (await exists(file)) return { hash, file, deviceName, ext, buf: await fs.readFile(file) };
 
-  const buf = await renderForFrame(await loadSource(ctx, img), {
+  const src = await loadSource(ctx, img);
+  await storeSizeFrom(ctx, img, src);
+  const buf = await renderForFrame(src, {
     width: params.width,
     height: params.height,
     landscape,
