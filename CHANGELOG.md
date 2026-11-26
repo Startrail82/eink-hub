@@ -9,6 +9,12 @@ web share a single number (see `VERSION` at the repository root).
 Generated automatically from commit messages. The 0.1.0 entry is the only
 one written by hand: it summarises everything before the first release.
 
+## [0.8.1] - 2026-11-26
+
+### Fixed
+
+- **schedule**: Don't reschedule the change an early wake is serving ([e467a173](https://github.com/yayitazale/eink-hub/commit/e467a173d7c54f7cb6477cf92436d909c87e97e1))
+
 ## [0.8.0] - 2026-11-26
 
 ### Added
