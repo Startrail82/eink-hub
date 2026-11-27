@@ -3,6 +3,7 @@ import type { Catalogue } from '../i18n.js';
 export const ca: Catalogue = {
   collection_not_found: 'No s’ha trobat la col·lecció {id}',
   ai_config_invalid: "Configuració de la col·lecció d'IA no vàlida: {reason}",
+  ai_provider_unknown: 'Servei d\'IA desconegut: {provider}',
   immich_not_configured: 'Immich no està configurat',
   canvas_not_found: 'No s’ha trobat el Canvas {id}',
   playlist_empty: 'La llista «{name}» no té cap imatge',

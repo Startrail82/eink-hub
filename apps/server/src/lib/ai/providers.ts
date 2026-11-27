@@ -1,5 +1,7 @@
 import crypto from 'node:crypto';
-import { OPENAI_DEFAULT_URL, type AiConfig } from './settings.js';
+import type { AiConfig } from './settings.js';
+
+export const OPENAI_DEFAULT_URL = 'https://api.openai.com/v1';
 
 export interface GenerateOpts {
   /** The frame's shape, used to pick a fitting size. */
@@ -13,12 +15,55 @@ export class AiError extends Error {}
 
 const DEFAULT_TIMEOUT_MS = 5 * 60_000;
 
+/** A settings field a provider needs; the Settings page draws it from this. */
+export interface ProviderField {
+  /** Which AiConfig value the field edits. */
+  key: 'url' | 'apiKey' | 'username' | 'model' | 'size' | 'workflow';
+  type: 'text' | 'password' | 'textarea';
+  /** Translation key of the label, or `text` for a name that is the same in every language. */
+  label?: string;
+  text?: string;
+  /** Translation key of the explanation. */
+  hint?: string;
+  placeholder?: string;
+}
+
+/** Ready-made values for an OpenAI-compatible service. */
+export interface ProviderPreset {
+  id: string;
+  label: string;
+  url: string;
+  model: string;
+  /** What to put in the size field: "" lets the hub pick one that fits, "none" sends no size at all. */
+  size: string;
+}
+
+/**
+ * An image generator. To add one, write an ImageProvider and list it in `imageProviders`; the
+ * Settings page, the connection test and the generation all work from this description. See
+ * "Adding an image provider" in the AI images guide.
+ */
+export interface ImageProvider {
+  /** Stable identifier, saved in the settings. */
+  id: string;
+  /** Name shown in Settings. */
+  label: string;
+  fields: ProviderField[];
+  /** Offered in Settings as a shortcut that fills in the fields; leave out for none. */
+  presets?: ProviderPreset[];
+  /** Whether enough is filled in to try a generation. */
+  configured(cfg: AiConfig): boolean;
+  /** Draw one picture and return its bytes. Throw an AiError with a readable message when it fails. */
+  generate(cfg: AiConfig, prompt: string, opts: GenerateOpts, timeout: number): Promise<Buffer>;
+  /** Check the address and key without generating anything; return a short description of what answered. */
+  test(cfg: AiConfig): Promise<string>;
+}
+
 /** Ask the configured provider for one image and return its bytes. */
 export async function generateImage(cfg: AiConfig, prompt: string, opts: GenerateOpts): Promise<Buffer> {
-  const timeout = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS;
-  if (cfg.provider === 'openai') return openaiImage(cfg, prompt, opts, timeout);
-  if (cfg.provider === 'comfyui') return comfyImage(cfg, prompt, opts, timeout);
-  throw new AiError('No AI provider is configured');
+  const provider = imageProviders.find((p) => p.id === cfg.provider);
+  if (!provider) throw new AiError('No AI provider is configured');
+  return provider.generate(cfg, prompt, opts, opts.timeoutMs ?? DEFAULT_TIMEOUT_MS);
 }
 
 /** ComfyUI has no login of its own; behind a proxy that asks for one, sign in with HTTP Basic. */
@@ -51,6 +96,12 @@ export function openaiSize(width: number, height: number): string {
   return '1024x1024';
 }
 
+/** Some services reject `size`: "none" in the settings leaves it out. */
+function openaiSizeField(cfg: AiConfig, opts: GenerateOpts): { size?: string } {
+  if (cfg.size.toLowerCase() === 'none') return {};
+  return { size: cfg.size || openaiSize(opts.width, opts.height) };
+}
+
 async function openaiImage(cfg: AiConfig, prompt: string, opts: GenerateOpts, timeout: number): Promise<Buffer> {
   const base = (cfg.url || OPENAI_DEFAULT_URL).replace(/\/+$/, '');
   const res = await http(
@@ -58,7 +109,7 @@ async function openaiImage(cfg: AiConfig, prompt: string, opts: GenerateOpts, ti
     {
       method: 'POST',
       headers: { 'content-type': 'application/json', ...(cfg.apiKey ? { authorization: `Bearer ${cfg.apiKey}` } : {}) },
-      body: JSON.stringify({ model: cfg.model, prompt, n: 1, size: cfg.size || openaiSize(opts.width, opts.height) }),
+      body: JSON.stringify({ model: cfg.model, prompt, n: 1, ...openaiSizeField(cfg, opts) }),
     },
     timeout,
   );
@@ -126,20 +177,54 @@ async function comfyImage(cfg: AiConfig, prompt: string, opts: GenerateOpts, tim
   }
 }
 
-// --- Connection test (costs nothing: no image is generated) -------------------------------
+// --- The providers --------------------------------------------------------------------------
 
-/** Check the address and key. Returns a short description of what answered. */
-export async function testConnection(cfg: AiConfig): Promise<string> {
-  if (cfg.provider === 'openai') {
+const openai: ImageProvider = {
+  id: 'openai',
+  label: 'OpenAI-compatible',
+  fields: [
+    { key: 'url', type: 'text', label: 'ai.url', hint: 'ai.url_hint_openai', placeholder: OPENAI_DEFAULT_URL },
+    { key: 'apiKey', type: 'password', text: 'API key' },
+    { key: 'model', type: 'text', label: 'ai.model', hint: 'ai.model_hint', placeholder: 'gpt-image-1' },
+    { key: 'size', type: 'text', label: 'ai.size', hint: 'ai.size_hint', placeholder: '1024x1536' },
+  ],
+  presets: [{ id: 'custom', label: 'Custom', url: '', model: '', size: '' }],
+  configured: (cfg) => !!cfg.model,
+  generate: openaiImage,
+  async test(cfg) {
     const base = (cfg.url || OPENAI_DEFAULT_URL).replace(/\/+$/, '');
     await http(`${base}/models`, { headers: cfg.apiKey ? { authorization: `Bearer ${cfg.apiKey}` } : {} }, 15_000);
     return new URL(base).host;
-  }
-  if (cfg.provider === 'comfyui') {
+  },
+};
+
+const comfyui: ImageProvider = {
+  id: 'comfyui',
+  label: 'ComfyUI',
+  fields: [
+    { key: 'url', type: 'text', label: 'ai.url', hint: 'ai.url_hint_comfyui', placeholder: 'http://192.168.1.30:8188' },
+    { key: 'username', type: 'text', label: 'login.username', hint: 'ai.auth_hint' },
+    { key: 'apiKey', type: 'password', label: 'login.password' },
+    { key: 'workflow', type: 'textarea', label: 'ai.workflow', hint: 'ai.workflow_hint', placeholder: '{"6": {"class_type": "CLIPTextEncode", "inputs": {"text": "{{prompt}}"}}}' },
+  ],
+  configured: (cfg) => !!cfg.url && cfg.workflow.includes('{{prompt}}'),
+  generate: comfyImage,
+  async test(cfg) {
     if (!cfg.url) throw new AiError('The ComfyUI address is empty');
     await http(`${cfg.url.replace(/\/+$/, '')}/system_stats`, { headers: comfyHeaders(cfg) }, 15_000);
     if (cfg.workflow) fillWorkflow(cfg.workflow, 'test', { width: 512, height: 512 });
     return new URL(cfg.url).host;
-  }
-  throw new AiError('No AI provider is configured');
+  },
+};
+
+/** Every image generator the hub knows. */
+export const imageProviders: ImageProvider[] = [openai, comfyui];
+
+export const aiProviderIds = (): string[] => imageProviders.map((p) => p.id);
+
+/** Check the address and key. Returns a short description of what answered. */
+export async function testConnection(cfg: AiConfig): Promise<string> {
+  const provider = imageProviders.find((p) => p.id === cfg.provider);
+  if (!provider) throw new AiError('No AI provider is configured');
+  return provider.test(cfg);
 }

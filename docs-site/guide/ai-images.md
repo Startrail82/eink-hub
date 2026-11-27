@@ -13,7 +13,7 @@ Open **Settings > AI images** (admins only). One connection is used by the whole
 | Address | The base address up to and including `/v1`. Leave empty to use OpenAI itself. For a local service this is something like `http://192.168.1.30:8080/v1`. |
 | API key | Your key. It is stored on the Hub and never shown again; leave the field empty to keep the saved one. |
 | Model | The model name, for example `gpt-image-1`. |
-| Image size | Optional, for example `1024x1536`. Empty picks a size that matches the Canvas. |
+| Image size | Optional, for example `1024x1536`. Empty picks a size that matches the Canvas. Enter `none` for a service that does not accept a size (xAI's image API is reported to reject it), and no size is sent. |
 
 Anything that implements `POST /v1/images/generations` works.
 
@@ -58,9 +58,31 @@ Generation has to finish before the Canvas wakes. A few minutes is fine. If your
 
 ## Storage
 
-By default the Hub keeps the **20 newest** pictures of each AI collection and removes older ones. Change this under the collection's **Settings** (*Pictures to keep*); `0` keeps everything. A picture that is currently on a Canvas is never removed.
+By default the Hub keeps the **20 newest** pictures of each AI collection and takes older ones out of it. Change this under the collection's **Settings** (*Pictures to keep*); `0` keeps everything. A picture that is currently on a Canvas is never taken out. A picture you also added to another collection (a favourite, say) stays in that collection; it is only deleted when no collection has it any more.
 
 ## Good to know
 
 - The Hub adds no caption of its own to AI pictures. The date caption of a schedule still applies if you switch it on there.
 - Each picture costs what your generator charges. A schedule that changes every hour with OpenAI generates 24 pictures a day.
+
+## Adding an image provider
+
+The Hub draws its pictures through a small interface, so another service can be added without touching the rest, and a new provider can come as a separate pull request. The first two are OpenAI-compatible services and ComfyUI.
+
+A provider is an object (`ImageProvider`, in `apps/server/src/lib/ai/providers.ts`) with:
+
+| Field | Meaning |
+| --- | --- |
+| `id`, `label` | A stable name that is saved in the settings, and the name shown in Settings. |
+| `fields` | The settings it needs (`url`, `apiKey`, `username`, `model`, `size` or `workflow`), each with a type (`text`, `password` or `textarea`), a label, a hint and a placeholder. Settings draws exactly these fields. |
+| `presets` | Optional shortcuts that fill in `url`, `model` and `size`, for a service that is OpenAI-compatible. |
+| `configured(cfg)` | Whether enough is filled in to try a generation. |
+| `generate(cfg, prompt, opts, timeout)` | Draw one picture and return its bytes. Throw an `AiError` with a readable message on failure. |
+| `test(cfg)` | Check the address and key without generating anything, and return a short description of what answered. |
+
+To add one:
+
+1. Write the provider in `providers.ts` and add it to the `imageProviders` list. Settings, the connection test and the generation pick it up from there.
+2. Add the labels and hints of any new field to every language in `apps/web/src/i18n`.
+3. Add tests with a stubbed `fetch` (see `apps/server/test/ai.test.ts`); the tests must not call the real service.
+4. **Test it against the real service** with a real key before you open the pull request, and say in the description that you did. This goes for presets too: a preset (a base address, a default model and whether the service accepts `size`) is only added for a service that was tried for real.

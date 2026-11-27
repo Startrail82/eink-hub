@@ -3,6 +3,7 @@ import type { Catalogue } from '../i18n.js';
 export const pt: Catalogue = {
   collection_not_found: 'Coleção {id} não encontrada',
   ai_config_invalid: 'Definições inválidas da coleção de IA: {reason}',
+  ai_provider_unknown: 'Serviço de IA desconhecido: {provider}',
   immich_not_configured: 'O Immich não está configurado',
   canvas_not_found: 'Canvas {id} não encontrado',
   playlist_empty: 'A lista «{name}» não tem imagens',

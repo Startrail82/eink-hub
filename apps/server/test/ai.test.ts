@@ -8,15 +8,16 @@ import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 const dataDir = vi.hoisted(() => {
   const dir = `${process.env.TMPDIR ?? '/tmp'}/eink-ai-test-${process.pid}`;
   process.env.DATA_DIR = dir;
+  process.env.AUTH_DISABLED = 'true';
   return dir;
 });
 
 import { ensureDirs } from '../src/config.js';
 import { openDb, schema, setSetting } from '../src/db/index.js';
 import { aiState, buildPrompt, collectionConfig, generationDue, generateFor, LEAD_MS, prune, RETRY_MS, sizeFor, targetSize, validateCollectionConfig } from '../src/lib/ai/generate.js';
-import { AiError, fillWorkflow, generateImage, openaiSize, testConnection } from '../src/lib/ai/providers.js';
+import { AiError, fillWorkflow, generateImage, imageProviders, openaiSize, testConnection } from '../src/lib/ai/providers.js';
 import { aiConfigured, type AiConfig } from '../src/lib/ai/settings.js';
-import { commonVars, fillTemplate, nextFeedItem, parseFeed } from '../src/lib/ai/sources.js';
+import { commonVars, fetchFeed, fillTemplate, nextFeedItem, parseFeed } from '../src/lib/ai/sources.js';
 import { pickFresh } from '../src/lib/selection.js';
 
 const cfg = (c: Partial<AiConfig>): AiConfig => ({ provider: '', url: '', apiKey: '', username: '', model: '', size: '', workflow: '', ...c });
@@ -315,5 +316,108 @@ describe('collections end to end', () => {
     expect(left).toEqual([ids[0], ids[3], ids[4]].sort());
     await prune(db, col.id, 0);
     expect(db.select().from(schema.collectionItems).all().filter((i) => i.collectionId === col.id)).toHaveLength(3);
+  });
+
+  it('only drops a picture from the AI collection when another collection holds it too', async () => {
+    const col = addCollection({ source: 'prompt', prompt: 'x' });
+    const manual = db.insert(schema.collections).values({ name: 'Favourites', type: 'manual', config: {}, createdAt: Date.now() }).returning().get();
+    const imgs = [0, 1, 2].map((i) => {
+      const img = db.insert(schema.images).values({ source: 'local', filePath: `local/k${col.id}-${i}.png`, createdAt: 5000 + i }).returning().get();
+      db.insert(schema.collectionItems).values({ collectionId: col.id, imageId: img.id, position: i }).run();
+      return img;
+    });
+    // The oldest one is a favourite in the manual collection.
+    db.insert(schema.collectionItems).values({ collectionId: manual.id, imageId: imgs[0].id, position: 0 }).run();
+    await prune(db, col.id, 1);
+    const inAi = db.select().from(schema.collectionItems).all().filter((i) => i.collectionId === col.id).map((i) => i.imageId);
+    expect(inAi).toEqual([imgs[2].id]);
+    const images = db.select().from(schema.images).all().map((i) => i.id);
+    expect(images).toContain(imgs[0].id); // kept: still in Favourites
+    expect(images).not.toContain(imgs[1].id); // deleted: nowhere else
+    expect(db.select().from(schema.collectionItems).all().filter((i) => i.collectionId === manual.id).map((i) => i.imageId)).toEqual([imgs[0].id]);
+  });
+});
+
+describe('feed size limit', () => {
+  it('stops reading a feed that is too large', async () => {
+    let pulled = 0;
+    const body = new ReadableStream({
+      pull(c) {
+        pulled++;
+        c.enqueue(new Uint8Array(1_000_000));
+        if (pulled > 50) c.close();
+      },
+    });
+    vi.stubGlobal('fetch', async () => new Response(body));
+    await expect(fetchFeed('http://f/rss')).rejects.toThrow('too large');
+    expect(pulled).toBeLessThan(10);
+  });
+
+  it('refuses a feed that announces a size over the limit', async () => {
+    vi.stubGlobal('fetch', async () => new Response('x', { headers: { 'content-length': '9000000' } }));
+    await expect(fetchFeed('http://f/rss')).rejects.toThrow('too large');
+  });
+});
+
+describe('image providers', () => {
+  it('describes the fields of each provider and treats size "none" as no size', async () => {
+    expect(imageProviders.map((p) => p.id)).toEqual(['openai', 'comfyui']);
+    expect(imageProviders[0].fields.map((f) => f.key)).toEqual(['url', 'apiKey', 'model', 'size']);
+    expect(imageProviders[1].fields.map((f) => f.key)).toEqual(['url', 'username', 'apiKey', 'workflow']);
+    const bodies: Record<string, unknown>[] = [];
+    vi.stubGlobal('fetch', async (_u: string, init: RequestInit) => {
+      bodies.push(JSON.parse(String(init.body)));
+      return jsonRes({ data: [{ b64_json: Buffer.from('x').toString('base64') }] });
+    });
+    await generateImage(cfg({ provider: 'openai', url: 'http://llm/v1', model: 'm', size: 'none' }), 'p', { width: 1, height: 1 });
+    await generateImage(cfg({ provider: 'openai', url: 'http://llm/v1', model: 'm' }), 'p', { width: 1, height: 1 });
+    expect(bodies[0]).not.toHaveProperty('size');
+    expect(bodies[1]).toHaveProperty('size', '1024x1024');
+  });
+});
+
+describe('settings API', () => {
+  let app: Awaited<ReturnType<(typeof import('../src/app.js'))['buildApp']>>['app'];
+  let apiDb: ReturnType<typeof openDb>;
+  beforeAll(async () => {
+    ensureDirs();
+    apiDb = openDb(path.join(os.tmpdir(), `eink-ai-api-${process.pid}.db`));
+    const { buildApp } = await import('../src/app.js');
+    app = (await buildApp(apiDb, { logger: false })).app;
+    return () => app.close();
+  });
+
+  it('lists the providers with their fields', async () => {
+    const res = (await app.inject({ url: '/api/settings/ai' })).json();
+    expect(res.providers.map((p: { id: string }) => p.id)).toEqual(['openai', 'comfyui']);
+    expect(res.providers[0].fields[0]).toMatchObject({ key: 'url', type: 'text' });
+    expect(res).not.toHaveProperty('apiKey');
+  });
+
+  it('rejects an unknown provider with a 400', async () => {
+    const res = await app.inject({ method: 'PUT', url: '/api/settings/ai', payload: { provider: 'nonsense' } });
+    expect(res.statusCode).toBe(400);
+    expect(res.json().error ?? res.json().message).toMatch(/nonsense/);
+  });
+
+  it('forgets the key when another service is chosen', async () => {
+    await app.inject({ method: 'PUT', url: '/api/settings/ai', payload: { provider: 'openai', apiKey: 'secret' } });
+    expect((await app.inject({ url: '/api/settings/ai' })).json().apiKeySet).toBe(true);
+    await app.inject({ method: 'PUT', url: '/api/settings/ai', payload: { provider: 'comfyui' } });
+    expect((await app.inject({ url: '/api/settings/ai' })).json().apiKeySet).toBe(false);
+  });
+
+  it('only uses the saved key for the address it was saved for', async () => {
+    await app.inject({ method: 'PUT', url: '/api/settings/ai', payload: { provider: 'openai', url: 'http://llm/v1', apiKey: 'secret' } });
+    const auth: (string | undefined)[] = [];
+    vi.stubGlobal('fetch', async (_u: string, init: RequestInit) => {
+      auth.push((init.headers as Record<string, string>).authorization);
+      return jsonRes({});
+    });
+    await app.inject({ method: 'POST', url: '/api/settings/ai/test', payload: {} });
+    await app.inject({ method: 'POST', url: '/api/settings/ai/test', payload: { url: 'http://llm/v1/' } });
+    await app.inject({ method: 'POST', url: '/api/settings/ai/test', payload: { url: 'http://elsewhere/v1' } });
+    await app.inject({ method: 'POST', url: '/api/settings/ai/test', payload: { url: 'http://elsewhere/v1', apiKey: 'typed' } });
+    expect(auth).toEqual(['Bearer secret', 'Bearer secret', undefined, 'Bearer typed']);
   });
 });

@@ -1,11 +1,10 @@
 import { getSetting, setSetting, type DB } from '../../db/index.js';
-
-export const aiProviders = ['openai', 'comfyui'] as const;
-export type AiProviderKind = (typeof aiProviders)[number];
+import { aiProviderIds, imageProviders } from './providers.js';
 
 /** The hub-wide connection to the image generator (Settings > AI images). */
 export interface AiConfig {
-  provider: AiProviderKind | '';
+  /** The id of one of the providers in providers.ts, or empty when none is chosen. */
+  provider: string;
   /** OpenAI-compatible: base URL up to and including /v1. ComfyUI: server address. */
   url: string;
   apiKey: string;
@@ -19,12 +18,10 @@ export interface AiConfig {
   workflow: string;
 }
 
-export const OPENAI_DEFAULT_URL = 'https://api.openai.com/v1';
-
 export function aiConfig(db: DB): AiConfig {
   const provider = getSetting(db, 'ai.provider');
   return {
-    provider: (aiProviders as readonly string[]).includes(provider ?? '') ? (provider as AiProviderKind) : '',
+    provider: aiProviderIds().includes(provider ?? '') ? (provider as string) : '',
     url: getSetting(db, 'ai.url') ?? '',
     apiKey: getSetting(db, 'ai.apiKey') ?? '',
     username: getSetting(db, 'ai.username') ?? '',
@@ -35,7 +32,9 @@ export function aiConfig(db: DB): AiConfig {
 }
 
 export function saveAiConfig(db: DB, c: Partial<AiConfig>) {
-  if (c.provider !== undefined) setSetting(db, 'ai.provider', (aiProviders as readonly string[]).includes(c.provider) ? c.provider : '');
+  // A key belongs to one service: choosing another one forgets it rather than sending it to a stranger.
+  if (c.provider !== undefined && c.provider !== aiConfig(db).provider) setSetting(db, 'ai.apiKey', '');
+  if (c.provider !== undefined) setSetting(db, 'ai.provider', aiProviderIds().includes(c.provider) ? c.provider : '');
   if (c.url !== undefined) setSetting(db, 'ai.url', c.url.trim().replace(/\/+$/, ''));
   if (c.apiKey) setSetting(db, 'ai.apiKey', c.apiKey.trim());
   if (c.username !== undefined) setSetting(db, 'ai.username', c.username.trim());
@@ -46,7 +45,5 @@ export function saveAiConfig(db: DB, c: Partial<AiConfig>) {
 
 /** Whether enough is filled in to try a generation. */
 export function aiConfigured(c: AiConfig): boolean {
-  if (c.provider === 'openai') return !!c.model;
-  if (c.provider === 'comfyui') return !!c.url && c.workflow.includes('{{prompt}}');
-  return false;
+  return imageProviders.find((p) => p.id === c.provider)?.configured(c) ?? false;
 }

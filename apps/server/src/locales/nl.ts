@@ -3,6 +3,7 @@ import type { Catalogue } from '../i18n.js';
 export const nl: Catalogue = {
   collection_not_found: 'Collectie {id} niet gevonden',
   ai_config_invalid: 'Ongeldige instellingen voor de AI-collectie: {reason}',
+  ai_provider_unknown: 'Onbekende AI-dienst: {provider}',
   immich_not_configured: 'Immich is niet geconfigureerd',
   canvas_not_found: 'Canvas {id} niet gevonden',
   playlist_empty: 'De afspeellijst “{name}” bevat geen afbeeldingen',

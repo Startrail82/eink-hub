@@ -34,9 +34,24 @@ async function fetchText(url: string, accept: string, limit: number): Promise<st
     throw new AiError(`${new URL(url).host}: ${(err as Error).name === 'TimeoutError' ? 'no answer in time' : ((err as Error).cause as Error | undefined)?.message ?? (err as Error).message}`);
   }
   if (!res.ok) throw new AiError(`${new URL(url).host} answered ${res.status}`);
-  const text = await res.text();
-  if (text.length > limit) throw new AiError(`${new URL(url).host}: the answer is too large`);
-  return text;
+  // Stop reading as soon as the limit is passed, instead of loading a huge answer first.
+  const tooLarge = () => new AiError(`${new URL(url).host}: the answer is too large`);
+  if (Number(res.headers.get('content-length')) > limit) throw tooLarge();
+  const reader = res.body?.getReader();
+  if (!reader) return '';
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > limit) {
+      await reader.cancel().catch(() => {});
+      throw tooLarge();
+    }
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks).toString('utf8');
 }
 
 // --- RSS / Atom ---------------------------------------------------------------------------

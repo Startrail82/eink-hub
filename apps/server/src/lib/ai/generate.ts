@@ -170,7 +170,10 @@ export async function generateFor(ctx: Ctx, collectionId: number): Promise<boole
   }
 }
 
-/** Remove the oldest pictures beyond `keep`, never one that is on a frame (or queued for it). */
+/**
+ * Drop the oldest pictures beyond `keep` from the collection, never one that is on a frame (or queued
+ * for it). A picture that is also in another collection stays there.
+ */
 export async function prune(db: DB, collectionId: number, keep: number) {
   if (keep <= 0) return;
   const members = db
@@ -190,7 +193,12 @@ export async function prune(db: DB, collectionId: number, keep: number) {
       .filter((n): n is number => n != null),
   );
   for (const img of members.slice(keep)) {
-    if (!onScreen.has(img.id)) await deleteImage(db, img);
+    if (onScreen.has(img.id)) continue;
+    // Only leave this collection; the picture itself goes when no other collection holds it
+    // (someone may have added a favourite to a manual collection).
+    db.delete(schema.collectionItems).where(and(eq(schema.collectionItems.collectionId, collectionId), eq(schema.collectionItems.imageId, img.id))).run();
+    const elsewhere = db.select().from(schema.collectionItems).where(eq(schema.collectionItems.imageId, img.id)).get();
+    if (!elsewhere) await deleteImage(db, img);
   }
   refreshCount(db, collectionId);
 }

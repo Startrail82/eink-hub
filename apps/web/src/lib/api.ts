@@ -290,9 +290,33 @@ export const immichThumb = (assetId: string, size: 'thumbnail' | 'preview' = 'th
   `/api/immich/assets/${assetId}/thumbnail?size=${size}`;
 export const renderUrl = (hash: string) => `/api/renders/${hash}`;
 
-export type AiProvider = 'openai' | 'comfyui' | '';
+/** A settings field a provider asks for; Settings draws it from this. */
+export interface AiProviderField {
+  key: 'url' | 'apiKey' | 'username' | 'model' | 'size' | 'workflow';
+  type: 'text' | 'password' | 'textarea';
+  label?: string;
+  text?: string;
+  hint?: string;
+  placeholder?: string;
+}
+export interface AiProviderPreset {
+  id: string;
+  label: string;
+  url: string;
+  model: string;
+  size: string;
+}
+export interface AiProviderInfo {
+  id: string;
+  label: string;
+  fields: AiProviderField[];
+  presets: AiProviderPreset[];
+}
+/** The id of one of the providers, or empty when none is chosen. */
+export type AiProvider = string;
 export interface AiSettings {
   provider: AiProvider;
+  providers: AiProviderInfo[];
   url: string;
   apiKeySet: boolean;
   username: string;

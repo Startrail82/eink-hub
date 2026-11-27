@@ -22,6 +22,7 @@ export type Lang = (typeof languages)[number];
 const es = {
   collection_not_found: 'Colección {id} no encontrada',
   ai_config_invalid: 'Configuración no válida de la colección de IA: {reason}',
+  ai_provider_unknown: 'Servicio de IA desconocido: {provider}',
   immich_not_configured: 'Immich no está configurado',
   canvas_not_found: 'Canvas {id} no encontrado',
   schedule_conflict: 'Otra programación de este Canvas ({name}) ya cambia a las {time}',
@@ -100,6 +101,7 @@ export type Catalogue = Record<MsgKey, string> &
 const eu: Catalogue = {
   collection_not_found: 'Ez da {id} bilduma aurkitu',
   ai_config_invalid: 'IA bildumaren ezarpenak baliogabeak dira: {reason}',
+  ai_provider_unknown: 'IA zerbitzu ezezaguna: {provider}',
   immich_not_configured: 'Immich ez dago konfiguratuta',
   canvas_not_found: 'Ez da {id} Canvasa aurkitu',
   schedule_conflict: 'Canvas honen beste programazio batek ({name}) ordu berean aldatzen du: {time}',
@@ -172,6 +174,7 @@ const eu: Catalogue = {
 const en: Catalogue = {
   collection_not_found: 'Collection {id} not found',
   ai_config_invalid: 'Invalid AI collection settings: {reason}',
+  ai_provider_unknown: 'Unknown AI service: {provider}',
   immich_not_configured: 'Immich is not configured',
   canvas_not_found: 'Canvas {id} not found',
   schedule_conflict: 'Another schedule of this Canvas ({name}) already changes at {time}',
