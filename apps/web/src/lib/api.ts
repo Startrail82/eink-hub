@@ -339,6 +339,7 @@ export type AiSource = 'prompt' | 'rss';
 export interface AiCollectionConfig {
   source: AiSource;
   prompt: string;
+  negative: string;
   feedUrl: string;
   keep: number;
   /** Panel resolution "shortxlong" the pictures are made for, and how that panel hangs. */

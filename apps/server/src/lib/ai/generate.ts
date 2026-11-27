@@ -16,6 +16,8 @@ export interface AiCollectionConfig {
   source: AiSource;
   /** Prompt text; {title}, {description}, {date}, {time}, {season} are filled in. Empty = a default. */
   prompt: string;
+  /** ComfyUI only: what the picture should not look like; fills "{{negative}}" in the workflow. */
+  negative: string;
   feedUrl: string;
   /** How many generated pictures to keep; 0 = keep them all. */
   keep: number;
@@ -36,6 +38,7 @@ export function collectionConfig(c: Collection): AiCollectionConfig {
   return {
     source: (aiSources as readonly string[]).includes(raw.source ?? '') ? (raw.source as AiSource) : 'prompt',
     prompt: typeof raw.prompt === 'string' ? raw.prompt : '',
+    negative: typeof raw.negative === 'string' ? raw.negative.trim() : '',
     feedUrl: typeof raw.feedUrl === 'string' ? raw.feedUrl.trim() : '',
     keep: Number.isInteger(keep) && keep >= 0 ? keep : DEFAULT_KEEP,
     panel: typeof raw.panel === 'string' && /^\d{2,5}x\d{2,5}$/.test(raw.panel) ? raw.panel : null,
@@ -151,7 +154,7 @@ export async function generateFor(ctx: Ctx, collectionId: number): Promise<boole
     validateCollectionConfig(cfg);
     const state = aiState(ctx.db, c.id);
     const { prompt, itemId } = await buildPrompt(cfg, state.seen);
-    const buf = await generateImage(provider, prompt, sizeFor(cfg, framesOf(ctx.db, c.id)[0]));
+    const buf = await generateImage(provider, prompt, { ...sizeFor(cfg, framesOf(ctx.db, c.id)[0]), negative: cfg.negative });
     const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
     const img = await saveLocalUpload(ctx.db, buf, `ai-${c.id}-${stamp}.png`);
     addItems(ctx.db, c.id, [img.id]);

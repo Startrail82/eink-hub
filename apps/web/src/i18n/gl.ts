@@ -650,4 +650,6 @@ export const gl: Catalogue = {
   'ai.panel': 'Tipo de pantalla',
   'ai.panel_hint': 'As imaxes xéranse para este tipo de pantalla e esta orientación.',
   'ai.mismatch': 'Esta colección crea imaxes para {made}, pero este Canvas é {frame}. As imaxes recortaranse ou escalaranse.',
+  'ai.negative': 'Prompt negativo',
+  'ai.negative_hint': 'O que non debe aparecer na imaxe. Pon {{negative}} no workflow onde vai este texto. Baleiro non engade nada.',
 };

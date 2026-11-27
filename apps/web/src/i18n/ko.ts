@@ -650,4 +650,6 @@ export const ko: Catalogue = {
   'ai.panel': '화면 종류',
   'ai.panel_hint': '이미지는 이 화면 종류와 방향에 맞게 생성됩니다.',
   'ai.mismatch': '이 컬렉션은 {made}용 이미지를 만들지만, 이 Canvas는 {frame}입니다. 이미지가 잘리거나 크기가 조정됩니다.',
+  'ai.negative': '네거티브 프롬프트',
+  'ai.negative_hint': '이미지에 나오지 않았으면 하는 것. 워크플로에서 이 텍스트가 들어갈 자리에 {{negative}} 를 넣으세요. 비워 두면 아무것도 추가되지 않습니다.',
 };

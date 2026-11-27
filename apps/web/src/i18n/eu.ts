@@ -650,4 +650,6 @@ export const eu: Messages = {
   'ai.panel': 'Pantaila mota',
   'ai.panel_hint': 'Irudiak pantaila mota eta norabide honetarako sortzen dira.',
   'ai.mismatch': 'Bilduma honek {made} motarako sortzen ditu irudiak, baina Canvas hau {frame} da. Irudiak moztu edo eskalatu egingo dira.',
+  'ai.negative': 'Prompt negatiboa',
+  'ai.negative_hint': 'Irudian agertu behar ez dena. Jarri {{negative}} workflow-an testu hau doan lekuan. Hutsik badago, ez da ezer gehitzen.',
 };

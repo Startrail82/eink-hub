@@ -650,4 +650,6 @@ export const ca: Catalogue = {
   'ai.panel': 'Tipus de pantalla',
   'ai.panel_hint': 'Les imatges es generen per a aquest tipus de pantalla i aquesta orientació.',
   'ai.mismatch': 'Aquesta col·lecció crea imatges per a {made}, però aquest Canvas és {frame}. Les imatges es retallaran o s’escalaran.',
+  'ai.negative': 'Prompt negatiu',
+  'ai.negative_hint': 'Què no ha d\'aparèixer a la imatge. Posa {{negative}} al workflow on va aquest text. Buit no afegeix res.',
 };
