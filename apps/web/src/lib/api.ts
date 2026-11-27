@@ -2,7 +2,7 @@ import { currentLang } from '../i18n';
 
 export type FitMode = 'cover' | 'contain' | 'blur';
 export type OrderMode = 'random' | 'sequential' | 'newest';
-export type CollectionType = 'manual' | 'immich_album' | 'immich_person' | 'immich_favorites' | 'immich_smart' | 'immich_memories';
+export type CollectionType = 'manual' | 'immich_album' | 'immich_person' | 'immich_favorites' | 'immich_smart' | 'immich_memories' | 'ai';
 
 export type Schedule =
   | { kind: 'interval'; hours: 1 | 3 | 6 | 12 }
@@ -190,6 +190,8 @@ export interface Collection {
   syncError: string | null;
   itemCount: number;
   coverImageId: number | null;
+  /** An AI collection is busy making a picture. */
+  generating?: boolean;
 }
 
 export interface ImmichAssetLite {
@@ -244,6 +246,8 @@ export interface Settings {
   defaultFit: FitMode;
   /** Per-Canvas statistics tab on, and battery samples recorded. */
   statsEnabled: boolean;
+  /** An AI image service is set up (Settings > AI images), so AI collections can be made. */
+  aiConfigured: boolean;
 }
 
 export class ApiError extends Error {
@@ -287,3 +291,57 @@ export const thumbUrl = (imageId: number) => `/api/images/${imageId}/thumb`;
 export const immichThumb = (assetId: string, size: 'thumbnail' | 'preview' = 'thumbnail') =>
   `/api/immich/assets/${assetId}/thumbnail?size=${size}`;
 export const renderUrl = (hash: string) => `/api/renders/${hash}`;
+
+/** A settings field a provider asks for; Settings draws it from this. */
+export interface AiProviderField {
+  key: 'url' | 'apiKey' | 'username' | 'model' | 'size' | 'workflow';
+  type: 'text' | 'password' | 'textarea';
+  label?: string;
+  text?: string;
+  hint?: string;
+  placeholder?: string;
+  /** Shown under "Advanced options". */
+  advanced?: boolean;
+}
+export interface AiProviderInfo {
+  id: string;
+  /** Translation key of the name, else `label` as it is. */
+  label: string;
+  labelKey?: string;
+  fields: AiProviderField[];
+  /** Put in the model field when the provider is chosen. */
+  defaultModel?: string;
+  /** The connection test lists the image models. */
+  listsModels: boolean;
+}
+/** Result of "Test connection". */
+export interface AiTestResult {
+  ok: boolean;
+  server?: string;
+  error?: string;
+  models?: string[];
+}
+/** The id of one of the providers, or empty when none is chosen. */
+export type AiProvider = string;
+export interface AiSettings {
+  provider: AiProvider;
+  providers: AiProviderInfo[];
+  url: string;
+  apiKeySet: boolean;
+  username: string;
+  model: string;
+  size: string;
+  workflow: string;
+  configured: boolean;
+}
+
+export type AiSource = 'prompt' | 'rss';
+export interface AiCollectionConfig {
+  source: AiSource;
+  prompt: string;
+  feedUrl: string;
+  keep: number;
+  /** Panel resolution "shortxlong" the pictures are made for, and how that panel hangs. */
+  panel: string | null;
+  orientation: 'portrait' | 'landscape';
+}

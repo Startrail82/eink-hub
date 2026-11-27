@@ -20,7 +20,8 @@ export function Button({
   const styles: Record<Variant, string> = {
     primary: 'bg-ink text-paper hover:opacity-90',
     accent: 'bg-accent text-white hover:opacity-90',
-    secondary: 'bg-surface text-ink border border-line hover:bg-surface-2',
+    // line/50 rather than surface-2: on white, surface-2 is too close to show the hover.
+    secondary: 'bg-surface text-ink border border-line hover:bg-line/50',
     ghost: 'text-ink-2 hover:bg-surface-2',
     danger: 'bg-surface text-red-600 border border-line hover:bg-red-50 dark:hover:bg-red-950/30',
   };
@@ -175,13 +176,27 @@ export function Chips<T extends string>({
 }
 
 /** `group` renders a <div> instead of a <label>, for controls made of several buttons. */
-export function Field({ label, hint, children, group }: { label: string; hint?: ReactNode; children: ReactNode; group?: boolean }) {
+export function Field({
+  label,
+  hint,
+  children,
+  group,
+  hintFirst,
+}: {
+  label: string;
+  hint?: ReactNode;
+  children: ReactNode;
+  group?: boolean;
+  /** Show the hint under the label, before the input, for hints you should read before filling it in. */
+  hintFirst?: boolean;
+}) {
   const Tag = group ? 'div' : 'label';
   return (
     <Tag className="block min-w-0">
-      <span className="mb-1.5 block text-[13px] font-semibold text-ink-2">{label}</span>
+      <span className={cx('block text-[13px] font-semibold text-ink-2', hint && hintFirst ? 'mb-0.5' : 'mb-1.5')}>{label}</span>
+      {hint && hintFirst && <span className="mb-2 block text-xs text-muted">{hint}</span>}
       {children}
-      {hint && <span className="mt-1 block text-xs text-muted">{hint}</span>}
+      {hint && !hintFirst && <span className="mt-1 block text-xs text-muted">{hint}</span>}
     </Tag>
   );
 }

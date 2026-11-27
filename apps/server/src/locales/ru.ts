@@ -2,6 +2,8 @@ import type { Catalogue } from '../i18n.js';
 
 export const ru: Catalogue = {
   collection_not_found: 'Коллекция {id} не найдена',
+  ai_config_invalid: 'Неверные настройки коллекции ИИ: {reason}',
+  ai_provider_unknown: 'Неизвестный сервис ИИ: {provider}',
   immich_not_configured: 'Immich не настроен',
   canvas_not_found: 'Canvas {id} не найден',
   playlist_empty: 'В плейлисте «{name}» нет изображений',

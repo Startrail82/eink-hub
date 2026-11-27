@@ -10,7 +10,13 @@ export const useFrame = (id: number) =>
     queryFn: () => api.get<Frame>(`/api/frames/${id}`),
     refetchInterval: (q) => (q.state.data?.pendingImageId ? 10_000 : 30_000),
   });
-export const useCollections = () => useQuery({ queryKey: ['collections'], queryFn: () => api.get<Collection[]>('/api/collections') });
+export const useCollections = () =>
+  useQuery({
+    queryKey: ['collections'],
+    queryFn: () => api.get<Collection[]>('/api/collections'),
+    // An AI collection takes a while to make a picture: keep looking until it is done.
+    refetchInterval: (q) => (q.state.data?.some((c) => c.generating) ? 2000 : false),
+  });
 export const useSettings = () => useQuery({ queryKey: ['settings'], queryFn: () => api.get<Settings>('/api/settings') });
 export const useImmichStatus = () =>
   useQuery({

@@ -11,6 +11,7 @@ import { DeviceError } from './device/client.js';
 import { ImmichError } from './immich/client.js';
 import { HttpError, type Ctx } from './lib/context.js';
 import { requestLang, tr } from './i18n.js';
+import { aiRoutes } from './routes/ai.js';
 import { frameRoutes } from './routes/frames.js';
 import { immichRoutes } from './routes/immich.js';
 import { libraryRoutes } from './routes/library.js';
@@ -54,6 +55,7 @@ export async function buildApp(db: DB, opts: { logger?: boolean; logDir?: string
   frameRoutes(app, ctx);
   libraryRoutes(app, ctx);
   immichRoutes(app, ctx);
+  aiRoutes(app, ctx);
   logRoutes(app, ctx);
   statsRoutes(app, ctx);
 

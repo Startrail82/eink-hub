@@ -2,6 +2,8 @@ import type { Catalogue } from '../i18n.js';
 
 export const pl: Catalogue = {
   collection_not_found: 'Nie znaleziono kolekcji {id}',
+  ai_config_invalid: 'Nieprawidłowe ustawienia kolekcji AI: {reason}',
+  ai_provider_unknown: 'Nieznana usługa AI: {provider}',
   immich_not_configured: 'Immich nie jest skonfigurowany',
   canvas_not_found: 'Nie znaleziono Canvasa {id}',
   playlist_empty: 'Lista „{name}” nie zawiera obrazów',

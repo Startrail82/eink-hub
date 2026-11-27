@@ -3,6 +3,7 @@ import { schema, type DB } from '../db/index.js';
 import type { Collection } from '../db/schema.js';
 import { matchesOrientation, type ImmichAsset, type ImmichClient, type OrientationFilter } from '../immich/client.js';
 import { HttpError, immichFor, type Ctx } from './context.js';
+import { generateFor } from './ai/generate.js';
 import { upsertImmichAssets } from './images.js';
 
 export function getCollection(db: DB, id: number): Collection {
@@ -68,6 +69,11 @@ async function fetchAssets(immich: ImmichClient, c: Collection): Promise<ImmichA
 
 export async function syncCollection(ctx: Ctx, c: Collection) {
   if (c.type === 'manual') return c;
+  if (c.type === 'ai') {
+    // "Sync" of an AI collection makes a new picture; that takes a while, so it runs in the background.
+    void generateFor(ctx, c.id);
+    return getCollection(ctx.db, c.id);
+  }
   try {
     const filter = (c.config as { orientation?: OrientationFilter }).orientation;
     const assets = (await fetchAssets(immichFor(ctx.db), c)).filter((a) => matchesOrientation(a, filter));
@@ -100,7 +106,7 @@ export async function prepareCollection(ctx: Ctx, collectionId: number) {
 }
 
 export function needsSync(c: Collection, now = new Date()): boolean {
-  if (c.type === 'manual') return false;
+  if (c.type === 'manual' || c.type === 'ai') return false;
   if (!c.lastSync) return true;
   if (c.type === 'immich_memories') return memoriesDay(new Date(c.lastSync)) !== memoriesDay(now);
   return now.getTime() - c.lastSync > SYNC_EVERY_MS;

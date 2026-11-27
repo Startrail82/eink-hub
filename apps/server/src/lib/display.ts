@@ -13,7 +13,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { isDue } from './schedule.js';
-import { matchOrientation, pickNext } from './selection.js';
+import { matchOrientation, pickFresh, pickNext } from './selection.js';
 import { recordBattery } from './stats.js';
 import { withWake } from './wake.js';
 
@@ -108,6 +108,9 @@ export function chooseNextImage(db: DB, frame: Frame, a: Assignment): number | n
     .limit(500)
     .all()
     .map((r) => r.imageId);
+  const ai = db.select({ type: schema.collections.type }).from(schema.collections).where(eq(schema.collections.id, a.collectionId)).get()?.type === 'ai';
+  // AI pictures are made for the Canvas's own orientation, so only the others are matched.
+  if (ai) return pickFresh(cands, recent);
   const pool = a.matchOrientation ? matchOrientation(cands, frame.orientation) : cands;
   return pickNext(pool, recent, a.orderMode);
 }

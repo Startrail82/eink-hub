@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { ArrowLeft, CheckCheck, RectangleHorizontal, RectangleVertical, Heart, History, Search, Sparkles, Users, Images, Plus, Send, FolderPlus } from 'lucide-react';
+import { ArrowLeft, CheckCheck, RectangleHorizontal, RectangleVertical, Heart, History, Search, Flower, Users, Images, Plus, Send, FolderPlus } from 'lucide-react';
 import { api, immichThumb, type Collection, type CollectionType, type ImmichAssetLite } from '../lib/api';
 import { useAction, useCollections, useImmichStatus } from '../lib/hooks';
 import { useI18n } from '../i18n';
@@ -328,7 +328,7 @@ export function Immich() {
     return (
       <>
         <SectionTitle title="Immich" />
-        <Empty icon={<Sparkles className="size-6" />} title={t(status.data?.configured ? 'immich.cannot_connect' : 'immich.connect')}>
+        <Empty icon={<Flower className="size-6" />} title={t(status.data?.configured ? 'immich.cannot_connect' : 'immich.connect')}>
           <p>{status.data?.error ?? t('immich.connect_hint')}</p>
           <Link to="/settings" className="mt-4 inline-block font-semibold text-accent">
             {t('immich.go_settings')} →

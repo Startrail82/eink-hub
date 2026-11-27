@@ -129,6 +129,7 @@ export const collectionTypes = [
   'immich_favorites',
   'immich_smart',
   'immich_memories',
+  'ai',
 ] as const;
 export type CollectionType = (typeof collectionTypes)[number];
 

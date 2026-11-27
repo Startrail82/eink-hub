@@ -2,6 +2,8 @@ import type { Catalogue } from '../i18n.js';
 
 export const ko: Catalogue = {
   collection_not_found: '컬렉션 {id}을(를) 찾을 수 없습니다',
+  ai_config_invalid: 'AI 컬렉션 설정이 올바르지 않습니다: {reason}',
+  ai_provider_unknown: '알 수 없는 AI 서비스: {provider}',
   immich_not_configured: 'Immich가 설정되지 않았습니다',
   canvas_not_found: 'Canvas {id}을(를) 찾을 수 없습니다',
   playlist_empty: '재생목록 “{name}”에 이미지가 없습니다',

@@ -2,6 +2,8 @@ import type { Catalogue } from '../i18n.js';
 
 export const zh: Catalogue = {
   collection_not_found: '未找到图集 {id}',
+  ai_config_invalid: 'AI 图集设置无效：{reason}',
+  ai_provider_unknown: '未知的 AI 服务：{provider}',
   immich_not_configured: 'Immich 尚未配置',
   canvas_not_found: '未找到 Canvas {id}',
   playlist_empty: '播放列表“{name}”中没有图片',

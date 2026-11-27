@@ -2,6 +2,8 @@ import type { Catalogue } from '../i18n.js';
 
 export const de: Catalogue = {
   collection_not_found: 'Sammlung {id} nicht gefunden',
+  ai_config_invalid: 'Ungültige Einstellungen der KI-Sammlung: {reason}',
+  ai_provider_unknown: 'Unbekannter KI-Dienst: {provider}',
   immich_not_configured: 'Immich ist nicht konfiguriert',
   canvas_not_found: 'Canvas {id} nicht gefunden',
   playlist_empty: 'Die Wiedergabeliste „{name}“ enthält keine Bilder',
