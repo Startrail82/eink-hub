@@ -93,7 +93,15 @@ merged once the tests and that build pass.
 
 ## Cutting a release
 
-From `main`, with everything merged and no pending changes:
+Before cutting it, **check the documentation is up to date** with what the
+release brings: go through the commits since the last tag
+(`git log $(git describe --tags --abbrev=0)..HEAD`) and make sure every new
+feature, renamed setting or changed flow is reflected in these docs and the
+README, and that the screenshots still match the UI. If anything is out of
+date, update it in a `docs:` pull request and merge it first, so the docs ship
+with the release.
+
+Then, from `main`, with everything merged and no pending changes:
 
 ```bash
 node scripts/release.mjs
