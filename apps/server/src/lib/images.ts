@@ -13,7 +13,9 @@ import { aspectKey, formatExt, probeImage, renderForFrame, thumbnail, type CropR
 import { renderTarget } from '../device/drivers/index.js';
 import { HttpError, immichFor, type Ctx } from './context.js';
 import { reverseGeocode } from './geo.js';
-import { homeCountry } from './location.js';
+import { frameLocation, homeCountry } from './location.js';
+import { fetchSnapshot, weatherConfig } from './weather/index.js';
+import { skyLabel, skyOf } from '../imaging/sky.js';
 
 const RENDER_VERSION = 1;
 
@@ -351,10 +353,35 @@ export interface Rendered {
   ext: string;
 }
 
+/**
+ * What the weather bar shows for a Canvas: the weather at its location (or the hub's), now or
+ * some hours ahead. The word for the sky is in the hub's language, so it is part of the render's
+ * identity. Without a location or a forecast the picture is shown without the bar.
+ */
+export async function weatherBarFor(ctx: Ctx, frame: Frame, hours: number) {
+  const place = frameLocation(ctx.db, frame);
+  if (!place) return null;
+  try {
+    const w = await fetchSnapshot(place, weatherConfig(ctx.db), hours);
+    const sky = skyOf(w.dayCode);
+    return {
+      min: Math.round(w.low ?? w.temperature),
+      max: Math.round(w.high ?? w.temperature),
+      rain: w.rain === null ? null : Math.round(w.rain),
+      sky,
+      label: sky ? skyLabel(sky, hubLang(ctx.db)) : null,
+    };
+  } catch (err) {
+    ctx.log.warn({ err }, 'weather bar: no forecast, picture shown without it');
+    return null;
+  }
+}
+
 export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: DisplayOptions = {}): Promise<Rendered> {
   const needLocation = !!opts.showLocation && opts.showLocation !== 'off';
   if (opts.showDate || needLocation) img = await withCaptionDetails(ctx, img, { date: opts.showDate, location: needLocation });
   const landscape = frame.orientation === 'landscape';
+  const weather = opts.weatherBar ? await weatherBarFor(ctx, frame, opts.weatherBar.hours) : null;
   const crop = opts.crop !== undefined ? opts.crop : getCrop(ctx.db, img.id, frameAspect(frame));
   const target = renderTarget(frame);
   const ext = formatExt(target.format);
@@ -378,6 +405,8 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
       homeCountry: homeCountry(ctx.db, frame),
     }),
     // Only when not the default, so existing JPEG renders keep their hash.
+    // Only when present, so existing renders keep their hash.
+    ...(weather ? { weather } : {}),
     ...(ext === 'jpg' && !target.format.palette ? {} : { format: target.format }),
   } as const;
   // The label style only matters when there is a label, and only when not the default, so
@@ -400,6 +429,7 @@ export async function renderFor(ctx: Ctx, img: Image, frame: Frame, opts: Displa
     crop: params.crop,
     caption: params.caption,
     pill,
+    weather,
     format: target.format,
   });
   await fs.writeFile(file, buf);

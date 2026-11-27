@@ -47,6 +47,18 @@ With both on, the label reads like `6 October 2019 · Rome, Italy`. With neither
 
 With **Place** on, **Leave out the home country** shows only the city for photos taken in the country of the Canvas's location. That is the hub's location from *Settings → Location*, or the Canvas's own one if you set it under the Canvas's *Settings → Location*.
 
+## Weather bar
+
+A schedule can also draw the weather on its pictures: switch on **Weather bar**. A small label appears at the bottom right with the lowest and highest temperature of the day and the chance of rain on the first line (for example `↓ 8°  ↑ 13°  💧 60%`), and the sky below it as a small icon and a word in the hub's language (sunny, partly cloudy, cloudy, fog, drizzle, rain, snow or thunderstorm). It works on any photo or picture, whatever the collection.
+
+The weather is for the Canvas's location (*Settings → Location* on its page) or, without one, the hub's location, and comes from the source chosen under [Settings → Weather](/guide/weather). Without a location, or when the forecast can't be fetched, the picture is shown without the bar.
+
+With **Weather in (hours)** the bar looks ahead: with `4`, a picture made at 06:50 and shown at 07:00 shows the sky of 11:00. The low, high and chance of rain stay those of that day. You can look up to 47 hours ahead; `0` is the weather now.
+
+If the date is shown too and the two would overlap, the weather label moves just above it. It has the colours and opacity of the date label, set per Canvas on its page, including the automatic colours.
+
+The bar is added when a picture is made for the Canvas by its schedule. The Send dialog and the previews in the library do not show it.
+
 ## How each frame gets the next photo
 
 | Frame | What happens at each change |

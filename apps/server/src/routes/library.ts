@@ -12,6 +12,7 @@ import { firstAssignment, getAssignmentById, getAssignments, getFrame } from '..
 import { checkSchedule, overview } from '../lib/plan.js';
 import { DEFAULT_SCHEDULE, MEMORIES_SCHEDULE, firstRun, isFrequent, parseSchedule, upcoming, type Schedule } from '../lib/schedule.js';
 import { deleteImage, frameAspect, getCrop, getImage, imageThumbnail, loadSource, readRender, renderFor, saveLocalUpload, setCrop } from '../lib/images.js';
+import { cleanOffset } from '../lib/weather/index.js';
 import { formatMime, thumbnail } from '../imaging/pipeline.js';
 import { renderTarget } from '../device/drivers/index.js';
 
@@ -202,6 +203,8 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
     showLocation?: (typeof locationModes)[number];
     hideHomeCountry?: boolean;
     matchOrientation?: boolean;
+    weatherBar?: boolean;
+    weatherHours?: number;
     enabled?: boolean;
   }
 
@@ -261,6 +264,8 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
       showLocation: locationModes.includes(b.showLocation!) ? b.showLocation! : (prev?.showLocation ?? 'off'),
       hideHomeCountry: typeof b.hideHomeCountry === 'boolean' ? b.hideHomeCountry : (prev?.hideHomeCountry ?? false),
       matchOrientation: typeof b.matchOrientation === 'boolean' ? b.matchOrientation : (prev?.matchOrientation ?? false),
+      weatherBar: typeof b.weatherBar === 'boolean' ? b.weatherBar : (prev?.weatherBar ?? false),
+      weatherHours: b.weatherHours === undefined ? (prev?.weatherHours ?? 0) : cleanOffset(b.weatherHours),
       enabled,
     };
     const assignment = prev

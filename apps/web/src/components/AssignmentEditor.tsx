@@ -78,6 +78,8 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
   const [showLocation, setShowLocation] = useState<LocationMode>(a?.showLocation ?? 'off');
   const [hideHome, setHideHome] = useState(a?.hideHomeCountry ?? false);
   const [matchOrientation, setMatchOrientation] = useState(a?.matchOrientation ?? false);
+  const [weatherBar, setWeatherBar] = useState(a?.weatherBar ?? false);
+  const [weatherHours, setWeatherHours] = useState(a?.weatherHours ?? 0);
   const [enabled, setEnabled] = useState(a?.enabled ?? true);
 
   const collection = collections.data?.find((c) => c.id === collectionId);
@@ -113,6 +115,8 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
         showLocation,
         hideHomeCountry: hideHome,
         matchOrientation,
+        weatherBar,
+        weatherHours,
         enabled,
       };
       return a
@@ -241,6 +245,24 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
             onHideHome={setHideHome}
             memories={isMemories}
           />
+
+          <div>
+            <Toggle label={t('assign.weather_bar')} hint={t('assign.weather_bar_hint')} checked={weatherBar} onChange={setWeatherBar} />
+            {weatherBar && (
+              <div className="mt-3">
+                <Field label={t('assign.weather_hours')} hint={t('assign.weather_hours_hint')}>
+                  <input
+                    className={inputClass}
+                    type="number"
+                    min={0}
+                    max={47}
+                    value={weatherHours}
+                    onChange={(e) => setWeatherHours(Math.min(47, Math.max(0, Math.floor(Number(e.target.value) || 0))))}
+                  />
+                </Field>
+              </div>
+            )}
+          </div>
 
           {hourly && (
             <div className="rounded-2xl bg-surface-2 p-4">

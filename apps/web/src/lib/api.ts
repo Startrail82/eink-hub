@@ -48,6 +48,9 @@ export interface Assignment {
   hideHomeCountry: boolean;
   /** Only pick pictures that suit the way the Canvas hangs. */
   matchOrientation: boolean;
+  /** Draw the weather on the picture, `weatherHours` hours ahead (0 is now). */
+  weatherBar: boolean;
+  weatherHours: number;
   enabled: boolean;
   lastChange: number | null;
 }

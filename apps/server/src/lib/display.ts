@@ -1,3 +1,4 @@
+import { cleanOffset } from './weather/index.js';
 import { asc, desc, eq } from 'drizzle-orm';
 import { schema, type DB } from '../db/index.js';
 import type { Assignment, DisplayOptions, Frame, Image } from '../db/schema.js';
@@ -88,6 +89,7 @@ export function assignmentOptions(db: DB, a?: Assignment): DisplayOptions {
     showDate: a.showDate,
     showLocation: a.showLocation,
     hideHomeCountry: a.hideHomeCountry,
+    ...(a.weatherBar ? { weatherBar: { hours: cleanOffset(a.weatherHours) } } : {}),
     ...(c?.type === 'immich_memories' ? { memories: true } : {}),
   };
 }
