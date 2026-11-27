@@ -33,7 +33,12 @@ export function aiConfig(db: DB): AiConfig {
 
 export function saveAiConfig(db: DB, c: Partial<AiConfig>) {
   // A key belongs to one service: choosing another one forgets it rather than sending it to a stranger.
-  if (c.provider !== undefined && c.provider !== aiConfig(db).provider) setSetting(db, 'ai.apiKey', '');
+  // Same for the address: a key saved for one host is not sent to another unless a new one is typed.
+  const cur = aiConfig(db);
+  const newUrl = c.url === undefined ? undefined : c.url.trim().replace(/\/+$/, '');
+  if ((c.provider !== undefined && c.provider !== cur.provider) || (newUrl !== undefined && newUrl !== cur.url)) {
+    setSetting(db, 'ai.apiKey', '');
+  }
   if (c.provider !== undefined) setSetting(db, 'ai.provider', aiProviderIds().includes(c.provider) ? c.provider : '');
   if (c.url !== undefined) setSetting(db, 'ai.url', c.url.trim().replace(/\/+$/, ''));
   if (c.apiKey) setSetting(db, 'ai.apiKey', c.apiKey.trim());

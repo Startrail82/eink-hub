@@ -420,4 +420,18 @@ describe('settings API', () => {
     await app.inject({ method: 'POST', url: '/api/settings/ai/test', payload: { url: 'http://elsewhere/v1', apiKey: 'typed' } });
     expect(auth).toEqual(['Bearer secret', 'Bearer secret', undefined, 'Bearer typed']);
   });
+
+  it('forgets the key when the address is saved without a new key', async () => {
+    const key = async () => (await app.inject({ url: '/api/settings/ai' })).json().apiKeySet;
+    await app.inject({ method: 'PUT', url: '/api/settings/ai', payload: { provider: 'openai', url: 'http://llm/v1', apiKey: 'secret' } });
+    // Saving the same address again (the form sends no key) keeps it.
+    await app.inject({ method: 'PUT', url: '/api/settings/ai', payload: { url: 'http://llm/v1/' } });
+    expect(await key()).toBe(true);
+    // A new address without a new key forgets it.
+    await app.inject({ method: 'PUT', url: '/api/settings/ai', payload: { url: 'http://elsewhere/v1' } });
+    expect(await key()).toBe(false);
+    // A new address with a new key keeps the new one.
+    await app.inject({ method: 'PUT', url: '/api/settings/ai', payload: { url: 'http://third/v1', apiKey: 'new' } });
+    expect(await key()).toBe(true);
+  });
 });
