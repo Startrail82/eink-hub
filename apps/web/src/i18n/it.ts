@@ -674,4 +674,5 @@ export const it: Catalogue = {
   'ai.mismatch': 'Questa raccolta crea immagini per {made}, ma questo Canvas è {frame}. Le immagini verranno ritagliate o ridimensionate.',
   'ai.negative': 'Prompt negativo',
   'ai.negative_hint': 'Cosa non deve apparire nell\'immagine. Metti {{negative}} nel workflow dove va questo testo. Vuoto non aggiunge nulla.',
+  'ai.pick_hint': 'Sceglie un\'opzione a caso per ogni immagine, per esempio {pick: montagne | costa | bosco}. Clic per copiare.',
 };

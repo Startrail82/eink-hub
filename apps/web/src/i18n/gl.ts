@@ -674,4 +674,5 @@ export const gl: Catalogue = {
   'ai.mismatch': 'Esta colección crea imaxes para {made}, pero este Canvas é {frame}. As imaxes recortaranse ou escalaranse.',
   'ai.negative': 'Prompt negativo',
   'ai.negative_hint': 'O que non debe aparecer na imaxe. Pon {{negative}} no workflow onde vai este texto. Baleiro non engade nada.',
+  'ai.pick_hint': 'Escolle unha opción ao chou en cada imaxe, por exemplo {pick: montañas | costa | bosque}. Preme para copiar.',
 };

@@ -2,9 +2,17 @@ import { AiError } from './providers.js';
 
 export type PromptVars = Record<string, string>;
 
-/** Replace {name} with its value; unknown names become empty so a typo never leaks into the prompt. */
-export function fillTemplate(template: string, vars: PromptVars): string {
+/**
+ * Replace {name} with its value; unknown names become empty so a typo never leaks into the prompt.
+ * {pick: a | b | c} becomes one of its options, chosen at random for every picture (options may
+ * contain {name} tags too).
+ */
+export function fillTemplate(template: string, vars: PromptVars, random: () => number = Math.random): string {
   return template
+    .replace(/\{pick:((?:[^{}]|\{\w+\})*)\}/g, (_, list: string) => {
+      const options = list.split('|').map((o) => o.trim()).filter(Boolean);
+      return options.length ? options[Math.floor(random() * options.length)] : '';
+    })
     .replace(/\{(\w+)\}/g, (_, name: string) => vars[name] ?? '')
     .replace(/[ \t]+/g, ' ')
     .trim();

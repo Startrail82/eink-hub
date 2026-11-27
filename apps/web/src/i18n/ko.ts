@@ -674,4 +674,5 @@ export const ko: Catalogue = {
   'ai.mismatch': '이 컬렉션은 {made}용 이미지를 만들지만, 이 Canvas는 {frame}입니다. 이미지가 잘리거나 크기가 조정됩니다.',
   'ai.negative': '네거티브 프롬프트',
   'ai.negative_hint': '이미지에 나오지 않았으면 하는 것. 워크플로에서 이 텍스트가 들어갈 자리에 {{negative}} 를 넣으세요. 비워 두면 아무것도 추가되지 않습니다.',
+  'ai.pick_hint': '이미지마다 선택지 중 하나를 무작위로 고릅니다. 예: {pick: 산 | 해안 | 숲}. 클릭하여 복사.',
 };

@@ -673,6 +673,7 @@ export const es = {
   'ai.mismatch': 'Esta colección crea imágenes para {made}, pero este Canvas es {frame}. Las imágenes se recortarán o escalarán.',
   'ai.negative': 'Prompt negativo',
   'ai.negative_hint': 'Qué no debe aparecer en la imagen. Pon {{negative}} en el workflow donde va este texto. Vacío no añade nada.',
+  'ai.pick_hint': 'Elige una opción al azar en cada imagen, por ejemplo {pick: montañas | costa | bosque}. Clic para copiar.',
 };
 
 export type Messages = Record<keyof typeof es, string>;

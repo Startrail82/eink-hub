@@ -674,4 +674,5 @@ export const ja: Catalogue = {
   'ai.mismatch': 'このコレクションは {made} 向けの画像を作成しますが、この Canvas は {frame} です。画像はトリミングまたは拡大縮小されます。',
   'ai.negative': 'ネガティブプロンプト',
   'ai.negative_hint': '画像に含めたくないもの。ワークフローのこのテキストの位置に {{negative}} を置いてください。空の場合は何も追加されません。',
+  'ai.pick_hint': '画像ごとに選択肢の1つをランダムに選びます。例：{pick: 山 | 海岸 | 森}。クリックでコピー。',
 };

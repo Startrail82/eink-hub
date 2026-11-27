@@ -674,4 +674,5 @@ export const zhTW: Catalogue = {
   'ai.mismatch': '此圖集依 {made} 產生圖片，但此 Canvas 為 {frame}。圖片將被裁切或縮放。',
   'ai.negative': '反向提示詞',
   'ai.negative_hint': '畫面中不希望出現的內容。請在工作流程中此文字所在位置放入 {{negative}}。留空則不新增任何內容。',
+  'ai.pick_hint': '每張圖片隨機選取一個選項，例如 {pick: 山 | 海岸 | 森林}。點擊複製。',
 };

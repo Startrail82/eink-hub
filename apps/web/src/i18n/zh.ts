@@ -674,4 +674,5 @@ export const zh: Catalogue = {
   'ai.mismatch': '此图集按 {made} 生成图片，但此 Canvas 为 {frame}。图片将被裁剪或缩放。',
   'ai.negative': '反向提示词',
   'ai.negative_hint': '画面中不希望出现的内容。请在工作流中此文本所在位置放入 {{negative}}。留空则不添加任何内容。',
+  'ai.pick_hint': '每张图片随机选取一个选项，例如 {pick: 山 | 海岸 | 森林}。点击复制。',
 };

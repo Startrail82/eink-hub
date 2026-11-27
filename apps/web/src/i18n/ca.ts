@@ -674,4 +674,5 @@ export const ca: Catalogue = {
   'ai.mismatch': 'Aquesta col·lecció crea imatges per a {made}, però aquest Canvas és {frame}. Les imatges es retallaran o s’escalaran.',
   'ai.negative': 'Prompt negatiu',
   'ai.negative_hint': 'Què no ha d\'aparèixer a la imatge. Posa {{negative}} al workflow on va aquest text. Buit no afegeix res.',
+  'ai.pick_hint': 'Tria una opció a l\'atzar a cada imatge, per exemple {pick: muntanyes | costa | bosc}. Clic per copiar.',
 };

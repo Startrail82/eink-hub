@@ -674,4 +674,5 @@ export const nl: Catalogue = {
   'ai.mismatch': 'Deze collectie maakt beelden voor {made}, maar dit Canvas is {frame}. De beelden worden bijgesneden of geschaald.',
   'ai.negative': 'Negatieve prompt',
   'ai.negative_hint': 'Wat het beeld niet mag tonen. Zet {{negative}} in de workflow op de plek van deze tekst. Leeg voegt niets toe.',
+  'ai.pick_hint': 'Kiest voor elk beeld willekeurig één optie, bijvoorbeeld {pick: bergen | kust | bos}. Klik om te kopiëren.',
 };

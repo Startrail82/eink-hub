@@ -674,4 +674,5 @@ export const fr: Catalogue = {
   'ai.mismatch': 'Cette collection crée des images pour {made}, mais ce Canvas est {frame}. Les images seront recadrées ou mises à l’échelle.',
   'ai.negative': 'Prompt négatif',
   'ai.negative_hint': 'Ce que l\'image ne doit pas montrer. Mets {{negative}} dans le workflow à l\'endroit de ce texte. Vide, il n\'ajoute rien.',
+  'ai.pick_hint': 'Choisit une option au hasard pour chaque image, par exemple {pick: montagnes | côte | forêt}. Clique pour copier.',
 };

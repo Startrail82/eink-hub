@@ -674,4 +674,5 @@ export const de: Catalogue = {
   'ai.mismatch': 'Diese Sammlung erzeugt Bilder für {made}, dieses Canvas ist jedoch {frame}. Die Bilder werden zugeschnitten oder skaliert.',
   'ai.negative': 'Negativ-Prompt',
   'ai.negative_hint': 'Was das Bild nicht zeigen soll. Setze {{negative}} im Workflow an die Stelle dieses Textes. Leer fügt nichts hinzu.',
+  'ai.pick_hint': 'Wählt für jedes Bild zufällig eine Option, zum Beispiel {pick: Berge | Küste | Wald}. Zum Kopieren klicken.',
 };

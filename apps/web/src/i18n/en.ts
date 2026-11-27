@@ -674,4 +674,5 @@ export const en: Messages = {
   'ai.mismatch': 'This collection makes pictures for {made}, but this Canvas is {frame}. The pictures will be cropped or scaled.',
   'ai.negative': 'Negative prompt',
   'ai.negative_hint': 'What the picture should not look like. Put {{negative}} in the workflow where this text goes. Empty adds nothing.',
+  'ai.pick_hint': 'Picks one option at random for every picture, for example {pick: mountains | coast | forest}. Click to copy.',
 };
