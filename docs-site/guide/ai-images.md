@@ -6,16 +6,32 @@ An **AI collection** fills itself with pictures drawn by an image generator: a c
 
 Open **Settings > AI images** (admins only). One connection is used by the whole Hub.
 
-### OpenAI or a compatible service
+Pick the **Service**:
+
+| Service | What it needs |
+| --- | --- |
+| **Google Gemini** | An API key from [Google AI Studio](https://aistudio.google.com/apikey). |
+| **OpenAI** | An API key from [platform.openai.com](https://platform.openai.com/api-keys). |
+| **ComfyUI (self-hosted)** | Its address and a workflow, see below. |
+| **Another OpenAI-compatible service** | Its address and a model, for anything else that implements `POST /v1/images/generations`, such as LocalAI. |
+
+### Google Gemini and OpenAI
+
+Paste your **API key** and press **Test connection**. The Hub reads the image models of your account, and the **Model** field becomes a list of them. A model is already chosen (`gemini-2.5-flash-image` for Gemini, `gpt-image-1` for OpenAI); pick another one if you prefer, or *Another model…* to type a name the list doesn't show.
+
+The key is stored on the Hub and never shown again. Leave the field empty to keep the saved one. Each picture is charged to your account by Google or OpenAI.
+
+### Another OpenAI-compatible service
 
 | Field | What to enter |
 | --- | --- |
-| Address | The base address up to and including `/v1`. Leave empty to use OpenAI itself. For a local service this is something like `http://192.168.1.30:8080/v1`. |
-| API key | Your key. It is stored on the Hub and never shown again; leave the field empty to keep the saved one. |
-| Model | The model name, for example `gpt-image-1`. |
-| Image size | Optional, for example `1024x1536`. Empty picks a size that matches the Canvas. Enter `none` for a service that does not accept a size (xAI's image API is reported to reject it), and no size is sent. |
+| Address | The base address up to and including `/v1`, for example `http://192.168.1.30:8080/v1`. |
+| API key | Only if the service asks for one. |
+| Model | The model name. **Test connection** lists every model the service offers, as it can't tell which ones draw pictures. |
 
-Anything that implements `POST /v1/images/generations` works.
+### Image size
+
+Under **Advanced options**, for Gemini, OpenAI and other compatible services. Leave it empty and the Hub picks a size that matches the Canvas. Enter a size such as `1024x1536` to choose one, or `none` for a service that does not accept a size (xAI's image API is reported to reject it), and no size is sent.
 
 ### ComfyUI
 
@@ -35,6 +51,8 @@ In ComfyUI, build a workflow you are happy with, then use **Save (API Format)** 
 
 **Test connection** checks the address (and your key) without generating a picture.
 
+**Remove configuration** forgets the service, its address and its key. AI collections and their pictures stay, but no new pictures are made until a service is set up again. Until one is, the Library doesn't offer **New AI collection**.
+
 ## 2. Create an AI collection
 
 In the **Library**, choose **New AI collection** and pick what to draw:
@@ -44,7 +62,7 @@ In the **Library**, choose **New AI collection** and pick what to draw:
 
 ### Placeholders
 
-A prompt can contain placeholders. Each time a picture is made, the Hub replaces them with their current value. In the collection's settings, click one to copy it.
+A prompt can contain placeholders. Each time a picture is made, the Hub replaces them with their current value. In the collection's settings, click one to add it to the prompt where the cursor is.
 
 | Placeholder | Replaced by | Example |
 | --- | --- | --- |
@@ -86,22 +104,25 @@ This setting is about the Hub's storage. What a Canvas keeps in its own memory f
 
 ## Adding an image provider
 
-The Hub draws its pictures through a small interface, so another service can be added without touching the rest, and a new provider can come as a separate pull request. The first two are OpenAI-compatible services and ComfyUI.
+The Hub draws its pictures through a small interface, so another service can be added without touching the rest, and a new provider can come as a separate pull request. Gemini, OpenAI and other OpenAI-compatible services share one implementation (`openaiLike`), and ComfyUI has its own.
 
 A provider is an object (`ImageProvider`, in `apps/server/src/lib/ai/providers.ts`) with:
 
 | Field | Meaning |
 | --- | --- |
-| `id`, `label` | A stable name that is saved in the settings, and the name shown in Settings. |
-| `fields` | The settings it needs (`url`, `apiKey`, `username`, `model`, `size` or `workflow`), each with a type (`text`, `password` or `textarea`), a label, a hint and a placeholder. Settings draws exactly these fields. |
-| `presets` | Optional shortcuts that fill in `url`, `model` and `size`, for a service that is OpenAI-compatible. |
+| `id`, `label`, `labelKey` | A stable name that is saved in the settings, and the name shown in Settings: `label` as it is (a brand name), or `labelKey` to translate it. |
+| `fields` | The settings it needs (`url`, `apiKey`, `username`, `model`, `size` or `workflow`), each with a type (`text`, `password` or `textarea`), a label, a hint and a placeholder. `advanced: true` puts a field under *Advanced options*. Settings draws exactly these fields. |
+| `defaultModel` | Optional. Put in the model field when the service is chosen, and used when it is left empty. |
+| `listsModels` | Optional. Set it when `test` returns the models, so Settings offers them as a list. |
 | `configured(cfg)` | Whether enough is filled in to try a generation. |
 | `generate(cfg, prompt, opts, timeout)` | Draw one picture and return its bytes. Throw an `AiError` with a readable message on failure. |
-| `test(cfg)` | Check the address and key without generating anything, and return a short description of what answered. |
+| `test(cfg)` | Check the address and key without generating anything. Return `{ server }`, a short description of what answered, and `models`, the image models, when the service can list them. |
+
+A hosted service that speaks the OpenAI images API only needs a few lines with `openaiLike`: its id and name, its fixed address, a default model and a test that tells its image models apart.
 
 To add one:
 
 1. Write the provider in `providers.ts` and add it to the `imageProviders` list. Settings, the connection test and the generation pick it up from there.
 2. Add the labels and hints of any new field to every language in `apps/web/src/i18n`.
 3. Add tests with a stubbed `fetch` (see `apps/server/test/ai.test.ts`); the tests must not call the real service.
-4. **Test it against the real service** with a real key before you open the pull request, and say in the description that you did. This goes for presets too: a preset (a base address, a default model and whether the service accepts `size`) is only added for a service that was tried for real.
+4. **Test it against the real service** with a real key before you open the pull request, and say in the description that you did. Only add a service that was tried for real.

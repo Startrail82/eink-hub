@@ -2,6 +2,8 @@ import crypto from 'node:crypto';
 import type { AiConfig } from './settings.js';
 
 export const OPENAI_DEFAULT_URL = 'https://api.openai.com/v1';
+/** Google's OpenAI-compatible endpoint for the Gemini API. */
+export const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/openai';
 
 export interface GenerateOpts {
   /** The frame's shape, used to pick a fitting size. */
@@ -26,16 +28,16 @@ export interface ProviderField {
   /** Translation key of the explanation. */
   hint?: string;
   placeholder?: string;
+  /** Shown under "Advanced options", for settings most people leave alone. */
+  advanced?: boolean;
 }
 
-/** Ready-made values for an OpenAI-compatible service. */
-export interface ProviderPreset {
-  id: string;
-  label: string;
-  url: string;
-  model: string;
-  /** What to put in the size field: "" lets the hub pick one that fits, "none" sends no size at all. */
-  size: string;
+/** What a connection test found. */
+export interface TestResult {
+  /** A short description of what answered, usually the host. */
+  server: string;
+  /** The image models the service offers, when it can list them. */
+  models?: string[];
 }
 
 /**
@@ -46,17 +48,20 @@ export interface ProviderPreset {
 export interface ImageProvider {
   /** Stable identifier, saved in the settings. */
   id: string;
-  /** Name shown in Settings. */
+  /** Name shown in Settings: a translation key in `labelKey`, or `label` when the name is the same in every language. */
   label: string;
+  labelKey?: string;
   fields: ProviderField[];
-  /** Offered in Settings as a shortcut that fills in the fields; leave out for none. */
-  presets?: ProviderPreset[];
+  /** Model used when none is filled in, and put in the field when the provider is chosen. */
+  defaultModel?: string;
+  /** Whether `test` lists the models, so Settings can offer them. */
+  listsModels?: boolean;
   /** Whether enough is filled in to try a generation. */
   configured(cfg: AiConfig): boolean;
   /** Draw one picture and return its bytes. Throw an AiError with a readable message when it fails. */
   generate(cfg: AiConfig, prompt: string, opts: GenerateOpts, timeout: number): Promise<Buffer>;
-  /** Check the address and key without generating anything; return a short description of what answered. */
-  test(cfg: AiConfig): Promise<string>;
+  /** Check the address and key without generating anything; say what answered and, if it can, list the image models. */
+  test(cfg: AiConfig): Promise<TestResult>;
 }
 
 /** Ask the configured provider for one image and return its bytes. */
@@ -102,13 +107,14 @@ function openaiSizeField(cfg: AiConfig, opts: GenerateOpts): { size?: string } {
   return { size: cfg.size || openaiSize(opts.width, opts.height) };
 }
 
-async function openaiImage(cfg: AiConfig, prompt: string, opts: GenerateOpts, timeout: number): Promise<Buffer> {
-  const base = (cfg.url || OPENAI_DEFAULT_URL).replace(/\/+$/, '');
+const bearer = (cfg: AiConfig): Record<string, string> => (cfg.apiKey ? { authorization: `Bearer ${cfg.apiKey}` } : {});
+
+async function openaiImage(base: string, cfg: AiConfig, prompt: string, opts: GenerateOpts, timeout: number): Promise<Buffer> {
   const res = await http(
     `${base}/images/generations`,
     {
       method: 'POST',
-      headers: { 'content-type': 'application/json', ...(cfg.apiKey ? { authorization: `Bearer ${cfg.apiKey}` } : {}) },
+      headers: { 'content-type': 'application/json', ...bearer(cfg) },
       body: JSON.stringify({ model: cfg.model, prompt, n: 1, ...openaiSizeField(cfg, opts) }),
     },
     timeout,
@@ -179,28 +185,83 @@ async function comfyImage(cfg: AiConfig, prompt: string, opts: GenerateOpts, tim
 
 // --- The providers --------------------------------------------------------------------------
 
-const openai: ImageProvider = {
+/**
+ * GET {base}/models: checks the address and key, and lists the models whose id passes `isImage`
+ * (Gemini may prefix ids with "models/").
+ */
+async function listModels(base: string, cfg: AiConfig, isImage: (id: string) => boolean): Promise<TestResult> {
+  const res = await http(`${base}/models`, { headers: bearer(cfg) }, 15_000);
+  const json = (await res.json().catch(() => null)) as { data?: { id?: unknown }[] } | null;
+  const ids = (json?.data ?? []).map((m) => String(m.id ?? '').replace(/^models\//, '')).filter(Boolean);
+  return { server: new URL(base).host, models: [...new Set(ids.filter(isImage))].sort() };
+}
+
+/** A service that speaks the OpenAI images API. `base` is null when the address is a setting. */
+function openaiLike(p: {
+  id: string;
+  label: string;
+  labelKey?: string;
+  base: string | null;
+  keyHint?: string;
+  defaultModel?: string;
+  isImage: (id: string) => boolean;
+}): ImageProvider {
+  const base = (cfg: AiConfig) => (p.base ?? cfg.url).replace(/\/+$/, '');
+  const fields: ProviderField[] = [
+    ...(p.base ? [] : [{ key: 'url', type: 'text', label: 'ai.url', hint: 'ai.url_hint_openai', placeholder: 'http://192.168.1.30:8080/v1' } satisfies ProviderField]),
+    { key: 'apiKey', type: 'password', text: 'API key', hint: p.keyHint },
+    { key: 'model', type: 'text', label: 'ai.model', hint: 'ai.model_hint', placeholder: p.defaultModel },
+    { key: 'size', type: 'text', label: 'ai.size', hint: 'ai.size_hint', placeholder: '1024x1536', advanced: true },
+  ];
+  return {
+    id: p.id,
+    label: p.label,
+    labelKey: p.labelKey,
+    defaultModel: p.defaultModel,
+    listsModels: true,
+    fields,
+    // A hosted service needs a key; a self-hosted one needs its address and a model.
+    configured: (cfg) => (p.base ? !!cfg.apiKey : !!cfg.url && !!cfg.model),
+    generate: (cfg, prompt, opts, timeout) => openaiImage(base(cfg), { ...cfg, model: cfg.model || p.defaultModel || '' }, prompt, opts, timeout),
+    async test(cfg) {
+      if (!base(cfg)) throw new AiError('The address is empty');
+      return listModels(base(cfg), cfg, p.isImage);
+    },
+  };
+}
+
+/** Google's Gemini API, through its OpenAI-compatible endpoint. */
+const gemini = openaiLike({
+  id: 'gemini',
+  label: 'Google Gemini',
+  base: GEMINI_URL,
+  keyHint: 'ai.key_hint_gemini',
+  defaultModel: 'gemini-2.5-flash-image',
+  isImage: (id) => /^gemini-.*image|^imagen|nano-banana/i.test(id),
+});
+
+const openai = openaiLike({
   id: 'openai',
+  label: 'OpenAI',
+  base: OPENAI_DEFAULT_URL,
+  keyHint: 'ai.key_hint_openai',
+  defaultModel: 'gpt-image-1',
+  isImage: (id) => /^(gpt-image|dall-e)/i.test(id),
+});
+
+/** Anything else that implements POST /v1/images/generations (LocalAI, xAI, a proxy...). */
+const openaiCompatible = openaiLike({
+  id: 'openai_compatible',
   label: 'OpenAI-compatible',
-  fields: [
-    { key: 'url', type: 'text', label: 'ai.url', hint: 'ai.url_hint_openai', placeholder: OPENAI_DEFAULT_URL },
-    { key: 'apiKey', type: 'password', text: 'API key' },
-    { key: 'model', type: 'text', label: 'ai.model', hint: 'ai.model_hint', placeholder: 'gpt-image-1' },
-    { key: 'size', type: 'text', label: 'ai.size', hint: 'ai.size_hint', placeholder: '1024x1536' },
-  ],
-  presets: [{ id: 'custom', label: 'Custom', url: '', model: '', size: '' }],
-  configured: (cfg) => !!cfg.model,
-  generate: openaiImage,
-  async test(cfg) {
-    const base = (cfg.url || OPENAI_DEFAULT_URL).replace(/\/+$/, '');
-    await http(`${base}/models`, { headers: cfg.apiKey ? { authorization: `Bearer ${cfg.apiKey}` } : {} }, 15_000);
-    return new URL(base).host;
-  },
-};
+  labelKey: 'ai.provider_compatible',
+  base: null,
+  isImage: () => true,
+});
 
 const comfyui: ImageProvider = {
   id: 'comfyui',
   label: 'ComfyUI',
+  labelKey: 'ai.provider_comfyui',
   fields: [
     { key: 'url', type: 'text', label: 'ai.url', hint: 'ai.url_hint_comfyui', placeholder: 'http://192.168.1.30:8188' },
     { key: 'username', type: 'text', label: 'login.username', hint: 'ai.auth_hint' },
@@ -213,17 +274,17 @@ const comfyui: ImageProvider = {
     if (!cfg.url) throw new AiError('The ComfyUI address is empty');
     await http(`${cfg.url.replace(/\/+$/, '')}/system_stats`, { headers: comfyHeaders(cfg) }, 15_000);
     if (cfg.workflow) fillWorkflow(cfg.workflow, 'test', { width: 512, height: 512 });
-    return new URL(cfg.url).host;
+    return { server: new URL(cfg.url).host };
   },
 };
 
 /** Every image generator the hub knows. */
-export const imageProviders: ImageProvider[] = [openai, comfyui];
+export const imageProviders: ImageProvider[] = [gemini, openai, comfyui, openaiCompatible];
 
 export const aiProviderIds = (): string[] => imageProviders.map((p) => p.id);
 
-/** Check the address and key. Returns a short description of what answered. */
-export async function testConnection(cfg: AiConfig): Promise<string> {
+/** Check the address and key: what answered and, when the service lists them, its image models. */
+export async function testConnection(cfg: AiConfig): Promise<TestResult> {
   const provider = imageProviders.find((p) => p.id === cfg.provider);
   if (!provider) throw new AiError('No AI provider is configured');
   return provider.test(cfg);

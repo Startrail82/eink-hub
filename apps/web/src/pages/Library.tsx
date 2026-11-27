@@ -5,7 +5,7 @@ import { ArrowLeft, FolderPlus, ImagePlus, Images, Pencil, RefreshCw, Send, Sett
 import { api, thumbUrl, type Collection, type Image } from '../lib/api';
 import { relativeTime } from '../lib/format';
 import { useI18n } from '../i18n';
-import { useAction, useCollections } from '../lib/hooks';
+import { useAction, useCollections, useSettings } from '../lib/hooks';
 import { AiCollectionDialog } from '../components/AiCollection';
 import { PhotoGrid } from '../components/PhotoGrid';
 import { SendDialog } from '../components/SendDialog';
@@ -280,6 +280,8 @@ function CollectionView({ collection, onBack }: { collection: Collection; onBack
 export function Library() {
   const { t } = useI18n();
   const collections = useCollections();
+  // Like the Immich page: AI collections are only offered once an AI service is set up.
+  const aiReady = !!useSettings().data?.aiConfigured;
   // The open album lives in the URL (?album=ID), so other pages can link straight to it.
   const [params, setParams] = useSearchParams();
   const openId = Number(params.get('album')) || null;
@@ -301,9 +303,11 @@ export function Library() {
         subtitle={t('library.subtitle')}
         action={
           <div className="flex flex-wrap gap-2">
-            <Button icon={<Sparkles className="size-4" />} onClick={() => setCreatingAi(true)}>
-              {t('library.new_ai')}
-            </Button>
+            {aiReady && (
+              <Button icon={<Sparkles className="size-4" />} onClick={() => setCreatingAi(true)}>
+                {t('library.new_ai')}
+              </Button>
+            )}
             <Button variant="primary" icon={<FolderPlus className="size-4" />} onClick={() => setCreating(true)}>
               {t('library.new')}
             </Button>

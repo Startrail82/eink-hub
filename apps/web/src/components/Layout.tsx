@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { CalendarClock, Frame as FrameIcon, Images, LogOut, Moon, PanelLeftClose, Settings, Sun, Sparkles } from 'lucide-react';
+import { CalendarClock, Flower, Frame as FrameIcon, Images, LogOut, Moon, PanelLeftClose, Settings, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 import { useImmichStatus } from '../lib/hooks';
@@ -11,7 +11,7 @@ import { useMe } from '../lib/me';
 const allNav = [
   { to: '/', label: 'nav.canvas', icon: FrameIcon, end: true },
   { to: '/library', label: 'nav.library', icon: Images },
-  { to: '/immich', label: 'nav.immich', icon: Sparkles, immich: true },
+  { to: '/immich', label: 'nav.immich', icon: Flower, immich: true },
   { to: '/schedule', label: 'nav.schedule', icon: CalendarClock },
   { to: '/settings', label: 'nav.settings', icon: Settings },
 ] as const;

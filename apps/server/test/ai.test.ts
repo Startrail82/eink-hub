@@ -15,8 +15,8 @@ const dataDir = vi.hoisted(() => {
 import { ensureDirs } from '../src/config.js';
 import { openDb, schema, setSetting } from '../src/db/index.js';
 import { aiState, buildPrompt, collectionConfig, generationDue, generateFor, LEAD_MS, prune, RETRY_MS, sizeFor, targetSize, validateCollectionConfig } from '../src/lib/ai/generate.js';
-import { AiError, fillWorkflow, generateImage, imageProviders, openaiSize, testConnection } from '../src/lib/ai/providers.js';
-import { aiConfigured, type AiConfig } from '../src/lib/ai/settings.js';
+import { AiError, fillWorkflow, GEMINI_URL, generateImage, imageProviders, openaiSize, testConnection } from '../src/lib/ai/providers.js';
+import { aiConfig, aiConfigured, type AiConfig } from '../src/lib/ai/settings.js';
 import { commonVars, fetchFeed, fillTemplate, nextFeedItem, parseFeed } from '../src/lib/ai/sources.js';
 import { pickFresh } from '../src/lib/selection.js';
 
@@ -104,10 +104,13 @@ describe('sizes', () => {
 });
 
 describe('provider configuration', () => {
-  it('needs a model for OpenAI and a placeholder workflow for ComfyUI', () => {
+  it('needs a key for Gemini and OpenAI, an address and a model for other services, a placeholder workflow for ComfyUI', () => {
     expect(aiConfigured(cfg({}))).toBe(false);
-    expect(aiConfigured(cfg({ provider: 'openai' }))).toBe(false);
-    expect(aiConfigured(cfg({ provider: 'openai', model: 'gpt-image-1' }))).toBe(true);
+    expect(aiConfigured(cfg({ provider: 'gemini' }))).toBe(false);
+    expect(aiConfigured(cfg({ provider: 'gemini', apiKey: 'k' }))).toBe(true);
+    expect(aiConfigured(cfg({ provider: 'openai', apiKey: 'k' }))).toBe(true);
+    expect(aiConfigured(cfg({ provider: 'openai_compatible', model: 'm' }))).toBe(false);
+    expect(aiConfigured(cfg({ provider: 'openai_compatible', url: 'http://llm/v1', model: 'm' }))).toBe(true);
     expect(aiConfigured(cfg({ provider: 'comfyui', url: 'http://c:8188', workflow: '{}' }))).toBe(false);
     expect(aiConfigured(cfg({ provider: 'comfyui', url: 'http://c:8188', workflow: '{"a":"{{prompt}}"}' }))).toBe(true);
   });
@@ -133,7 +136,7 @@ describe('generating', () => {
       calls.push({ url, init });
       return jsonRes({ data: [{ b64_json: png.toString('base64') }] });
     });
-    const out = await generateImage(cfg({ provider: 'openai', url: 'http://llm:8080/v1/', apiKey: 'k', model: 'm' }), 'a fox', { width: 1200, height: 1600 });
+    const out = await generateImage(cfg({ provider: 'openai_compatible', url: 'http://llm:8080/v1/', apiKey: 'k', model: 'm' }), 'a fox', { width: 1200, height: 1600 });
     expect(out.equals(png)).toBe(true);
     expect(calls[0].url).toBe('http://llm:8080/v1/images/generations');
     expect((calls[0].init.headers as Record<string, string>).authorization).toBe('Bearer k');
@@ -142,13 +145,13 @@ describe('generating', () => {
 
   it('follows an image url when no base64 comes back', async () => {
     vi.stubGlobal('fetch', async (url: string) => (url.endsWith('/images/generations') ? jsonRes({ data: [{ url: 'http://cdn/x.png' }] }) : new Response(png)));
-    const out = await generateImage(cfg({ provider: 'openai', url: 'http://llm/v1', model: 'm' }), 'p', { width: 1, height: 1 });
+    const out = await generateImage(cfg({ provider: 'openai_compatible', url: 'http://llm/v1', model: 'm' }), 'p', { width: 1, height: 1 });
     expect(out.equals(png)).toBe(true);
   });
 
   it('turns an HTTP error into a readable message', async () => {
     vi.stubGlobal('fetch', async () => new Response('quota exceeded', { status: 429 }));
-    await expect(generateImage(cfg({ provider: 'openai', url: 'http://llm/v1', model: 'm' }), 'p', { width: 1, height: 1 })).rejects.toThrow(/429.*quota exceeded/);
+    await expect(generateImage(cfg({ provider: 'openai_compatible', url: 'http://llm/v1', model: 'm' }), 'p', { width: 1, height: 1 })).rejects.toThrow(/429.*quota exceeded/);
   });
 
   it('queues a ComfyUI workflow, waits for the history and downloads the image', async () => {
@@ -198,8 +201,8 @@ describe('generating', () => {
       urls.push(url);
       return jsonRes({});
     });
-    expect(await testConnection(cfg({ provider: 'openai', url: 'http://llm/v1' }))).toBe('llm');
-    expect(await testConnection(cfg({ provider: 'comfyui', url: 'http://comfy:8188' }))).toBe('comfy:8188');
+    expect(await testConnection(cfg({ provider: 'openai_compatible', url: 'http://llm/v1' }))).toEqual({ server: 'llm', models: [] });
+    expect(await testConnection(cfg({ provider: 'comfyui', url: 'http://comfy:8188' }))).toEqual({ server: 'comfy:8188' });
     expect(urls).toEqual(['http://llm/v1/models', 'http://comfy:8188/system_stats']);
   });
 });
@@ -264,7 +267,7 @@ describe('collections end to end', () => {
     db.insert(schema.collections).values({ name: 'AI', type: 'ai', config, createdAt: Date.now() }).returning().get();
 
   it('generates a picture from a prompt, adds it to the collection and remembers it', async () => {
-    setSetting(db, 'ai.provider', 'openai');
+    setSetting(db, 'ai.provider', 'openai_compatible');
     setSetting(db, 'ai.url', 'http://llm/v1');
     setSetting(db, 'ai.model', 'm');
     const prompts: string[] = [];
@@ -361,18 +364,59 @@ describe('feed size limit', () => {
 
 describe('image providers', () => {
   it('describes the fields of each provider and treats size "none" as no size', async () => {
-    expect(imageProviders.map((p) => p.id)).toEqual(['openai', 'comfyui']);
-    expect(imageProviders[0].fields.map((f) => f.key)).toEqual(['url', 'apiKey', 'model', 'size']);
-    expect(imageProviders[1].fields.map((f) => f.key)).toEqual(['url', 'username', 'apiKey', 'workflow']);
+    expect(imageProviders.map((p) => p.id)).toEqual(['gemini', 'openai', 'comfyui', 'openai_compatible']);
+    const keys = (id: string) => imageProviders.find((p) => p.id === id)!.fields.map((f) => f.key);
+    expect(keys('gemini')).toEqual(['apiKey', 'model', 'size']);
+    expect(keys('openai')).toEqual(['apiKey', 'model', 'size']);
+    expect(keys('comfyui')).toEqual(['url', 'username', 'apiKey', 'workflow']);
+    expect(keys('openai_compatible')).toEqual(['url', 'apiKey', 'model', 'size']);
     const bodies: Record<string, unknown>[] = [];
     vi.stubGlobal('fetch', async (_u: string, init: RequestInit) => {
       bodies.push(JSON.parse(String(init.body)));
       return jsonRes({ data: [{ b64_json: Buffer.from('x').toString('base64') }] });
     });
-    await generateImage(cfg({ provider: 'openai', url: 'http://llm/v1', model: 'm', size: 'none' }), 'p', { width: 1, height: 1 });
-    await generateImage(cfg({ provider: 'openai', url: 'http://llm/v1', model: 'm' }), 'p', { width: 1, height: 1 });
+    await generateImage(cfg({ provider: 'openai_compatible', url: 'http://llm/v1', model: 'm', size: 'none' }), 'p', { width: 1, height: 1 });
+    await generateImage(cfg({ provider: 'openai_compatible', url: 'http://llm/v1', model: 'm' }), 'p', { width: 1, height: 1 });
     expect(bodies[0]).not.toHaveProperty('size');
     expect(bodies[1]).toHaveProperty('size', '1024x1024');
+  });
+
+  it('sends Gemini and OpenAI to their own address with the default model, whatever address is saved', async () => {
+    const calls: { url: string; body: Record<string, unknown>; auth?: string }[] = [];
+    vi.stubGlobal('fetch', async (url: string, init: RequestInit) => {
+      calls.push({ url, body: JSON.parse(String(init.body)), auth: (init.headers as Record<string, string>).authorization });
+      return jsonRes({ data: [{ b64_json: Buffer.from('x').toString('base64') }] });
+    });
+    await generateImage(cfg({ provider: 'gemini', url: 'http://left-over/v1', apiKey: 'g' }), 'p', { width: 1200, height: 1600 });
+    await generateImage(cfg({ provider: 'openai', apiKey: 'o', model: 'dall-e-3' }), 'p', { width: 1200, height: 1600 });
+    expect(calls[0]).toMatchObject({ url: `${GEMINI_URL}/images/generations`, auth: 'Bearer g', body: { model: 'gemini-2.5-flash-image' } });
+    expect(calls[1]).toMatchObject({ url: 'https://api.openai.com/v1/images/generations', auth: 'Bearer o', body: { model: 'dall-e-3' } });
+  });
+
+  it('lists only the image models when testing the connection', async () => {
+    const list = { data: [{ id: 'models/gemini-2.5-flash' }, { id: 'gemini-2.5-flash-image' }, { id: 'models/imagen-4.0-generate-001' }, { id: 'gpt-4o' }, { id: 'gpt-image-1' }, { id: 'dall-e-3' }, { id: 'nano-banana-pro-preview' }] };
+    const urls: string[] = [];
+    vi.stubGlobal('fetch', async (url: string) => {
+      urls.push(url);
+      return jsonRes(list);
+    });
+    expect(await testConnection(cfg({ provider: 'gemini', apiKey: 'g' }))).toEqual({
+      server: 'generativelanguage.googleapis.com',
+      models: ['gemini-2.5-flash-image', 'imagen-4.0-generate-001', 'nano-banana-pro-preview'],
+    });
+    expect((await testConnection(cfg({ provider: 'openai', apiKey: 'o' }))).models).toEqual(['dall-e-3', 'gpt-image-1']);
+    // Another service: no way to tell image models apart, so all of them.
+    expect((await testConnection(cfg({ provider: 'openai_compatible', url: 'http://llm/v1' }))).models).toHaveLength(7);
+    expect(urls).toEqual([`${GEMINI_URL}/models`, 'https://api.openai.com/v1/models', 'http://llm/v1/models']);
+  });
+
+  it('reads an "openai" setting with its own address as another OpenAI-compatible service', () => {
+    const db = openDb(path.join(os.tmpdir(), `eink-ai-migrate-${process.pid}.db`));
+    setSetting(db, 'ai.provider', 'openai');
+    setSetting(db, 'ai.url', 'http://localai:8080/v1');
+    expect(aiConfig(db).provider).toBe('openai_compatible');
+    setSetting(db, 'ai.url', '');
+    expect(aiConfig(db).provider).toBe('openai');
   });
 });
 
@@ -389,9 +433,34 @@ describe('settings API', () => {
 
   it('lists the providers with their fields', async () => {
     const res = (await app.inject({ url: '/api/settings/ai' })).json();
-    expect(res.providers.map((p: { id: string }) => p.id)).toEqual(['openai', 'comfyui']);
-    expect(res.providers[0].fields[0]).toMatchObject({ key: 'url', type: 'text' });
+    expect(res.providers.map((p: { id: string }) => p.id)).toEqual(['gemini', 'openai', 'comfyui', 'openai_compatible']);
+    expect(res.providers[0]).toMatchObject({ label: 'Google Gemini', defaultModel: 'gemini-2.5-flash-image', listsModels: true });
+    expect(res.providers[0].fields[0]).toMatchObject({ key: 'apiKey', type: 'password' });
     expect(res).not.toHaveProperty('apiKey');
+  });
+
+  it('lists the saved service\'s image models, and nothing when it can\'t', async () => {
+    await app.inject({ method: 'PUT', url: '/api/settings/ai', payload: { provider: 'gemini', apiKey: 'g' } });
+    vi.stubGlobal('fetch', async () => jsonRes({ data: [{ id: 'gemini-2.5-flash-image' }, { id: 'gemini-2.5-flash' }] }));
+    expect((await app.inject({ url: '/api/settings/ai/models' })).json()).toEqual({ models: ['gemini-2.5-flash-image'] });
+    const test = (await app.inject({ method: 'POST', url: '/api/settings/ai/test', payload: {} })).json();
+    expect(test).toMatchObject({ ok: true, models: ['gemini-2.5-flash-image'] });
+    vi.stubGlobal('fetch', async () => new Response('bad key', { status: 401 }));
+    expect((await app.inject({ url: '/api/settings/ai/models' })).json()).toEqual({ models: [] });
+  });
+
+  it('tells every user whether AI collections can be made', async () => {
+    await app.inject({ method: 'PUT', url: '/api/settings/ai', payload: { provider: '' } });
+    expect((await app.inject({ url: '/api/settings' })).json().aiConfigured).toBe(false);
+    await app.inject({ method: 'PUT', url: '/api/settings/ai', payload: { provider: 'gemini', apiKey: 'g' } });
+    expect((await app.inject({ url: '/api/settings' })).json().aiConfigured).toBe(true);
+  });
+
+  it('removes the whole configuration', async () => {
+    await app.inject({ method: 'PUT', url: '/api/settings/ai', payload: { provider: 'openai_compatible', url: 'http://llm/v1', apiKey: 'k', model: 'm' } });
+    expect((await app.inject({ method: 'DELETE', url: '/api/settings/ai' })).statusCode).toBe(200);
+    const res = (await app.inject({ url: '/api/settings/ai' })).json();
+    expect(res).toMatchObject({ provider: '', url: '', model: '', apiKeySet: false, configured: false });
   });
 
   it('rejects an unknown provider with a 400', async () => {
@@ -408,7 +477,7 @@ describe('settings API', () => {
   });
 
   it('only uses the saved key for the address it was saved for', async () => {
-    await app.inject({ method: 'PUT', url: '/api/settings/ai', payload: { provider: 'openai', url: 'http://llm/v1', apiKey: 'secret' } });
+    await app.inject({ method: 'PUT', url: '/api/settings/ai', payload: { provider: 'openai_compatible', url: 'http://llm/v1', apiKey: 'secret' } });
     const auth: (string | undefined)[] = [];
     vi.stubGlobal('fetch', async (_u: string, init: RequestInit) => {
       auth.push((init.headers as Record<string, string>).authorization);
@@ -423,7 +492,7 @@ describe('settings API', () => {
 
   it('forgets the key when the address is saved without a new key', async () => {
     const key = async () => (await app.inject({ url: '/api/settings/ai' })).json().apiKeySet;
-    await app.inject({ method: 'PUT', url: '/api/settings/ai', payload: { provider: 'openai', url: 'http://llm/v1', apiKey: 'secret' } });
+    await app.inject({ method: 'PUT', url: '/api/settings/ai', payload: { provider: 'openai_compatible', url: 'http://llm/v1', apiKey: 'secret' } });
     // Saving the same address again (the form sends no key) keeps it.
     await app.inject({ method: 'PUT', url: '/api/settings/ai', payload: { url: 'http://llm/v1/' } });
     expect(await key()).toBe(true);

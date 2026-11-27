@@ -9,6 +9,7 @@ import { displayImage } from '../lib/display.js';
 import { fillImmichSizes, upsertImmichAssets } from '../lib/images.js';
 import { nearestPlace, searchPlaces } from '../lib/geo.js';
 import { hubLocation, parsePlace, setHubLocation } from '../lib/location.js';
+import { aiConfig, aiConfigured } from '../lib/ai/settings.js';
 
 const slimAsset = (a: ImmichAsset) => ({
   id: a.id,
@@ -143,6 +144,8 @@ export function immichRoutes(app: FastifyInstance, ctx: Ctx) {
       homeCountry: getSetting(db, 'homeCountry') ?? '',
       defaultFit: getSetting(db, 'defaultFit') ?? 'cover',
       statsEnabled: statsEnabled(db),
+      // Whether an AI image service is set up: everyone may read it, to offer AI collections.
+      aiConfigured: aiConfigured(aiConfig(db)),
     };
   });
 

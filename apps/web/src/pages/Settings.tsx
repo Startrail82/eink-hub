@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { CheckCircle2, Images, ScrollText, Sparkles, ShieldCheck, SlidersHorizontal, Users, XCircle } from 'lucide-react';
+import { CheckCircle2, Flower, ScrollText, Sparkles, ShieldCheck, SlidersHorizontal, Users, XCircle } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, type Place } from '../lib/api';
 import { LocationPicker } from '../components/LocationPicker';
@@ -236,7 +236,7 @@ export function SettingsPage() {
         className="mb-6 max-w-full overflow-x-auto scrollbar-none"
         options={[
           { value: 'general' as const, label: label(<SlidersHorizontal className="size-3.5" />, t('settings.tab_general')) },
-          ...(admin ? [{ value: 'immich' as const, label: label(<Images className="size-3.5" />, 'Immich') }] : []),
+          ...(admin ? [{ value: 'immich' as const, label: label(<Flower className="size-3.5" />, 'Immich') }] : []),
           ...(admin ? [{ value: 'ai' as const, label: label(<Sparkles className="size-3.5" />, t('settings.tab_ai')) }] : []),
           ...(accounts ? [{ value: 'security' as const, label: label(<ShieldCheck className="size-3.5" />, t('settings.tab_security')) }] : []),
           ...(admin && accounts ? [{ value: 'users' as const, label: label(<Users className="size-3.5" />, t('settings.tab_users')) }] : []),

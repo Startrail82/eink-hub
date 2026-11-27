@@ -246,6 +246,8 @@ export interface Settings {
   defaultFit: FitMode;
   /** Per-Canvas statistics tab on, and battery samples recorded. */
   statsEnabled: boolean;
+  /** An AI image service is set up (Settings > AI images), so AI collections can be made. */
+  aiConfigured: boolean;
 }
 
 export class ApiError extends Error {
@@ -298,19 +300,26 @@ export interface AiProviderField {
   text?: string;
   hint?: string;
   placeholder?: string;
-}
-export interface AiProviderPreset {
-  id: string;
-  label: string;
-  url: string;
-  model: string;
-  size: string;
+  /** Shown under "Advanced options". */
+  advanced?: boolean;
 }
 export interface AiProviderInfo {
   id: string;
+  /** Translation key of the name, else `label` as it is. */
   label: string;
+  labelKey?: string;
   fields: AiProviderField[];
-  presets: AiProviderPreset[];
+  /** Put in the model field when the provider is chosen. */
+  defaultModel?: string;
+  /** The connection test lists the image models. */
+  listsModels: boolean;
+}
+/** Result of "Test connection". */
+export interface AiTestResult {
+  ok: boolean;
+  server?: string;
+  error?: string;
+  models?: string[];
 }
 /** The id of one of the providers, or empty when none is chosen. */
 export type AiProvider = string;

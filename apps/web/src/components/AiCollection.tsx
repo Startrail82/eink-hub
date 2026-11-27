@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { Check } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { api, type AiCollectionConfig, type AiSource, type Collection } from '../lib/api';
 import { useAction, useFrames } from '../lib/hooks';
 import { DEFAULT_PANEL, panelKey, panelOptions } from '../lib/panels';
@@ -16,20 +15,6 @@ const TAGS: Record<AiSource, string[]> = {
   rss: ['title', 'description', 'date', 'time', 'season'],
 };
 
-async function copyText(text: string) {
-  try {
-    await navigator.clipboard.writeText(text);
-  } catch {
-    // Plain http has no clipboard API: fall back to a throwaway selection.
-    const el = document.createElement('textarea');
-    el.value = text;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    el.remove();
-  }
-}
-
 /** What each placeholder becomes, shown next to it. */
 const TAG_HINT: Record<string, MsgKey> = {
   date: 'ai.tag_date',
@@ -39,26 +24,20 @@ const TAG_HINT: Record<string, MsgKey> = {
   description: 'ai.tag_description',
 };
 
-/** The placeholders with what each one becomes; click one to copy it, ready to paste into the prompt. */
-function TagChips({ tags }: { tags: string[] }) {
+/** The placeholders with what each one becomes; click one to add it to the prompt. */
+function TagChips({ tags, onPick }: { tags: string[]; onPick: (tag: string) => void }) {
   const { t } = useI18n();
-  const [done, setDone] = useState<string | null>(null);
   return (
     <ul className="mt-2 space-y-1.5">
       {tags.map((tag) => (
         <li key={tag} className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
           <button
             type="button"
-            title={t('common.copy')}
+            title={t('ai.tag_insert')}
             className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2.5 py-1 font-mono text-xs text-ink-2 transition hover:bg-accent/10 hover:text-accent"
-            onClick={() => {
-              void copyText(`{${tag}}`);
-              setDone(tag);
-              setTimeout(() => setDone((d) => (d === tag ? null : d)), 1500);
-            }}
+            onClick={() => onPick(`{${tag}}`)}
           >
             {`{${tag}}`}
-            {done === tag && <Check className="size-3" />}
           </button>
           {t(TAG_HINT[tag])}
         </li>
@@ -99,9 +78,35 @@ export function AiCollectionDialog({ open, onClose, collection, onCreated }: { o
     }
     setName(collection?.name ?? '');
     setCfg(c);
+    caret.current = null;
     setKeep(String(c.keep));
   }, [open, collection, frames.data]);
 
+  const promptRef = useRef<HTMLTextAreaElement>(null);
+  /** Where the cursor was in the prompt; clicking a tag takes the focus away. Null: at the end. */
+  const caret = useRef<{ start: number; end: number } | null>(null);
+  /** Put a placeholder where the cursor is (or at the end), with a space around it when needed. */
+  const insertTag = (tag: string) => {
+    const at = caret.current;
+    setCfg((c) => {
+      const text = c.prompt;
+      const start = Math.min(at?.start ?? text.length, text.length);
+      const end = Math.min(at?.end ?? start, text.length);
+      const before = text.slice(0, start);
+      const after = text.slice(end);
+      const piece = `${before && !/\s$/.test(before) ? ' ' : ''}${tag}${after && !/^\s/.test(after) ? ' ' : ''}`;
+      const pos = before.length + piece.length;
+      caret.current = { start: pos, end: pos };
+      return { ...c, prompt: before + piece + after };
+    });
+    requestAnimationFrame(() => {
+      const el = promptRef.current;
+      const pos = caret.current?.start;
+      if (!el || pos === undefined) return;
+      el.focus();
+      el.setSelectionRange(pos, pos);
+    });
+  };
   const set = <K extends keyof AiCollectionConfig>(k: K, v: AiCollectionConfig[K]) => setCfg((c) => ({ ...c, [k]: v }));
   const config = (): AiCollectionConfig => ({ ...cfg, keep: Math.max(0, Math.floor(Number(keep) || 0)) });
 
@@ -126,10 +131,10 @@ export function AiCollectionDialog({ open, onClose, collection, onCreated }: { o
           <input className={inputClass} autoFocus={!collection} value={name} onChange={(e) => setName(e.target.value)} placeholder={t('library.name_placeholder')} />
         </Field>
         <Field label={t('ai.source')} group>
-          <Select
-            aria-label={t('ai.source')}
+          <Segmented
+            fill
             value={cfg.source}
-            onChange={(v) => set('source', v as AiSource)}
+            onChange={(v) => set('source', v)}
             options={[
               { value: 'prompt', label: t('ai.source_prompt') },
               { value: 'rss', label: t('ai.source_rss') },
@@ -137,15 +142,23 @@ export function AiCollectionDialog({ open, onClose, collection, onCreated }: { o
           />
         </Field>
         {cfg.source === 'rss' && (
-          <Field label={t('ai.feed_url')} hint={t('ai.feed_hint')}>
+          <Field label={t('ai.feed_url')} hint={t('ai.feed_hint')} hintFirst>
             <input className={inputClass} placeholder="https://example.org/feed.xml" value={cfg.feedUrl} onChange={(e) => set('feedUrl', e.target.value)} />
           </Field>
         )}
-        <Field label={t('ai.prompt')} hint={t(hint[cfg.source])}>
-          <textarea className={`${inputClass} h-28 resize-y py-3`} value={cfg.prompt} onChange={(e) => set('prompt', e.target.value)} />
-          <TagChips tags={TAGS[cfg.source]} />
+        <Field label={t('ai.prompt')} hint={t(hint[cfg.source])} hintFirst group>
+          <textarea
+            ref={promptRef}
+            aria-label={t('ai.prompt')}
+            className={`${inputClass} h-28 resize-y py-3`}
+            value={cfg.prompt}
+            onChange={(e) => set('prompt', e.target.value)}
+            // Remember where the cursor is, since clicking a tag takes the focus away.
+            onSelect={(e) => (caret.current = { start: e.currentTarget.selectionStart, end: e.currentTarget.selectionEnd })}
+          />
+          <TagChips tags={TAGS[cfg.source]} onPick={insertTag} />
         </Field>
-        <Field label={t('ai.panel')} hint={t('ai.panel_hint')} group>
+        <Field label={t('ai.panel')} hint={t('ai.panel_hint')} hintFirst group>
           <div className="space-y-3">
             <Select aria-label={t('ai.panel')} value={cfg.panel ?? DEFAULT_PANEL} onChange={(v) => set('panel', String(v))} options={panelOptions(frames.data)} />
             <Segmented
@@ -159,7 +172,7 @@ export function AiCollectionDialog({ open, onClose, collection, onCreated }: { o
             />
           </div>
         </Field>
-        <Field label={t('ai.keep')} hint={t('ai.keep_hint')}>
+        <Field label={t('ai.keep')} hint={t('ai.keep_hint')} hintFirst>
           <input className={inputClass} type="number" min={0} step={1} value={keep} onChange={(e) => setKeep(e.target.value)} />
         </Field>
       </div>
