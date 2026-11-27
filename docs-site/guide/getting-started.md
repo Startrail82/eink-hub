@@ -48,9 +48,11 @@ The first time a frame connects it shows a welcome picture with a QR code that o
 
 ## Send a photo
 
-Upload photos in **Library** (or connect [Immich](/guide/immich)), open one and press **Send**. The preview is exactly what the frame will receive. You can let the hub find the subject (smart crop), crop by hand, fit with a border or fit on a blurred background. Under **Label on the photo**, switch on **Date** and/or **Place** to add a small label in the bottom-left corner with when and where it was taken, as a [schedule can](/guide/schedules#label-on-the-photo). The colours and the opacity of that label are set per Canvas, under **Settings → Date label**. It is white and solid by default; a see-through label can look slightly grainy on a colour e-ink panel. With **Automatic colours** the hub looks at the photo where the label goes and draws a light label over dark areas and a dark one over light areas, tinted with the photo's own tone (plain white or black on frames the hub dithers to a few colours).
+Upload photos in **Library** (or connect [Immich](/guide/immich)), open one and press **Send**. The preview is exactly what the frame will receive. You can let the hub find the subject (smart crop), crop by hand, fit with a border or fit on a blurred background. Under **Label on the photo**, switch on **Date** and/or **Place** to add a small label in the bottom-left corner with when and where it was taken, as a [schedule can](/guide/schedules#label-on-the-photo). The colours and the opacity of that label are set per Canvas, under **Settings → Label colours**. It is white and solid by default; a see-through label can look slightly grainy on a colour e-ink panel. With **Automatic colours** the hub looks at the photo where the label goes and draws a light label over dark areas and a dark one over light areas, tinted with the photo's own tone (plain white or black on frames the hub dithers to a few colours).
 
 If the frame is asleep, the photo is queued and shown the next time it wakes.
+
+To show a photo again, open the frame's **History** tab and tap it: the send dialog opens with that frame already picked.
 
 ## Set the hub's location
 
