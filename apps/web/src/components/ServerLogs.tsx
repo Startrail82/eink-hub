@@ -33,13 +33,19 @@ export function ServerLogs() {
             options={[{ value: '', label: t('logs.all_canvases') }, ...(frames.data ?? []).map((f) => ({ value: String(f.id), label: f.name }))]}
           />
         </div>
-        <input className={cx(inputClass, 'min-w-0 flex-1 sm:max-w-xs')} placeholder={t('logs.search')} value={q} onChange={(e) => setQ(e.target.value)} />
-        <Button size="sm" variant="ghost" icon={<RefreshCw className="size-4" />} loading={logs.isFetching} onClick={() => logs.refetch()}>
-          {t('detail.refresh')}
-        </Button>
-        <Button size="sm" icon={<Download className="size-4" />} onClick={() => (window.location.href = '/api/logs/download')}>
-          {t('logs.download')}
-        </Button>
+        {/* Phones: while searching, the field takes the whole row and the buttons slide away; they come
+            back on blur. Wider screens: the wrapper dissolves (contents) and nothing moves. */}
+        <div className="flex w-full items-center sm:contents">
+          <input className={cx(inputClass, 'peer min-w-0 flex-1 sm:max-w-xs')} placeholder={t('logs.search')} value={q} onChange={(e) => setQ(e.target.value)} />
+          <div className="ml-2 flex max-w-64 shrink-0 items-center gap-2 overflow-hidden transition-all duration-300 ease-out motion-reduce:transition-none max-sm:peer-focus:ml-0 max-sm:peer-focus:max-w-0 max-sm:peer-focus:opacity-0 sm:contents">
+            <Button size="sm" variant="ghost" icon={<RefreshCw className="size-4" />} loading={logs.isFetching} onClick={() => logs.refetch()}>
+              {t('detail.refresh')}
+            </Button>
+            <Button size="sm" icon={<Download className="size-4" />} onClick={() => (window.location.href = '/api/logs/download')}>
+              {t('logs.download')}
+            </Button>
+          </div>
+        </div>
       </div>
       {logs.isLoading ? (
         <Spinner />

@@ -56,17 +56,25 @@ export function AccountSettings() {
   const save = useAction(() => api.post('/api/me/password', { current, password }), { success: t('settings.password_changed'), invalidate: [] });
   return (
     <Card className="p-6">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h2 className="text-lg font-bold">{t('settings.account')}</h2>
-          <p className="mt-1 text-sm text-muted">
-            {t('settings.account_signed_in', { name: me?.user?.username ?? '' })} · {t(`users.role_${me?.user?.role ?? 'member'}`)}
-          </p>
-        </div>
-        <Button size="sm" variant="ghost" icon={<LogOut className="size-4" />} onClick={logout}>
+      {/* Title and Log out share a row; the subtitle runs the card's full width below them. */}
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-lg font-bold">{t('settings.account')}</h2>
+        <Button size="sm" variant="ghost" className="-mr-3" icon={<LogOut className="size-4" />} onClick={logout}>
           {t('layout.logout')}
         </Button>
       </div>
+      {/* The username in bold inside the sentence, the role as its own chip: "admin · Administrador" read as a repeat. */}
+      <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
+        <span>
+          {t('settings.account_signed_in', { name: '@@' })
+            .split('@@')
+            .map((part, i) => (i ? [<strong key={i} className="font-semibold text-ink-2">{me?.user?.username}</strong>, part] : part))}
+        </span>
+        <Pill>
+          {me?.user?.role === 'admin' ? <UserCog className="size-3" /> : <UserIcon className="size-3" />}
+          {t(`users.role_${me?.user?.role ?? 'member'}`)}
+        </Pill>
+      </p>
       <h3 className="mt-6 text-sm font-bold">{t('settings.password')}</h3>
       <div className="mt-3 grid gap-4 sm:grid-cols-2">
         <Field label={t('settings.password_current')}>
@@ -242,7 +250,7 @@ export function UsersSettings() {
         <ul className="mt-5 divide-y divide-line/70 rounded-2xl border border-line/70">
           {users.data?.map((u) => (
             <li key={u.id} className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3">
-              {/* Phones: name on its own line, controls below it. */}
+              {/* Phones: name on its own line, controls below it (role on the left, under the name; actions on the right). */}
               <div className="min-w-0 flex-1 basis-full sm:basis-0">
                 <div className="flex items-center gap-2 text-sm font-semibold">
                   {u.username}
@@ -258,13 +266,13 @@ export function UsersSettings() {
                   {u.lastLoginAt ? t('users.last_login', { when: relativeTime(u.lastLoginAt) }) : t('users.never_logged_in')}
                 </div>
               </div>
-              <div className="ml-auto flex items-center gap-1">
+              <div className="flex w-full items-center gap-1 sm:ml-auto sm:w-auto">
                 <Select
                   aria-label={t('users.role')}
                   value={u.role}
                   onChange={(v) => setUserRole.mutate({ id: u.id, role: v as Role })}
                   options={roleOptions}
-                  className="h-9! w-auto! rounded-full! px-3! text-xs! font-semibold"
+                  className="h-9! w-auto! rounded-full! px-3! text-xs! font-semibold max-sm:mr-auto"
                 />
                 <IconButton aria-label={t('users.reset')} title={t('users.reset')} onClick={() => reset.mutate(u.id, { onSuccess: setLink })}>
                   <KeyRound className="size-4" />

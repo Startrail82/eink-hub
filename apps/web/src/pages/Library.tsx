@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, FolderPlus, ImagePlus, Images, RefreshCw, Send, Trash2, Upload } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { ArrowLeft, FolderPlus, ImagePlus, Images, Pencil, RefreshCw, Send, Trash2, Upload } from 'lucide-react';
 import { api, thumbUrl, type Collection, type Image } from '../lib/api';
 import { relativeTime } from '../lib/format';
 import { useI18n } from '../i18n';
@@ -46,7 +47,7 @@ function CollectionCard({ c, onOpen }: { c: Collection; onOpen: () => void }) {
   const { t, tn } = useI18n();
   return (
     <button onClick={onOpen} className="group text-left">
-      <div className="aspect-[4/5] overflow-hidden rounded-3xl bg-surface-2">
+      <div className="aspect-square overflow-hidden rounded-3xl bg-surface-2">
         {c.coverImageId ? (
           <img src={thumbUrl(c.coverImageId)} alt="" className="size-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" />
         ) : (
@@ -111,13 +112,18 @@ function CollectionName({ collection }: { collection: Collection }) {
     <button
       type="button"
       title={`${t('common.edit')} · ${t('common.name')}`}
-      className="-mx-2 cursor-text rounded-xl px-2 text-left transition hover:bg-surface-2"
+      className="group -mx-2 cursor-text rounded-xl px-2 text-left transition hover:bg-surface-2"
       onClick={() => {
         cancelled.current = false;
         setDraft(rename.isPending ? (rename.variables ?? collection.name) : collection.name);
       }}
     >
       {rename.isPending ? rename.variables : collection.name}
+      {/* Says the name can be edited: on hover with a mouse, always on a touch screen (no hover there). */}
+      <Pencil
+        aria-hidden
+        className="ml-2 inline size-[0.6em] align-baseline text-muted transition pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 pointer-fine:group-focus-visible:opacity-100"
+      />
     </button>
   );
 }
@@ -254,7 +260,10 @@ function CollectionView({ collection, onBack }: { collection: Collection; onBack
 export function Library() {
   const { t } = useI18n();
   const collections = useCollections();
-  const [openId, setOpenId] = useState<number | null>(null);
+  // The open album lives in the URL (?album=ID), so other pages can link straight to it.
+  const [params, setParams] = useSearchParams();
+  const openId = Number(params.get('album')) || null;
+  const setOpenId = (id: number | null) => setParams(id ? { album: String(id) } : {});
   const [creating, setCreating] = useState(false);
   const open = collections.data?.find((c) => c.id === openId);
 

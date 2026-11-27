@@ -76,21 +76,25 @@ function FrameCard({ frame }: { frame: Frame }) {
   const col = collections.data?.find((c) => c.id === frame.assignment?.collectionId);
   return (
     <Link to={`/frames/${frame.id}`} className="group block">
-      <div className="rounded-[32px] bg-surface-2/60 px-8 pt-10 pb-6 transition group-hover:bg-surface-2">
-        <FrameMockup frame={frame} className="mx-auto max-w-[220px] transition group-hover:-translate-y-1" />
+      {/* Every card's picture area is the same height, whatever the frame's shape, so the grid lines up. */}
+      <div className="flex h-[354px] items-center justify-center rounded-[32px] bg-surface-2/60 px-8 pt-10 pb-6 transition group-hover:bg-surface-2">
+        <FrameMockup frame={frame} fitHeight="288px" className="max-w-[220px] transition group-hover:-translate-y-1" />
       </div>
       <div className="mt-4 px-1">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center justify-between gap-3">
           <h3 className="min-w-0 truncate text-[17px] font-bold">{frame.name}</h3>
-          <div className="flex shrink-0 flex-col items-end gap-1.5">
-            <span className="flex gap-1">
-              {frame.simulated ? <TestPill /> : <KindPill kind={frame.kind} />}
-              <FrameStatus frame={frame} />
-            </span>
-            <Battery value={frame.battery} />
-          </div>
+          <span className="flex shrink-0 gap-1">
+            {frame.simulated ? <TestPill /> : <KindPill kind={frame.kind} />}
+            <FrameStatus frame={frame} />
+          </span>
         </div>
-        <p className="mt-0.5 break-words text-[13px] text-muted">{col ? col.name : t('canvas.no_schedule')}</p>
+        {/* The schedule on the left, the battery on the right of the same line. */}
+        <div className="mt-0.5 flex items-start justify-between gap-3">
+          <p className="min-w-0 break-words text-[13px] text-muted">{col ? col.name : t('canvas.no_schedule')}</p>
+          <span className="shrink-0">
+            <Battery value={frame.battery} />
+          </span>
+        </div>
         {frame.mode === 'pull' && frame.nextWake ? (
           <p className="text-[13px] text-muted">{sentence(t('canvas.next_wake_short', { when: relativeTime(frame.nextWake) }))}</p>
         ) : null}

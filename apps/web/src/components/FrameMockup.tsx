@@ -40,6 +40,7 @@ export function FrameMockup({
   src,
   className,
   appearance: override,
+  fitHeight,
 }: {
   frame: Pick<Frame, 'orientation' | 'currentRender' | 'currentImageId' | 'width' | 'height'> & {
     kind?: Frame['kind'];
@@ -51,6 +52,8 @@ export function FrameMockup({
   className?: string;
   /** Unsaved appearance, for a live preview. */
   appearance?: FrameAppearance;
+  /** A CSS height the frame must fit in: narrows it (keeping its shape) when it would be taller. */
+  fitHeight?: string;
 }) {
   const landscape = frame.orientation === 'landscape';
   // BLOOMIN8 renders are stored portrait; for landscape ones show the un-rotated thumbnail instead.
@@ -96,6 +99,7 @@ export function FrameMockup({
       style={
         {
           aspectRatio: `${g.width} / ${g.height}`,
+          ...(fitHeight ? { width: `min(100%, calc(${fitHeight} * ${g.width} / ${g.height}))` } : {}),
           '--W': g.width,
           '--depth': g.depth,
         } as CSSProperties

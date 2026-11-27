@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Bluetooth, Copy, Download, Eraser, Moon, Play, Plus, RefreshCw, RotateCcw, SkipForward, Smartphone, Trash2 } from 'lucide-react';
+import { ArrowLeft, Bluetooth, Copy, Download, Eraser, Moon, Play, Plus, RefreshCw, RotateCcw, Send, SkipForward, Smartphone, ThumbsUp, Trash2 } from 'lucide-react';
 import { api, thumbUrl, type Assignment, type Frame, type FrameAppearance, type HistoryEntry, type ImageFormat, type Place, type Schedule } from '../lib/api';
 import { LocationPicker } from '../components/LocationPicker';
 import { FRAME_COLORS, FRAME_STYLES, KNOWN_DIAGONALS, formatCm, frameGeometry, withDefaults } from '../lib/frameGeometry';
@@ -9,6 +9,7 @@ import { dateTime, formatBytes, formatPercent, relativeTime } from '../lib/forma
 import { useAction, useBleStatus, useFrame, useSettings } from '../lib/hooks';
 import { phoneWakeSupport } from '../lib/webBluetooth';
 import { PhoneWakeSheet } from '../components/PhoneWakeSheet';
+import { SendDialog } from '../components/SendDialog';
 import { useI18n, type MsgKey, type TFunction } from '../i18n';
 import { OrientationField } from '../components/OrientationField';
 import { FrameMockup } from '../components/FrameMockup';
@@ -21,6 +22,14 @@ import { Button, Card, Field, Modal, Pill, Segmented, Spinner, Toggle, cx, input
 import { Battery, DOCS_URL, FrameStatus, KindPill, TestPill } from './Frames';
 import { Select } from '../components/Select';
 import { useIsAdmin } from '../lib/me';
+
+/**
+ * A Canvas action as a tile: icon over a small label. A long label wraps, and a single long word
+ * (Réinitialiser, Перезагрузить) is hyphenated in the page's language (or, where the browser
+ * can't, broken), so the row never breaks. The tiles share one height (grid stretch) and keep
+ * their content at the top, so every icon stays level when a label wraps.
+ */
+const actionTile = 'h-auto! min-w-0 flex-col justify-start! gap-1! rounded-2xl! px-1! py-2 text-[11px]! leading-tight whitespace-normal! text-center hyphens-auto [overflow-wrap:anywhere]';
 
 type Tab = 'schedule' | 'mode' | 'connection' | 'history' | 'stats' | 'device' | 'settings';
 const TABS: Tab[] = ['schedule', 'mode', 'connection', 'history', 'stats', 'device', 'settings'];
@@ -130,23 +139,39 @@ function ModeTab({ frame }: { frame: Frame }) {
   const detected = url && url === settings.data?.localUrl;
   const unchangedPush = mode === 'push' && frame.mode === 'push';
 
-  const card = (value: Frame['mode'], title: string, desc: string) => (
-    <button
-      type="button"
-      onClick={() => setMode(value)}
-      aria-pressed={mode === value}
-      className={cx(
-        'rounded-3xl border-2 p-5 text-left transition',
-        mode === value ? 'border-ink bg-surface-2' : 'border-line hover:border-ink/30',
-      )}
-    >
-      <span className="flex items-center justify-between gap-2">
-        <span className="font-bold">{title}</span>
-        {frame.mode === value && <Pill tone="ok">{t('mode.current')}</Pill>}
-      </span>
-      <span className="mt-1 block text-sm text-muted">{desc}</span>
-    </button>
-  );
+  const card = (value: Frame['mode'], title: string, desc: string) => {
+    // "Scheduled pull · recommended": the part after the dot is a hint, not the name.
+    const [name, hint] = title.split(' · ');
+    return (
+      <button
+        type="button"
+        onClick={() => setMode(value)}
+        aria-pressed={mode === value}
+        className={cx(
+          'rounded-3xl border-2 p-5 text-left transition',
+          mode === value ? 'border-ink bg-surface-2' : 'border-line hover:border-ink/30',
+        )}
+      >
+        <span className="flex flex-wrap-reverse items-center justify-between gap-x-2 gap-y-1.5">
+          <span className="font-bold whitespace-nowrap">{name}</span>
+          {/* One chip: the mode in use says so; otherwise the recommended one says that. */}
+          <span className="ml-auto">
+            {frame.mode === value ? (
+              <Pill tone="ok">{t('mode.current')}</Pill>
+            ) : (
+              hint && (
+                // The selected card is surface-2 too, so lift the pill off it.
+                <Pill className={mode === value ? 'bg-surface!' : undefined}>
+                  <ThumbsUp className="size-3" /> {hint.charAt(0).toLocaleUpperCase() + hint.slice(1)}
+                </Pill>
+              )
+            )}
+          </span>
+        </span>
+        <span className="mt-1 block text-sm text-muted">{desc}</span>
+      </button>
+    );
+  };
 
   return (
     <div className="space-y-5">
@@ -290,6 +315,8 @@ function ConnectionTab({ frame }: { frame: Frame }) {
 
 function HistoryTab({ frame }: { frame: Frame }) {
   const { t } = useI18n();
+  // Tapping a past photo opens the usual send dialog, with this Canvas already picked.
+  const [resendId, setResendId] = useState<number | null>(null);
   // Under ['frames', id] so whatever refreshes the frame (a wake, an action) refreshes this too.
   const history = useQuery({
     queryKey: ['frames', frame.id, 'history', frame.currentImageId],
@@ -302,7 +329,19 @@ function HistoryTab({ frame }: { frame: Frame }) {
     <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
       {history.data.map((h) => (
         <div key={h.id}>
-          <img src={thumbUrl(h.imageId)} alt="" className="aspect-[3/4] w-full rounded-2xl object-cover" loading="lazy" />
+          <button
+            type="button"
+            className="group relative block w-full rounded-2xl"
+            aria-label={t('send.send_to', { name: frame.name })}
+            title={t('send.send_to', { name: frame.name })}
+            onClick={() => setResendId(h.imageId)}
+          >
+            <img src={thumbUrl(h.imageId)} alt="" className="aspect-[3/4] w-full rounded-2xl object-cover transition group-hover:brightness-90" loading="lazy" />
+            {/* Says it can be sent again: on hover with a mouse, always on a touch screen. */}
+            <span className="absolute right-1.5 bottom-1.5 flex size-7 items-center justify-center rounded-full bg-ink/80 text-paper transition pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 pointer-fine:group-focus-visible:opacity-100">
+              <Send className="size-3.5" />
+            </span>
+          </button>
           <p className="mt-1 text-[11px] font-semibold text-ink-2">{relativeTime(h.shownAt)}</p>
           <p className="text-[11px] text-muted">
             {h.method}
@@ -311,6 +350,7 @@ function HistoryTab({ frame }: { frame: Frame }) {
           </p>
         </div>
       ))}
+      <SendDialog imageId={resendId} open={resendId !== null} onClose={() => setResendId(null)} defaultFrameId={frame.id} />
     </div>
   );
 }
@@ -839,17 +879,19 @@ export function FrameDetail() {
               {formatCm(frameGeometry(f, withDefaults(f.appearance)))}
             </p>
           </div>
-          <div className="flex flex-wrap justify-center gap-2">
-            <Button size="sm" icon={<SkipForward className="size-4" />} onClick={() => action.mutate('next')}>
+          {/* One row of equal tiles, so every language fits. Wake and Sleep share a slot. */}
+          <div className="grid auto-cols-fr grid-flow-col gap-2">
+            <Button size="sm" className={actionTile} icon={<SkipForward className="size-4" />} onClick={() => action.mutate('next')}>
               {t('detail.next')}
             </Button>
-            <Button size="sm" icon={<Eraser className="size-4" />} title={t('detail.clear_hint')} onClick={() => action.mutate('clear')}>
+            <Button size="sm" className={actionTile} icon={<Eraser className="size-4" />} title={t('detail.clear_hint')} onClick={() => action.mutate('clear')}>
               {t('detail.clear')}
             </Button>
             {/* Same slot: Sleep while awake, Wake while asleep (if it can be woken from here). */}
             {wakeVia && (!f.online || waking) ? (
               <Button
                 size="sm"
+                className={actionTile}
                 icon={wakeVia === 'hub' ? <Bluetooth className="size-4" /> : <Smartphone className="size-4" />}
                 title={t(wakeVia === 'hub' ? 'detail.wake_hint' : 'detail.wake_phone_hint')}
                 loading={waking}
@@ -860,13 +902,13 @@ export function FrameDetail() {
             ) : (
               f.online &&
               caps.sleep && (
-                <Button size="sm" icon={<Moon className="size-4" />} onClick={() => action.mutate('sleep')}>
+                <Button size="sm" className={actionTile} icon={<Moon className="size-4" />} onClick={() => action.mutate('sleep')}>
                   {t('detail.sleep')}
                 </Button>
               )
             )}
             {caps.reboot && (
-              <Button size="sm" icon={<RotateCcw className="size-4" />} onClick={async () => (await confirm({ title: t('detail.reboot'), message: t('detail.confirm_reboot'), danger: false })) && action.mutate('reboot')}>
+              <Button size="sm" className={actionTile} icon={<RotateCcw className="size-4" />} onClick={async () => (await confirm({ title: t('detail.reboot'), message: t('detail.confirm_reboot'), danger: false })) && action.mutate('reboot')}>
                 {t('detail.reboot')}
               </Button>
             )}
