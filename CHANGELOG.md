@@ -9,6 +9,12 @@ web share a single number (see `VERSION` at the repository root).
 Generated automatically from commit messages. The 0.1.0 entry is the only
 one written by hand: it summarises everything before the first release.
 
+## [0.9.0] - 2026-11-27
+
+### Added
+
+- **web**: UI polish across Canvas, schedules, library and settings ([73c9061c](https://github.com/yayitazale/eink-hub/commit/73c9061cad38a6a4af3f4bbb8ca68817fe17ce9b))
+
 ## [0.8.1] - 2026-11-26
 
 ### Fixed
