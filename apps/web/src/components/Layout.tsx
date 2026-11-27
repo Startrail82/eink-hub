@@ -25,7 +25,8 @@ function useNav() {
     .map((n) => ({ ...n, label: t(n.label), end: 'end' in n ? n.end : false }));
 }
 
-function useTheme() {
+/** Light/dark theme: saved choice, else the system preference. Shared by the app shell and the auth screens. */
+export function useTheme() {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     try {
       const saved = localStorage.getItem('theme');
