@@ -2,6 +2,7 @@ import type { Catalogue } from '../i18n.js';
 
 export const cs: Catalogue = {
   collection_not_found: 'Kolekce {id} nebyla nalezena',
+  ai_config_invalid: 'Neplatné nastavení AI kolekce: {reason}',
   immich_not_configured: 'Immich není nakonfigurován',
   canvas_not_found: 'Canvas {id} nebyl nalezen',
   playlist_empty: 'Playlist „{name}“ neobsahuje žádné obrázky',

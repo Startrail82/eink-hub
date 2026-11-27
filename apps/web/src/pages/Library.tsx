@@ -1,11 +1,12 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
-import { ArrowLeft, FolderPlus, ImagePlus, Images, Pencil, RefreshCw, Send, Trash2, Upload } from 'lucide-react';
+import { ArrowLeft, FolderPlus, ImagePlus, Images, Pencil, RefreshCw, Send, Settings2, Sparkles, Trash2, Upload } from 'lucide-react';
 import { api, thumbUrl, type Collection, type Image } from '../lib/api';
 import { relativeTime } from '../lib/format';
 import { useI18n } from '../i18n';
 import { useAction, useCollections } from '../lib/hooks';
+import { AiCollectionDialog } from '../components/AiCollection';
 import { PhotoGrid } from '../components/PhotoGrid';
 import { SendDialog } from '../components/SendDialog';
 import { Button, Card, Empty, Field, Modal, Pill, SectionTitle, Spinner, inputClass, useConfirm, useToast } from '../components/ui';
@@ -149,6 +150,15 @@ function CollectionView({ collection, onBack }: { collection: Collection; onBack
   });
   const deleteCol = useAction(() => api.del(`/api/collections/${collection.id}`), { success: t('library.deleted'), invalidate });
   const isManual = collection.type === 'manual';
+  const isAi = collection.type === 'ai';
+  const [editing, setEditing] = useState(false);
+  // When a picture is finished, show it without a reload.
+  const wasGenerating = useRef(false);
+  useEffect(() => {
+    if (wasGenerating.current && !collection.generating) qc.invalidateQueries({ queryKey: ['images'] });
+    wasGenerating.current = !!collection.generating;
+  }, [collection.generating, qc]);
+  const generate = useAction(() => api.post(`/api/collections/${collection.id}/generate`), { success: t('ai.generate_started'), invalidate });
 
   const upload = async (files: FileList | null) => {
     if (!files?.length) return;
@@ -205,6 +215,15 @@ function CollectionView({ collection, onBack }: { collection: Collection; onBack
                   {t('library.upload')}
                 </Button>
               </>
+            ) : isAi ? (
+              <>
+                <Button variant="primary" icon={<Sparkles className="size-4" />} loading={generate.isPending || !!collection.generating} onClick={() => generate.mutate()}>
+                  {t('ai.generate')}
+                </Button>
+                <Button icon={<Settings2 className="size-4" />} onClick={() => setEditing(true)}>
+                  {t('ai.edit')}
+                </Button>
+              </>
             ) : (
               <Button icon={<RefreshCw className="size-4" />} loading={sync.isPending} onClick={() => sync.mutate()}>
                 {t('library.sync')}
@@ -249,10 +268,11 @@ function CollectionView({ collection, onBack }: { collection: Collection; onBack
         />
       ) : (
         <Empty icon={<ImagePlus className="size-6" />} title={t('library.empty_collection')}>
-          {t(isManual ? 'library.empty_manual_hint' : 'library.empty_dynamic_hint')}
+          {t(isManual ? 'library.empty_manual_hint' : isAi ? 'library.empty_ai_hint' : 'library.empty_dynamic_hint')}
         </Empty>
       )}
       <SendDialog imageId={sendId} open={sendId !== null} onClose={() => setSendId(null)} />
+      {isAi && <AiCollectionDialog open={editing} onClose={() => setEditing(false)} collection={collection} />}
     </div>
   );
 }
@@ -265,12 +285,14 @@ export function Library() {
   const openId = Number(params.get('album')) || null;
   const setOpenId = (id: number | null) => setParams(id ? { album: String(id) } : {});
   const [creating, setCreating] = useState(false);
+  const [creatingAi, setCreatingAi] = useState(false);
   const open = collections.data?.find((c) => c.id === openId);
 
   if (open) return <CollectionView collection={open} onBack={() => setOpenId(null)} />;
 
   const manual = collections.data?.filter((c) => c.type === 'manual') ?? [];
-  const dynamic = collections.data?.filter((c) => c.type !== 'manual') ?? [];
+  const dynamic = collections.data?.filter((c) => c.type !== 'manual' && c.type !== 'ai') ?? [];
+  const generated = collections.data?.filter((c) => c.type === 'ai') ?? [];
 
   return (
     <>
@@ -278,9 +300,14 @@ export function Library() {
         title={t('nav.library')}
         subtitle={t('library.subtitle')}
         action={
-          <Button variant="primary" icon={<FolderPlus className="size-4" />} onClick={() => setCreating(true)}>
-            {t('library.new')}
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button icon={<Sparkles className="size-4" />} onClick={() => setCreatingAi(true)}>
+              {t('library.new_ai')}
+            </Button>
+            <Button variant="primary" icon={<FolderPlus className="size-4" />} onClick={() => setCreating(true)}>
+              {t('library.new')}
+            </Button>
+          </div>
         }
       />
       {collections.isLoading ? (
@@ -311,6 +338,16 @@ export function Library() {
               </div>
             </section>
           )}
+          {generated.length > 0 && (
+            <section>
+              <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-muted">{t('library.ai')}</h2>
+              <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
+                {generated.map((c) => (
+                  <CollectionCard key={c.id} c={c} onOpen={() => setOpenId(c.id)} />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       )}
       <p className="mt-10 flex items-center justify-center gap-2 text-center text-xs text-muted">
@@ -318,6 +355,7 @@ export function Library() {
         {t('library.tip')}
       </p>
       <NewCollectionDialog open={creating} onClose={() => setCreating(false)} onCreated={(c) => setOpenId(c.id)} />
+      <AiCollectionDialog open={creatingAi} onClose={() => setCreatingAi(false)} onCreated={(c) => setOpenId(c.id)} />
     </>
   );
 }

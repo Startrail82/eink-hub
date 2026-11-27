@@ -2,7 +2,7 @@ import { currentLang } from '../i18n';
 
 export type FitMode = 'cover' | 'contain' | 'blur';
 export type OrderMode = 'random' | 'sequential' | 'newest';
-export type CollectionType = 'manual' | 'immich_album' | 'immich_person' | 'immich_favorites' | 'immich_smart' | 'immich_memories';
+export type CollectionType = 'manual' | 'immich_album' | 'immich_person' | 'immich_favorites' | 'immich_smart' | 'immich_memories' | 'ai';
 
 export type Schedule =
   | { kind: 'interval'; hours: 1 | 3 | 6 | 12 }
@@ -190,6 +190,8 @@ export interface Collection {
   syncError: string | null;
   itemCount: number;
   coverImageId: number | null;
+  /** An AI collection is busy making a picture. */
+  generating?: boolean;
 }
 
 export interface ImmichAssetLite {
@@ -287,3 +289,26 @@ export const thumbUrl = (imageId: number) => `/api/images/${imageId}/thumb`;
 export const immichThumb = (assetId: string, size: 'thumbnail' | 'preview' = 'thumbnail') =>
   `/api/immich/assets/${assetId}/thumbnail?size=${size}`;
 export const renderUrl = (hash: string) => `/api/renders/${hash}`;
+
+export type AiProvider = 'openai' | 'comfyui' | '';
+export interface AiSettings {
+  provider: AiProvider;
+  url: string;
+  apiKeySet: boolean;
+  username: string;
+  model: string;
+  size: string;
+  workflow: string;
+  configured: boolean;
+}
+
+export type AiSource = 'prompt' | 'rss';
+export interface AiCollectionConfig {
+  source: AiSource;
+  prompt: string;
+  feedUrl: string;
+  keep: number;
+  /** Panel resolution "shortxlong" the pictures are made for, and how that panel hangs. */
+  panel: string | null;
+  orientation: 'portrait' | 'landscape';
+}

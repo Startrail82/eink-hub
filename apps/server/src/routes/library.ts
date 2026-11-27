@@ -4,6 +4,8 @@ import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import { requestLang, tr, type Lang } from '../i18n.js';
 import { schema } from '../db/index.js';
 import { collectionTypes, fitModes, locationModes, orderModes, type Assignment, type CollectionType, type DisplayOptions } from '../db/schema.js';
+import { collectionConfig, forgetState, generateFor, isGenerating, validateCollectionConfig } from '../lib/ai/generate.js';
+import { AiError } from '../lib/ai/providers.js';
 import { addItems, getCollection, refreshCount, syncCollection } from '../lib/collections.js';
 import { HttpError, type Ctx } from '../lib/context.js';
 import { firstAssignment, getAssignmentById, getAssignments, getFrame } from '../lib/display.js';
@@ -12,6 +14,16 @@ import { DEFAULT_SCHEDULE, MEMORIES_SCHEDULE, firstRun, isFrequent, parseSchedul
 import { deleteImage, frameAspect, getCrop, getImage, imageThumbnail, loadSource, readRender, renderFor, saveLocalUpload, setCrop } from '../lib/images.js';
 import { formatMime, thumbnail } from '../imaging/pipeline.js';
 import { renderTarget } from '../device/drivers/index.js';
+
+/** Reject an AI collection config that could never generate, with the reason as the message. */
+function checkAiConfig(config: Record<string, unknown>) {
+  try {
+    validateCollectionConfig(collectionConfig({ config } as never));
+  } catch (err) {
+    if (err instanceof AiError) throw new HttpError(400, 'ai_config_invalid', { reason: err.message });
+    throw err;
+  }
+}
 
 export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
   const { db } = ctx;
@@ -111,7 +123,7 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
       .groupBy(schema.collectionItems.collectionId)
       .all();
     const coverOf = new Map(covers.map((c) => [c.collectionId, c.imageId]));
-    return cols.map((c) => ({ ...c, coverImageId: coverOf.get(c.id) ?? null }));
+    return cols.map((c) => ({ ...c, coverImageId: coverOf.get(c.id) ?? null, generating: isGenerating(c.id) }));
   });
 
   app.post<{ Body: { name: string; type: CollectionType; config?: Record<string, unknown>; imageIds?: number[] } }>(
@@ -120,6 +132,7 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
       const { name, type, config = {}, imageIds = [] } = req.body ?? ({} as never);
       if (!name?.trim()) throw new HttpError(400, 'name_missing');
       if (!collectionTypes.includes(type)) throw new HttpError(400, 'collection_type_invalid');
+      if (type === 'ai') checkAiConfig(config);
       const col = db.insert(schema.collections).values({ name: name.trim(), type, config, createdAt: Date.now() }).returning().get();
       if (imageIds.length) addItems(db, col.id, imageIds);
       return type === 'manual' ? getCollection(db, col.id) : syncCollection(ctx, col);
@@ -129,12 +142,14 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
   app.patch<{ Params: { id: string }; Body: { name?: string; config?: Record<string, unknown> } }>('/api/collections/:id', async (req) => {
     const col = getCollection(db, +req.params.id);
     const name = typeof req.body.name === 'string' ? req.body.name.trim() : '';
+    if (col.type === 'ai' && req.body.config) checkAiConfig(req.body.config);
     db.update(schema.collections)
       .set({ ...(name ? { name } : {}), ...(req.body.config ? { config: req.body.config } : {}) })
       .where(eq(schema.collections.id, col.id))
       .run();
     const updated = getCollection(db, col.id);
-    return req.body.config && updated.type !== 'manual' ? syncCollection(ctx, updated) : updated;
+    // Editing an AI collection must not cost an image generation; "Generate now" does that.
+    return req.body.config && updated.type !== 'manual' && updated.type !== 'ai' ? syncCollection(ctx, updated) : updated;
   });
 
   app.delete<{ Params: { id: string } }>('/api/collections/:id', async (req) => {
@@ -142,7 +157,17 @@ export function libraryRoutes(app: FastifyInstance, ctx: Ctx) {
     db.delete(schema.assignments).where(eq(schema.assignments.collectionId, id)).run();
     db.delete(schema.collectionItems).where(eq(schema.collectionItems.collectionId, id)).run();
     db.delete(schema.collections).where(eq(schema.collections.id, id)).run();
+    forgetState(db, id);
     return { ok: true };
+  });
+
+  /** Make a new picture for an AI collection right away (runs in the background). */
+  app.post<{ Params: { id: string } }>('/api/collections/:id/generate', async (req) => {
+    const col = getCollection(db, +req.params.id);
+    if (col.type !== 'ai') throw new HttpError(400, 'collection_type_invalid');
+    if (isGenerating(col.id)) return { ok: true, running: true };
+    void generateFor(ctx, col.id);
+    return { ok: true, running: true };
   });
 
   app.post<{ Params: { id: string } }>('/api/collections/:id/sync', async (req) => syncCollection(ctx, getCollection(db, +req.params.id)));
