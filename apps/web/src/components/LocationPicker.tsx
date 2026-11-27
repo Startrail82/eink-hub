@@ -3,7 +3,7 @@ import { LocateFixed, MapPin, Search } from 'lucide-react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { api, type Place } from '../lib/api';
 import { languages, useI18n } from '../i18n';
-import { Button, Field, Spinner, inputClass, useToast } from './ui';
+import { Button, Field, Spinner, cx, fieldWidth, inputClass, useToast } from './ui';
 
 /** Country names in the UI language ("España"), falling back to the English name the hub stores. */
 export function useCountryName() {
@@ -95,7 +95,7 @@ export function LocationPicker({ value, onChange, saving }: { value: Place | nul
   return (
     <div className="space-y-4">
       {value && (
-        <div className="flex items-start gap-3 rounded-2xl bg-surface-2 p-4">
+        <div className={cx('flex items-start gap-3 rounded-2xl bg-surface-2 p-4', fieldWidth)}>
           <MapPin className="mt-0.5 size-5 shrink-0 text-muted" />
           <div className="min-w-0 flex-1">
             <div className="font-semibold [overflow-wrap:anywhere]">{value.name}</div>
@@ -109,7 +109,7 @@ export function LocationPicker({ value, onChange, saving }: { value: Place | nul
         </div>
       )}
 
-      <div className="relative sm:max-w-md">
+      <div className={cx('relative', fieldWidth)}>
         <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" />
         <input
           className={`${inputClass} pl-9`}

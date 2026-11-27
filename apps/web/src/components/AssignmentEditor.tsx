@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { History, Trash2 } from 'lucide-react';
+import { History, Pause, Play, Trash2 } from 'lucide-react';
 import { api, type FitMode, type Assignment, type Frame, type LocationMode, type OrderMode, type SavedAssignment, type Schedule } from '../lib/api';
 import { useAction, useCollections } from '../lib/hooks';
 import { SchedulePicker } from './SchedulePicker';
@@ -123,6 +123,16 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
       {/* Two columns when the editor itself has room (page vs. popup vs. phone), one otherwise. */}
       <div className="grid gap-5 @xl:grid-cols-2 @xl:gap-x-8">
         <div className="min-w-0 space-y-5">
+          {/* First: whether this schedule runs at all. */}
+          <div className="rounded-2xl bg-surface-2 p-4">
+            <Toggle
+              label={t(enabled ? 'assign.enabled' : 'assign.paused')}
+              hint={t(enabled ? 'assign.enabled_hint' : 'assign.paused_hint')}
+              icon={enabled ? <Play className="size-3.5 shrink-0" /> : <Pause className="size-3.5 shrink-0 text-warn" />}
+              checked={enabled}
+              onChange={setEnabled}
+            />
+          </div>
           {choices && (
             <Field label={t('nav.canvas')} group>
               <Select
@@ -218,21 +228,18 @@ export function AssignmentEditor({ frame: fixed, assignment, choices, onSaved }:
             memories={isMemories}
           />
 
-          <div className="space-y-4 rounded-2xl bg-surface-2 p-4">
-            {hourly && (
-              <div>
-                <Toggle label={t('assign.window')} hint={t('assign.window_hint')} checked={windowOn} onChange={setWindowOn} />
-                {windowOn && (
-                  <div className="mt-3 flex items-center gap-3">
-                    <TimeField aria-label={t('assign.window')} value={from} onChange={setFrom} />
-                    <span className="text-muted">→</span>
-                    <TimeField aria-label={t('assign.window')} value={to} onChange={setTo} />
-                  </div>
-                )}
-              </div>
-            )}
-            <Toggle label={t('assign.enabled')} hint={t('assign.enabled_hint')} checked={enabled} onChange={setEnabled} />
-          </div>
+          {hourly && (
+            <div className="rounded-2xl bg-surface-2 p-4">
+              <Toggle label={t('assign.window')} hint={t('assign.window_hint')} checked={windowOn} onChange={setWindowOn} />
+              {windowOn && (
+                <div className="mt-3 flex items-center gap-3">
+                  <TimeField aria-label={t('assign.window')} value={from} onChange={setFrom} />
+                  <span className="text-muted">→</span>
+                  <TimeField aria-label={t('assign.window')} value={to} onChange={setTo} />
+                </div>
+              )}
+            </div>
+          )}
         </fieldset>
       </div>
 

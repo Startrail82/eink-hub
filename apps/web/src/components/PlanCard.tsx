@@ -1,10 +1,10 @@
-import { CalendarClock, ChevronRight, CloudDownload, Pause, Play, Send, Trash2 } from 'lucide-react';
-import { api, type Assignment, type Frame } from '../lib/api';
+import { CalendarClock, ChevronRight, CloudDownload, Pause, Send } from 'lucide-react';
+import type { Assignment, Frame } from '../lib/api';
 import { dateTime, describeSchedule, relativeTime } from '../lib/format';
 import { useI18n } from '../i18n';
-import { useAction, useCollections } from '../lib/hooks';
+import { useCollections } from '../lib/hooks';
 import { FrameMockup } from './FrameMockup';
-import { Button, Card, Pill, cx, useConfirm } from './ui';
+import { Card, Pill, cx } from './ui';
 
 /** How the photo reaches the Canvas: the hub pushes it, or the Canvas pulls it when it wakes. */
 export function ModePill({ mode }: { mode: Frame['mode'] }) {
@@ -33,46 +33,17 @@ export const isPending = (f: Frame, a: Assignment) => {
 
 /**
  * One schedule of a Canvas as a list row. The picture runs down the left (only when `showFrame`);
- * name, playlist, timing, next change and chips stack beside it. The whole card opens the editor
- * (a list row with a chevron); Pause and Delete sit above that button: labelled on the right on
- * wide screens, icons below on a phone. Same hover as the Canvas cards. Paused: dashed border,
- * greyed picture and faded text, while the Paused chip and the buttons stay at full strength.
+ * beside it the name, playlist, timing and next change; chips pinned to the card's top-right corner. The whole
+ * card opens the editor (a list row with a chevron), which is where it is paused or deleted. Same
+ * hover as the Canvas cards. Paused: dashed border, greyed picture and faded text, while the
+ * Paused chip stays at full strength.
  */
 export function PlanCard({ frame: f, assignment: a, showFrame = true, onEdit }: { frame: Frame; assignment: Assignment; showFrame?: boolean; onEdit: () => void }) {
   const { t, tn } = useI18n();
   const collections = useCollections();
-  const confirm = useConfirm();
-  const setEnabled = useAction((enabled: boolean) => api.patch(`/api/assignments/${a.id}`, { enabled }), { success: t('assign.saved') });
-  const remove = useAction(() => api.del(`/api/assignments/${a.id}`), { success: t('assign.removed') });
   const col = collections.data?.find((c) => c.id === a.collectionId);
   const nextChange = nextChangeOf(f, a);
   const pending = isPending(f, a);
-
-  const pause = (label: boolean) => (
-    <Button
-      size="sm"
-      className={label ? undefined : 'size-8! px-0!'}
-      icon={a.enabled ? <Pause className="size-3.5" /> : <Play className="size-3.5" />}
-      aria-label={t(a.enabled ? 'scheduleView.pause' : 'scheduleView.resume')}
-      disabled={setEnabled.isPending}
-      onClick={() => setEnabled.mutate(!a.enabled)}
-    >
-      {label && t(a.enabled ? 'scheduleView.pause' : 'scheduleView.resume')}
-    </Button>
-  );
-  const del = (label: boolean) => (
-    <Button
-      size="sm"
-      variant="danger"
-      className={label ? undefined : 'size-8! px-0!'}
-      icon={<Trash2 className="size-3.5" />}
-      aria-label={t('common.delete')}
-      disabled={remove.isPending}
-      onClick={async () => (await confirm({ title: t('assign.remove'), message: t('assign.confirm_remove', { name: f.name }) })) && remove.mutate(undefined)}
-    >
-      {label && t('common.delete')}
-    </Button>
-  );
 
   return (
     <Card
@@ -93,8 +64,18 @@ export function PlanCard({ frame: f, assignment: a, showFrame = true, onEdit }: 
         </div>
       )}
       <div className="flex min-w-0 flex-1 flex-col self-stretch justify-center">
+        <h3
+          className={cx(
+            // One line on a phone (cut with an ellipsis); wider screens have room to wrap.
+            'min-w-0 font-bold break-words max-sm:truncate',
+            // Room for the corner chips, past the chevron column the text already stops at.
+            showFrame && a.enabled && 'pr-10',
+            !showFrame && !a.enabled && 'pr-14',
+            showFrame && !a.enabled && 'pr-32',
+            !a.enabled && 'opacity-55',
+          )}
+        >{showFrame ? f.name : (col?.name ?? '')}</h3>
         <div className={cx(!a.enabled && 'opacity-55')}>
-          <h3 className="truncate font-bold">{showFrame ? f.name : (col?.name ?? '')}</h3>
           {col && showFrame && (
             <p className="mt-0.5 truncate text-sm text-ink-2">
               <span className="font-semibold">{col.name}</span> · {t(`collectionType.${col.type}`)} · {tn('common.photos', col.itemCount)}
@@ -120,27 +101,18 @@ export function PlanCard({ frame: f, assignment: a, showFrame = true, onEdit }: 
             </span>
           </p>
         )}
-        {/* Chips wrap in their own space and the phone buttons stay bottom-right; only when not
-            even one chip fits beside them do the buttons drop to their own line (still right). */}
-        <div className="mt-2 flex flex-wrap items-end gap-2">
-          <div className="flex min-w-min grow basis-0 flex-wrap items-center gap-1.5">
-            {showFrame && <ModePill mode={f.mode} />}
-            {!a.enabled && (
-              <Pill tone="warn">
-                <Pause className="size-3" /> {t('scheduleView.paused')}
-              </Pill>
-            )}
-          </div>
-          <div className="relative z-10 ml-auto flex shrink-0 items-center gap-1.5 sm:hidden">
-            {pause(false)}
-            {del(false)}
-          </div>
+      </div>
+      {/* Chips pinned to the card's top-right corner; only the title line leaves room for them. */}
+      {(showFrame || !a.enabled) && (
+        <div className="absolute top-4 right-4 flex gap-1.5 sm:right-5">
+          {showFrame && <ModePill mode={f.mode} />}
+          {!a.enabled && (
+            <Pill tone="warn">
+              <Pause className="size-3" /> {t('scheduleView.paused')}
+            </Pill>
+          )}
         </div>
-      </div>
-      <div className="relative z-10 flex items-center gap-2 max-sm:hidden">
-        {pause(true)}
-        {del(true)}
-      </div>
+      )}
       <ChevronRight className="size-5 shrink-0 text-muted transition group-hover:translate-x-0.5 group-hover:text-ink-2" aria-hidden />
     </Card>
   );

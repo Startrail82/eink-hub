@@ -89,14 +89,22 @@ export function Empty({ icon, title, children }: { icon: ReactNode; title: strin
   );
 }
 
-export function Pill({ tone = 'neutral', children }: { tone?: 'neutral' | 'ok' | 'warn' | 'accent'; children: ReactNode }) {
+export function Pill({
+  tone = 'neutral',
+  className,
+  children,
+}: {
+  tone?: 'neutral' | 'ok' | 'warn' | 'accent';
+  className?: string;
+  children: ReactNode;
+}) {
   const tones = {
     neutral: 'bg-surface-2 text-ink-2',
     ok: 'bg-leaf-soft text-leaf',
     warn: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
     accent: 'bg-accent-soft text-accent',
   };
-  return <span className={cx('inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold', tones[tone])}>{children}</span>;
+  return <span className={cx('inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold', tones[tone], className)}>{children}</span>;
 }
 
 export function Segmented<T extends string>({
@@ -184,6 +192,7 @@ export function Toggle({
   checked,
   onChange,
   nested,
+  icon,
 }: {
   label: string;
   hint?: string;
@@ -191,17 +200,25 @@ export function Toggle({
   onChange: (v: boolean) => void;
   /** A sub-option of the toggle above it: indented, with smaller text. */
   nested?: boolean;
+  /** Shown before the label, e.g. to say what the switch does at a glance. */
+  icon?: ReactNode;
 }) {
   return (
     <label className={cx('flex items-center justify-between gap-3', nested && '-mt-1 ml-1 border-l-2 border-line pl-4')}>
       <span className="min-w-0">
-        <span className={cx('block font-semibold', nested ? 'text-xs' : 'text-sm')}>{label}</span>
+        <span className={cx('flex items-center gap-1.5 font-semibold text-ink-2', nested ? 'text-xs' : 'text-[13px]')}>
+          {icon}
+          {label}
+        </span>
         {hint && <span className={cx('block text-muted', nested ? 'text-[11px] leading-snug' : 'text-xs')}>{hint}</span>}
       </span>
       <input type="checkbox" className={cx('shrink-0 accent-[var(--ink)]', nested ? 'size-4' : 'size-5')} checked={checked} onChange={(e) => onChange(e.target.checked)} />
     </label>
   );
 }
+
+/** One width for settings fields on wider screens (full width on a phone), so a form reads as one column. */
+export const fieldWidth = 'sm:max-w-md';
 
 export const inputClass =
   'w-full h-11 rounded-2xl border border-line bg-surface-2 px-4 text-sm outline-none transition focus:border-ink/40 focus:bg-surface placeholder:text-muted';

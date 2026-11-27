@@ -11,7 +11,7 @@ import { AccountSettings, PasskeySettings, UsersSettings } from '../components/A
 import { useIsAdmin, useMe } from '../lib/me';
 
 const IMMICH_PERMISSIONS_URL = 'https://yayitazale.github.io/eink-hub/guide/immich#api-key-permissions';
-import { Button, Card, Field, SectionTitle, Segmented, Spinner, Toggle, inputClass, useConfirm, useToast } from '../components/ui';
+import { Button, Card, Field, SectionTitle, Segmented, Spinner, Toggle, cx, fieldWidth, inputClass, useConfirm, useToast } from '../components/ui';
 import { Select } from '../components/Select';
 
 type Tab = 'general' | 'immich' | 'security' | 'users' | 'logs';
@@ -37,7 +37,7 @@ function LanguageSettings() {
     <Card className="p-6">
       <h2 className="text-lg font-bold">{t('settings.language')}</h2>
       <p className="mt-1 text-sm text-muted">{t('settings.language_hint')}</p>
-      <div className="mt-5 sm:max-w-xs">
+      <div className={cx('mt-5', fieldWidth)}>
         <Select
           aria-label={t('settings.language')}
           value={lang}
@@ -104,11 +104,11 @@ function ImmichSettings() {
       </p>
       <div className="mt-5 space-y-4">
         <Field label={t('settings.immich_url')}>
-          <input className={inputClass} placeholder="http://192.168.1.20:2283" value={url} onChange={(e) => setUrl(e.target.value)} />
+          <input className={cx(inputClass, fieldWidth)} placeholder="http://192.168.1.20:2283" value={url} onChange={(e) => setUrl(e.target.value)} />
         </Field>
         <Field label="API key" hint={settings.data?.immichApiKeySet ? t('settings.immich_key_set') : undefined}>
           <input
-            className={inputClass}
+            className={cx(inputClass, fieldWidth)}
             type="password"
             placeholder={settings.data?.immichApiKeySet ? '••••••••' : ''}
             value={key}
@@ -174,21 +174,21 @@ function HubSettings() {
       <h2 className="text-lg font-bold">Hub</h2>
       <div className="mt-5 space-y-4">
         <Field label={t('settings.local_url')} hint={`${t('settings.local_url_hint')} ${source}`}>
-          <input className={inputClass} placeholder="http://192.168.1.10:8080" value={localUrl} onChange={(e) => setLocalUrl(e.target.value)} />
+          <input className={cx(inputClass, fieldWidth)} placeholder="http://192.168.1.10:8080" value={localUrl} onChange={(e) => setLocalUrl(e.target.value)} />
         </Field>
         <Field
           label={t('settings.external_url')}
           hint={tailscaleUrl && !externalUrl ? `${t('settings.external_url_hint')} ${t('externalUrl.tailscale')}` : t('settings.external_url_hint')}
         >
           <input
-            className={inputClass}
+            className={cx(inputClass, fieldWidth)}
             placeholder={tailscaleUrl || 'https://hub.example.ts.net'}
             value={externalUrl}
             onChange={(e) => setExternalUrl(e.target.value)}
           />
         </Field>
         <Field label={t('settings.cloud_url')} hint={t('settings.cloud_url_hint')}>
-          <input className={inputClass} placeholder="https://hub.example.ts.net:8443" value={cloudUrl} onChange={(e) => setCloudUrl(e.target.value)} />
+          <input className={cx(inputClass, fieldWidth)} placeholder="https://hub.example.ts.net:8443" value={cloudUrl} onChange={(e) => setCloudUrl(e.target.value)} />
         </Field>
         <Button variant="primary" loading={save.isPending} onClick={() => save.mutate()}>
           {t('common.save')}

@@ -1,4 +1,5 @@
 import { useQueries } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import { Frame as FrameIcon, Images, Moon } from 'lucide-react';
 import { api, thumbUrl, type Frame, type OverviewDay } from '../lib/api';
 import { useCollections } from '../lib/hooks';
@@ -79,17 +80,31 @@ export function WeekOverview({ frames, showFrame = false, compact = false }: { f
               // columns even when a row says "Pending" instead of a time.
               <ol className={cx('grid grid-cols-[auto_auto_minmax(0,1fr)_auto]', compact ? 'mt-2 gap-x-2 gap-y-1' : 'mt-3 gap-x-3 gap-y-2')}>
                 {day.items.map((i) => (
-                  <li key={`${i.assignmentId}-${i.at}`} className={cx('col-span-full grid grid-cols-subgrid items-center rounded-xl bg-surface-2', compact ? 'px-2.5 py-1' : 'px-3 py-2')}>
-                    <span className={cx('font-bold tabular-nums', compact ? 'text-xs' : 'text-sm', i.pending && 'text-warn')}>{i.pending ? t('detail.pending') : clock(i.at)}</span>
-                    <Cover imageId={covers.get(i.collectionId)} compact={compact} />
-                    <span className={cx('truncate font-medium text-ink-2', compact ? 'text-xs' : 'text-sm')}>{i.collection}</span>
-                    {showFrame ? (
-                      <span className="flex max-w-24 min-w-0 items-center justify-end sm:max-w-40 gap-1 text-xs text-muted">
+                  // Two targets per row: the album (time, cover, name) and, on the Schedule page, the Canvas.
+                  <li key={`${i.assignmentId}-${i.at}`} className="col-span-full grid grid-cols-subgrid items-center rounded-xl bg-surface-2">
+                    <Link
+                      to={`/library?album=${i.collectionId}`}
+                      className={cx(
+                        'grid grid-cols-subgrid items-center rounded-xl transition hover:bg-line',
+                        showFrame ? 'col-span-3' : 'col-span-full',
+                        compact ? 'px-2.5 py-1' : 'px-3 py-2',
+                      )}
+                    >
+                      <span className={cx('font-bold tabular-nums', compact ? 'text-xs' : 'text-sm', i.pending && 'text-warn')}>{i.pending ? t('detail.pending') : clock(i.at)}</span>
+                      <Cover imageId={covers.get(i.collectionId)} compact={compact} />
+                      <span className={cx('truncate font-medium text-ink-2', compact ? 'text-xs' : 'text-sm')}>{i.collection}</span>
+                    </Link>
+                    {showFrame && (
+                      <Link
+                        to={`/frames/${i.frameId}`}
+                        className={cx(
+                          'flex max-w-24 min-w-0 items-center justify-end gap-1 self-stretch rounded-xl text-xs text-muted transition hover:bg-line hover:text-ink sm:max-w-40',
+                          compact ? 'px-2.5' : 'px-3',
+                        )}
+                      >
                         <FrameIcon className="size-3 shrink-0" aria-hidden />
                         <span className="truncate">{i.frameName}</span>
-                      </span>
-                    ) : (
-                      <span />
+                      </Link>
                     )}
                   </li>
                 ))}
