@@ -20,7 +20,8 @@ export function Button({
   const styles: Record<Variant, string> = {
     primary: 'bg-ink text-paper hover:opacity-90',
     accent: 'bg-accent text-white hover:opacity-90',
-    secondary: 'bg-surface text-ink border border-line hover:bg-surface-2',
+    // line/50 rather than surface-2: on white, surface-2 is too close to show the hover.
+    secondary: 'bg-surface text-ink border border-line hover:bg-line/50',
     ghost: 'text-ink-2 hover:bg-surface-2',
     danger: 'bg-surface text-red-600 border border-line hover:bg-red-50 dark:hover:bg-red-950/30',
   };
