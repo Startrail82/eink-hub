@@ -19,6 +19,8 @@ A frame can have one or more schedules. Each one has its own collection and timi
 - **Order**: random (avoiding recent repeats), sequential or newest first.
 - **Only pictures that suit the Canvas** (optional): on a portrait Canvas only upright pictures are chosen, on a landscape Canvas only wide ones. Square pictures suit both, and pictures of unknown size are kept. If none fit, all pictures are used, so the Canvas never stops changing. It works for every kind of collection and is set per schedule, so the same library can be filtered on one Canvas and not on another.
 
+To pause a schedule without losing it, open it and turn off **Rotation enabled** at the top of the form; you can still send photos by hand meanwhile. Deleting a schedule is also done from its form.
+
 Changes less than 12 hours apart cost battery on battery-powered frames; the form warns you. Twice a day, 12 hours apart, is fine.
 
 ### Several schedules on one frame
@@ -32,7 +34,7 @@ Add as many schedules as you like to a frame, for example one collection in the 
 
 ### Week overview
 
-The **Schedule** page has a **Week view** next to the list of schedules (and every frame's page shows it below its schedules). It lists, per day, at what time the frame changes and to which collection, for the coming seven days.
+The **Schedule** page has a **Week view** next to the list of schedules (and every frame's page shows it below its schedules). It lists, per day, at what time the frame changes and to which collection, for the coming seven days. Each change links to its collection in **Library**, and on the **Schedule** page the frame's name links to the frame.
 
 ## Label on the photo
 

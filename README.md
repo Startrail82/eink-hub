@@ -4,7 +4,7 @@ Self-hosted control center for e-ink photo frames, with **Immich** integration. 
 
 📖 **Documentation: https://yayitazale.github.io/eink-hub/**
 
-| Frame | Integration | |
+| Frame | Integration | Status |
 | --- | --- | --- |
 | [BLOOMIN8 E-Ink Canvas](https://yayitazale.github.io/eink-hub/devices/bloomin8) | 🏠 Local | ✅ |
 | [SwitchBot AI Art Frame](https://yayitazale.github.io/eink-hub/devices/switchbot) | ☁️ Cloud | ✅ ⚠️ not tested |
