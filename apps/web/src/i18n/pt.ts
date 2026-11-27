@@ -672,4 +672,6 @@ export const pt: Catalogue = {
   'ai.panel': 'Tipo de ecrã',
   'ai.panel_hint': 'As imagens são geradas para este tipo de ecrã e esta orientação.',
   'ai.mismatch': 'Esta coleção cria imagens para {made}, mas este Canvas é {frame}. As imagens serão cortadas ou redimensionadas.',
+  'ai.negative': 'Prompt negativo',
+  'ai.negative_hint': 'O que não deve aparecer na imagem. Coloca {{negative}} no workflow onde vai este texto. Vazio não acrescenta nada.',
 };

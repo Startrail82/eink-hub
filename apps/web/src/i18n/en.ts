@@ -672,4 +672,6 @@ export const en: Messages = {
   'ai.panel': 'Screen type',
   'ai.panel_hint': 'Pictures are generated for this screen type and orientation.',
   'ai.mismatch': 'This collection makes pictures for {made}, but this Canvas is {frame}. The pictures will be cropped or scaled.',
+  'ai.negative': 'Negative prompt',
+  'ai.negative_hint': 'What the picture should not look like. Put {{negative}} in the workflow where this text goes. Empty adds nothing.',
 };

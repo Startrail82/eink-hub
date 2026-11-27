@@ -19,6 +19,8 @@ export interface AiCollectionConfig {
   source: AiSource;
   /** Prompt text; {title}, {description}, {date}, {time}, {season} are filled in. Empty = a default. */
   prompt: string;
+  /** ComfyUI only: what the picture should not look like; fills "{{negative}}" in the workflow. */
+  negative: string;
   feedUrl: string;
   /** Hours ahead the weather placeholders are for (0 = now, up to 47). */
   weatherOffset: number;
@@ -41,6 +43,7 @@ export function collectionConfig(c: Collection): AiCollectionConfig {
   return {
     source: (aiSources as readonly string[]).includes(raw.source ?? '') ? (raw.source as AiSource) : 'prompt',
     prompt: typeof raw.prompt === 'string' ? raw.prompt : '',
+    negative: typeof raw.negative === 'string' ? raw.negative.trim() : '',
     feedUrl: typeof raw.feedUrl === 'string' ? raw.feedUrl.trim() : '',
     weatherOffset: cleanOffset(raw.weatherOffset),
     keep: Number.isInteger(keep) && keep >= 0 ? keep : DEFAULT_KEEP,
@@ -169,7 +172,7 @@ export async function generateFor(ctx: Ctx, collectionId: number): Promise<boole
         throw err;
       }
     });
-    const buf = await generateImage(provider, prompt, sizeFor(cfg, frame));
+    const buf = await generateImage(provider, prompt, { ...sizeFor(cfg, frame), negative: cfg.negative });
     const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
     const img = await saveLocalUpload(ctx.db, buf, `ai-${c.id}-${stamp}.png`);
     addItems(ctx.db, c.id, [img.id]);

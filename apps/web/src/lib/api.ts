@@ -342,6 +342,7 @@ export type AiSource = 'prompt' | 'rss';
 export interface AiCollectionConfig {
   source: AiSource;
   prompt: string;
+  negative: string;
   feedUrl: string;
   /** Hours ahead the weather placeholders are for (0 is now). */
   weatherOffset: number;

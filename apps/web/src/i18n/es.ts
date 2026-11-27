@@ -671,6 +671,8 @@ export const es = {
   'ai.panel': 'Tipo de pantalla',
   'ai.panel_hint': 'Las imágenes se generan para este tipo de pantalla y esta orientación.',
   'ai.mismatch': 'Esta colección crea imágenes para {made}, pero este Canvas es {frame}. Las imágenes se recortarán o escalarán.',
+  'ai.negative': 'Prompt negativo',
+  'ai.negative_hint': 'Qué no debe aparecer en la imagen. Pon {{negative}} en el workflow donde va este texto. Vacío no añade nada.',
 };
 
 export type Messages = Record<keyof typeof es, string>;

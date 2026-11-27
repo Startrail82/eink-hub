@@ -672,4 +672,6 @@ export const de: Catalogue = {
   'ai.panel': 'Bildschirmtyp',
   'ai.panel_hint': 'Bilder werden für diesen Bildschirmtyp und diese Ausrichtung erzeugt.',
   'ai.mismatch': 'Diese Sammlung erzeugt Bilder für {made}, dieses Canvas ist jedoch {frame}. Die Bilder werden zugeschnitten oder skaliert.',
+  'ai.negative': 'Negativ-Prompt',
+  'ai.negative_hint': 'Was das Bild nicht zeigen soll. Setze {{negative}} im Workflow an die Stelle dieses Textes. Leer fügt nichts hinzu.',
 };

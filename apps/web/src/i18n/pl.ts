@@ -688,4 +688,6 @@ export const pl: Catalogue = {
   'ai.panel': 'Typ ekranu',
   'ai.panel_hint': 'Obrazy są generowane dla tego typu ekranu i tej orientacji.',
   'ai.mismatch': 'Ta kolekcja tworzy obrazy dla {made}, ale ten Canvas to {frame}. Obrazy zostaną przycięte lub przeskalowane.',
+  'ai.negative': 'Negatywny prompt',
+  'ai.negative_hint': 'Czego nie powinno być na obrazie. Wstaw {{negative}} w workflow tam, gdzie ma trafić ten tekst. Puste nic nie dodaje.',
 };

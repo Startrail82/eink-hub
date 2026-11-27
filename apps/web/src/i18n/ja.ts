@@ -672,4 +672,6 @@ export const ja: Catalogue = {
   'ai.panel': '画面の種類',
   'ai.panel_hint': '画像はこの画面タイプと向きに合わせて生成されます。',
   'ai.mismatch': 'このコレクションは {made} 向けの画像を作成しますが、この Canvas は {frame} です。画像はトリミングまたは拡大縮小されます。',
+  'ai.negative': 'ネガティブプロンプト',
+  'ai.negative_hint': '画像に含めたくないもの。ワークフローのこのテキストの位置に {{negative}} を置いてください。空の場合は何も追加されません。',
 };
