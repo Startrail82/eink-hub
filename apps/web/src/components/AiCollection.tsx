@@ -30,29 +30,40 @@ async function copyText(text: string) {
   }
 }
 
-/** Click a placeholder to copy it, ready to paste into the prompt. */
+/** What each placeholder becomes, shown next to it. */
+const TAG_HINT: Record<string, MsgKey> = {
+  date: 'ai.tag_date',
+  time: 'ai.tag_time',
+  season: 'ai.tag_season',
+  title: 'ai.tag_title',
+  description: 'ai.tag_description',
+};
+
+/** The placeholders with what each one becomes; click one to copy it, ready to paste into the prompt. */
 function TagChips({ tags }: { tags: string[] }) {
   const { t } = useI18n();
   const [done, setDone] = useState<string | null>(null);
   return (
-    <div className="mt-2 flex flex-wrap gap-1.5">
+    <ul className="mt-2 space-y-1.5">
       {tags.map((tag) => (
-        <button
-          key={tag}
-          type="button"
-          title={t('common.copy')}
-          className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2.5 py-1 font-mono text-xs text-ink-2 transition hover:bg-accent/10 hover:text-accent"
-          onClick={() => {
-            void copyText(`{${tag}}`);
-            setDone(tag);
-            setTimeout(() => setDone((d) => (d === tag ? null : d)), 1500);
-          }}
-        >
-          {`{${tag}}`}
-          {done === tag && <Check className="size-3" />}
-        </button>
+        <li key={tag} className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
+          <button
+            type="button"
+            title={t('common.copy')}
+            className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2.5 py-1 font-mono text-xs text-ink-2 transition hover:bg-accent/10 hover:text-accent"
+            onClick={() => {
+              void copyText(`{${tag}}`);
+              setDone(tag);
+              setTimeout(() => setDone((d) => (d === tag ? null : d)), 1500);
+            }}
+          >
+            {`{${tag}}`}
+            {done === tag && <Check className="size-3" />}
+          </button>
+          {t(TAG_HINT[tag])}
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }
 
@@ -80,7 +91,7 @@ export function AiCollectionDialog({ open, onClose, collection, onCreated }: { o
   useEffect(() => {
     if (!open) return;
     const c = configOf(collection);
-    // Nothing chosen yet (new, or made before this setting existed): start from the first frame showing it, else any frame.
+    // Nothing chosen yet (new, or made before this setting existed): start from the first Canvas showing it, else any Canvas.
     if (!c.panel) {
       const first = frames.data?.find((f) => f.assignment?.collectionId === collection?.id) ?? (collection ? undefined : frames.data?.[0]);
       c.panel = first ? panelKey(first) : DEFAULT_PANEL;
@@ -126,7 +137,7 @@ export function AiCollectionDialog({ open, onClose, collection, onCreated }: { o
           />
         </Field>
         {cfg.source === 'rss' && (
-          <Field label={t('ai.feed_url')}>
+          <Field label={t('ai.feed_url')} hint={t('ai.feed_hint')}>
             <input className={inputClass} placeholder="https://example.org/feed.xml" value={cfg.feedUrl} onChange={(e) => set('feedUrl', e.target.value)} />
           </Field>
         )}

@@ -39,16 +39,30 @@ In ComfyUI, build a workflow you are happy with, then use **Save (API Format)** 
 
 In the **Library**, choose **New AI collection** and pick what to draw:
 
-- **A fixed prompt.** The same description every time. The result still differs from picture to picture. `{date}`, `{time}` (the nearest full hour, like `14:00`) and `{season}` can be used in it. `{date}`, `{time}` and `{season}` work in every kind of collection.
-- **An RSS feed.** Each picture is made from the newest feed item that has not been drawn yet. When all items were drawn, it starts again with the newest. Leave the prompt empty for a cartoon of the headline, or write your own with `{title}` and `{description}`. RSS 2.0 and Atom are supported.
+- **A fixed prompt.** The same description every time. The result still differs from picture to picture.
+- **An RSS feed.** Each picture is made from the newest feed item that has not been drawn yet. When all items were drawn, it starts again with the newest. Leave the prompt empty for a cartoon of the headline, or write your own with `{title}` and `{description}`. RSS 2.0 and Atom feeds are supported.
 
-Choose the **Frame type** (screen) and **orientation** the pictures are made for. They are generated at that screen's shape, so they fit without cropping. When you later use the collection on a Canvas with a different resolution or orientation, the Hub warns you that the pictures will be cropped or scaled.
+### Placeholders
+
+A prompt can contain placeholders. Each time a picture is made, the Hub replaces them with their current value. In the collection's settings, click one to copy it.
+
+| Placeholder | Replaced by | Example |
+| --- | --- | --- |
+| `{date}` | The day, in English | `Friday 27 November 2026` |
+| `{time}` | The nearest full hour, in the Hub's time zone. A picture is made shortly before the Canvas changes, so this is about the time it goes on screen. | `14:00` |
+| `{season}` | The season, in English. For now it follows the northern hemisphere. | `winter`, `spring`, `summer`, `autumn` |
+| `{title}` | RSS only: the headline of the feed item | |
+| `{description}` | RSS only: the summary of the feed item, up to 500 characters | |
+
+An unknown placeholder (a typo, say) is left out rather than sent to the generator as is. For example, `A watercolour of a quiet street on a {season} {date}, around {time}` becomes "A watercolour of a quiet street on a winter Friday 27 November 2026, around 14:00".
+
+Choose the **Screen type** and **orientation** the pictures are made for. They are generated at that screen's shape, so they fit without cropping. When you later use the collection on a Canvas with a different resolution or orientation, the Hub warns you that the pictures will be cropped or scaled.
 
 Use **Generate now** in the collection to make a first picture and check the result. Failures (an unreachable service, a refused key) show up on the collection.
 
 ## 3. Show it on a Canvas
 
-Use the collection in a schedule like any other. Frames show the newest picture they have not displayed yet.
+Use the collection in a schedule like any other. Each Canvas shows the newest picture it has not displayed yet.
 
 The Hub starts generating ten minutes before a Canvas is due to change, whatever the mode (push or pull), and tries again every five minutes if it fails. If it keeps failing, the Canvas shows an older picture from the collection instead.
 
@@ -58,7 +72,12 @@ Generation has to finish before the Canvas wakes. A few minutes is fine. If your
 
 ## Storage
 
-By default the Hub keeps the **20 newest** pictures of each AI collection and takes older ones out of it. Change this under the collection's **Settings** (*Pictures to keep*); `0` keeps everything. A picture that is currently on a Canvas is never taken out. A picture you also added to another collection (a favourite, say) stays in that collection; it is only deleted when no collection has it any more.
+Every generated picture is stored on the Hub. By default the Hub keeps the **20 newest** pictures of each AI collection and takes older ones out of it. Change this under the collection's **Settings** (*Pictures to keep*); `0` keeps everything.
+
+- The picture a Canvas is showing right now (or is about to receive) stays until the Canvas changes to another one.
+- A picture you also added to another collection (a favourite, say) stays in that collection. It is only deleted from the Hub when no collection has it any more.
+
+This setting is about the Hub's storage. What a Canvas keeps in its own memory follows the Canvas's own settings.
 
 ## Good to know
 
