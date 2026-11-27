@@ -1,21 +1,31 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
-import { Fingerprint } from 'lucide-react';
+import { Fingerprint, Moon, Sun } from 'lucide-react';
 import { api } from '../lib/api';
 import { cancelled, loginWithPasskey, passkeysAvailable } from '../lib/passkeys';
 import { languages, useI18n, type Lang } from '../i18n';
-import { Logo } from '../components/Layout';
+import { Logo, useTheme } from '../components/Layout';
 import { Button, inputClass } from '../components/ui';
 import { Select } from '../components/Select';
 
 /** The card shared by the login and invite screens. */
 export function AuthCard({ title, hint, children, onSubmit }: { title: string; hint: ReactNode; children: ReactNode; onSubmit: (e: FormEvent) => void }) {
   const { t, lang, setLang } = useI18n();
+  const [theme, toggleTheme] = useTheme();
   return (
     <div className="flex min-h-dvh items-center justify-center px-4">
       <form onSubmit={onSubmit} className="w-full max-w-sm rounded-[32px] border border-line/60 bg-surface p-8 shadow-lift">
         <div className="flex items-start justify-between gap-3">
           <Logo />
-          <div>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="rounded-full p-2 text-muted transition hover:bg-line/40 hover:text-ink"
+              aria-label={t('layout.toggle_theme')}
+              title={t(theme === 'dark' ? 'layout.light_theme' : 'layout.dark_theme')}
+            >
+              {theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
+            </button>
             <Select
               aria-label={t('settings.language')}
               value={lang}
