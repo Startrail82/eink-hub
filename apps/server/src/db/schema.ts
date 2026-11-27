@@ -18,6 +18,8 @@ export interface DisplayOptions {
   showLocation?: LocationMode;
   /** Leave the country out of the location when it is the hub's home country (Settings). */
   hideHomeCountry?: boolean;
+  /** Draw the weather at the Canvas's location (or the hub's): now, or this many hours ahead. */
+  weatherBar?: { hours: number };
 }
 
 /** Per-kind settings that don't deserve a column. */
@@ -178,6 +180,10 @@ export const assignments = sqliteTable('assignments', {
   hideHomeCountry: integer('hide_home_country', { mode: 'boolean' }).notNull().default(false),
   /** Only pick pictures that suit the Canvas: upright ones for a portrait Canvas, wide ones for a landscape one. */
   matchOrientation: integer('match_orientation', { mode: 'boolean' }).notNull().default(false),
+  /** Draw the weather (low, high, chance of rain, sky) on the picture. */
+  weatherBar: integer('weather_bar', { mode: 'boolean' }).notNull().default(false),
+  /** How many hours ahead the weather bar looks; 0 is now. */
+  weatherHours: integer('weather_hours').notNull().default(0),
   enabled: integer('enabled', { mode: 'boolean' }).notNull().default(true),
   lastChange: integer('last_change'),
 });

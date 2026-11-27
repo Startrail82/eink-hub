@@ -1095,7 +1095,7 @@ paths:
       tags: [Schedules]
       summary: Change a schedule
       description: |
-        Fields left out keep their value for `showLocation`, `hideHomeCountry`, `matchOrientation` and `enabled`;
+        Fields left out keep their value for `showLocation`, `hideHomeCountry`, `matchOrientation`, `weatherBar`, `weatherHours` and `enabled`;
         the rest go back to their defaults. A new collection changes the picture right away, new timing starts counting
         from now, anything else keeps the pending change time.
       security: [{ session: [] }]
@@ -1724,6 +1724,8 @@ components:
         showLocation: { $ref: '#/components/schemas/LocationMode' }
         hideHomeCountry: { type: boolean }
         matchOrientation: { type: boolean, description: 'Only pick photos that suit the way the frame hangs; if none fit, all are used' }
+        weatherBar: { type: boolean, description: "Draw the weather (low, high, chance of rain, sky) at the Canvas's location, or the hub's, bottom right" }
+        weatherHours: { type: integer, minimum: 0, maximum: 47, default: 0, description: 'Hours ahead the weather bar looks; 0 is now' }
         enabled: { type: boolean, default: true }
     Assignment:
       allOf:

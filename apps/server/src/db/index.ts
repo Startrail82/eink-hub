@@ -243,6 +243,11 @@ export const migrations: string[] = [
   `
   ALTER TABLE assignments ADD COLUMN match_orientation INTEGER NOT NULL DEFAULT 0;
   `,
+  // v15: a schedule can draw the weather (low, high, chance of rain, sky) on the picture, now or some hours ahead.
+  `
+  ALTER TABLE assignments ADD COLUMN weather_bar INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE assignments ADD COLUMN weather_hours INTEGER NOT NULL DEFAULT 0;
+  `,
 ];
 
 function migrate(sqlite: Database.Database) {
