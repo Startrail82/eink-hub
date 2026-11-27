@@ -248,6 +248,7 @@ export const en: Messages = {
   'weather.provider': 'Weather source',
   'weather.key': 'API key',
   'weather.now': 'Now at {place}: {temp}°, low {low}°, high {high}°',
+  'weather.now_simple': 'Now at {place}: {temp}°',
   'weather.rain': '{n}% chance of rain',
   'weather.no_location': 'Choose a location above to see the weather there.',
   'settings.location_legacy': 'Home country: {country}. Pick a location to replace it.',

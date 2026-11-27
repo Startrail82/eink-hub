@@ -248,6 +248,7 @@ export const pt: Catalogue = {
   'weather.provider': 'Fonte meteorológica',
   'weather.key': 'Chave API',
   'weather.now': 'Agora em {place}: {temp}°, mín. {low}°, máx. {high}°',
+  'weather.now_simple': 'Agora em {place}: {temp}°',
   'weather.rain': '{n}% de probabilidade de chuva',
   'weather.no_location': 'Escolhe acima uma localização para ver o tempo.',
   'settings.location_legacy': 'País de origem: {country}. Escolha uma localização para o substituir.',

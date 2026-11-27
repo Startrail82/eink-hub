@@ -248,6 +248,7 @@ export const nl: Catalogue = {
   'weather.provider': 'Weerbron',
   'weather.key': 'API-sleutel',
   'weather.now': 'Nu in {place}: {temp}°, min {low}°, max {high}°',
+  'weather.now_simple': 'Nu in {place}: {temp}°',
   'weather.rain': '{n}% kans op regen',
   'weather.no_location': 'Kies hierboven een locatie om het weer daar te zien.',
   'settings.location_legacy': 'Thuisland: {country}. Kies een locatie om het te vervangen.',

@@ -248,6 +248,7 @@ export const zh: Catalogue = {
   'weather.provider': '天气来源',
   'weather.key': 'API 密钥',
   'weather.now': '现在 {place}：{temp}°，最低 {low}°，最高 {high}°',
+  'weather.now_simple': '{place}当前：{temp}°',
   'weather.rain': '降雨概率 {n}%',
   'weather.no_location': '请在上方选择位置以查看当地天气。',
   'settings.location_legacy': '本国：{country}。选择一个位置来替换它。',

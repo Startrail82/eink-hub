@@ -256,6 +256,7 @@ export const cs: Catalogue = {
   'weather.provider': 'Zdroj počasí',
   'weather.key': 'Klíč API',
   'weather.now': 'Nyní v {place}: {temp}°, min {low}°, max {high}°',
+  'weather.now_simple': 'Nyní v {place}: {temp}°',
   'weather.rain': '{n} % pravděpodobnost deště',
   'weather.no_location': 'Nahoře vyber místo, abys viděl počasí.',
   'settings.location_legacy': 'Domovská země: {country}. Vyberte polohu, která ji nahradí.',

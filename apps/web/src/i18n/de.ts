@@ -248,6 +248,7 @@ export const de: Catalogue = {
   'weather.provider': 'Wetterquelle',
   'weather.key': 'API-Schlüssel',
   'weather.now': 'Jetzt in {place}: {temp}°, Tief {low}°, Hoch {high}°',
+  'weather.now_simple': 'Jetzt in {place}: {temp}°',
   'weather.rain': '{n} % Regenwahrscheinlichkeit',
   'weather.no_location': 'Wähle oben einen Standort, um das Wetter dort zu sehen.',
   'settings.location_legacy': 'Heimatland: {country}. Wähle einen Standort, um es zu ersetzen.',

@@ -56,6 +56,17 @@ describe('Open-Meteo to the neutral forecast', () => {
     expect(f.daily[1]).toEqual({ date: '2026-11-24', code: 71, high: 4.2, low: -1.4, rain: 20, sunrise: '2026-11-24T08:02', sunset: '2026-11-24T16:44' });
   });
 
+  it('skips the hours Open-Meteo has no value for, and refuses a current weather without one', () => {
+    const a = openMeteoAnswer('2026-11-23T06:50');
+    (a.hourly.temperature_2m as (number | null)[])[3] = null;
+    (a.hourly.weather_code as (number | null)[])[4] = null;
+    const f = forecastFromOpenMeteo(a);
+    expect(f.hourly).toHaveLength(46);
+    expect(f.hourly.some((h) => h.time === '2026-11-23T03:00' || h.time === '2026-11-23T04:00')).toBe(false);
+    expect(() => forecastFromOpenMeteo({ current: { time: 'x', temperature_2m: null, weather_code: 3 } })).toThrow('no current weather');
+    expect(() => forecastFromOpenMeteo({ current: { time: 'x', temperature_2m: 5, weather_code: null } })).toThrow('no current weather');
+  });
+
   it('throws a readable error without current weather', () => {
     expect(() => forecastFromOpenMeteo({})).toThrow(WeatherError);
     expect(() => forecastFromOpenMeteo({ current: { time: 'x' } })).toThrow('no current weather');
@@ -152,6 +163,37 @@ describe('provider choice', () => {
   });
 });
 
+describe('cache', () => {
+  it('shares a fetch that is already under way, and tries again after a failure', async () => {
+    let calls = 0;
+    let fail = true;
+    const slow: Provider = {
+      id: 'slow',
+      name: 'Slow',
+      key: 'none',
+      fetch: async () => {
+        calls++;
+        await new Promise((r) => setTimeout(r, 20));
+        if (fail) throw new WeatherError('down');
+        return forecastFromOpenMeteo(openMeteoAnswer('2026-11-23T06:50'));
+      },
+    };
+    weatherProviders.push(slow);
+    try {
+      const place = { latitude: 51.16, longitude: 4.49 };
+      const cfg = { provider: 'slow', apiKey: '' };
+      const failed = await Promise.allSettled([fetchForecast(place, cfg, 1_000), fetchForecast(place, cfg, 1_000), fetchForecast(place, cfg, 1_000)]);
+      expect(calls).toBe(1);
+      expect(failed.map((r) => r.status)).toEqual(['rejected', 'rejected', 'rejected']);
+      fail = false;
+      await Promise.all([fetchForecast(place, cfg, 2_000), fetchForecast(place, cfg, 2_000)]);
+      expect(calls).toBe(2);
+    } finally {
+      weatherProviders.pop();
+    }
+  });
+});
+
 describe('API', () => {
   let app: Awaited<ReturnType<typeof buildApp>>['app'];
   beforeAll(async () => {
@@ -163,7 +205,14 @@ describe('API', () => {
     const res = (await app.inject({ url: '/api/settings/weather' })).json();
     expect(res).toMatchObject({ provider: 'open-meteo', apiKeySet: false, providers: [{ id: 'open-meteo', name: 'Open-Meteo', key: 'none' }] });
     expect(res).not.toHaveProperty('apiKey');
-    expect((await app.inject({ method: 'PUT', url: '/api/settings/weather', payload: { provider: 'nonsense' } })).json()).toEqual({ ok: false });
+  });
+
+  it('answers 400 for an unknown provider, and ignores a key that is not text', async () => {
+    const bad = await app.inject({ method: 'PUT', url: '/api/settings/weather', payload: { provider: 'nonsense' } });
+    expect(bad.statusCode).toBe(400);
+    const odd = await app.inject({ method: 'PUT', url: '/api/settings/weather', payload: { provider: 'open-meteo', apiKey: 123 } });
+    expect(odd.statusCode).toBe(200);
+    expect((await app.inject({ url: '/api/settings/weather' })).json().apiKeySet).toBe(false);
   });
 
   it('shows the weather at the hub location, or why it cannot', async () => {

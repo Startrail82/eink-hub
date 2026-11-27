@@ -55,7 +55,7 @@ function LanguageSettings() {
 function HubLocationSettings() {
   const { t } = useI18n();
   const settings = useSettings();
-  const save = useAction((location: Place | null) => api.put('/api/settings', { location }), { success: t('common.saved'), invalidate: [['settings']] });
+  const save = useAction((location: Place | null) => api.put('/api/settings', { location }), { success: t('common.saved'), invalidate: [['settings'], ['weather']] });
   const legacy = !settings.data?.location && settings.data?.homeCountry;
   return (
     <Card className="p-6">

@@ -1,13 +1,13 @@
 import { WeatherError, type WeatherDay, type WeatherForecast, type WeatherHour, type WeatherProvider } from './provider.js';
 
 interface OpenMeteo {
-  current?: { time?: string; temperature_2m?: number; weather_code?: number; is_day?: number; wind_speed_10m?: number };
+  current?: { time?: string; temperature_2m?: number | null; weather_code?: number | null; is_day?: number | null; wind_speed_10m?: number | null };
   hourly?: {
     time?: string[];
-    temperature_2m?: number[];
-    weather_code?: number[];
-    is_day?: number[];
-    wind_speed_10m?: number[];
+    temperature_2m?: (number | null)[];
+    weather_code?: (number | null)[];
+    is_day?: (number | null)[];
+    wind_speed_10m?: (number | null)[];
     precipitation_probability?: (number | null)[];
   };
   daily?: {
@@ -24,13 +24,13 @@ interface OpenMeteo {
 /** Open-Meteo's answer as the neutral forecast. Its weather codes already are WMO codes. */
 export function forecastFromOpenMeteo(w: OpenMeteo): WeatherForecast {
   const c = w.current;
-  if (!c || c.weather_code === undefined || c.temperature_2m === undefined || !c.time) throw new WeatherError('Open-Meteo returned no current weather');
+  if (!c || c.weather_code == null || c.temperature_2m == null || !c.time) throw new WeatherError('Open-Meteo returned no current weather');
   const h = w.hourly;
   const hourly: WeatherHour[] = [];
   for (const [i, time] of (h?.time ?? []).entries()) {
     const code = h?.weather_code?.[i];
     const temperature = h?.temperature_2m?.[i];
-    if (code === undefined || temperature === undefined) continue;
+    if (code == null || temperature == null) continue;
     hourly.push({ time, code, temperature, wind: h?.wind_speed_10m?.[i] ?? null, isDay: h?.is_day?.[i] !== 0, rain: h?.precipitation_probability?.[i] ?? null });
   }
   const d = w.daily;

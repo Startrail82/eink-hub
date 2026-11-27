@@ -248,6 +248,7 @@ export const ca: Catalogue = {
   'weather.provider': 'Font del temps',
   'weather.key': 'Clau API',
   'weather.now': 'Ara a {place}: {temp}°, mín. {low}°, màx. {high}°',
+  'weather.now_simple': 'Ara a {place}: {temp}°',
   'weather.rain': '{n}% de probabilitat de pluja',
   'weather.no_location': 'Tria una ubicació a dalt per veure el temps.',
   'settings.location_legacy': 'País d’origen: {country}. Tria una ubicació per substituir-lo.',

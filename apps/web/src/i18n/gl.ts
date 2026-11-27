@@ -248,6 +248,7 @@ export const gl: Catalogue = {
   'weather.provider': 'Fonte do tempo',
   'weather.key': 'Chave API',
   'weather.now': 'Agora en {place}: {temp}°, mín. {low}°, máx. {high}°',
+  'weather.now_simple': 'Agora en {place}: {temp}°',
   'weather.rain': '{n}% de probabilidade de chuvia',
   'weather.no_location': 'Escolle arriba unha localización para ver o tempo.',
   'settings.location_legacy': 'País de orixe: {country}. Escolle unha localización para substituílo.',

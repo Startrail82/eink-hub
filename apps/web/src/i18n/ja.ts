@@ -248,6 +248,7 @@ export const ja: Catalogue = {
   'weather.provider': '天気のソース',
   'weather.key': 'APIキー',
   'weather.now': '現在の{place}: {temp}°、最低 {low}°、最高 {high}°',
+  'weather.now_simple': '現在の{place}：{temp}°',
   'weather.rain': '降水確率 {n}%',
   'weather.no_location': '上で場所を選ぶと、その場所の天気が表示されます。',
   'settings.location_legacy': '自国: {country}。場所を選ぶとこれに置き換わります。',

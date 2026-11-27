@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { setSetting } from '../db/index.js';
-import type { Ctx } from '../lib/context.js';
+
+import { HttpError, type Ctx } from '../lib/context.js';
 import { hubLocation } from '../lib/location.js';
 import { fetchSnapshot, saveWeatherConfig, weatherConfig, weatherProviders, WeatherError, type WeatherConfig } from '../lib/weather/index.js';
 
@@ -15,8 +16,8 @@ export function weatherRoutes(app: FastifyInstance, ctx: Ctx) {
 
   app.put<{ Body: Partial<WeatherConfig> }>('/api/settings/weather', async (req) => {
     const b = req.body ?? {};
-    if (b.provider !== undefined && !weatherProviders.some((p) => p.id === b.provider)) return { ok: false };
-    saveWeatherConfig(db, b.apiKey ? b : { provider: b.provider });
+    if (b.provider !== undefined && !weatherProviders.some((p) => p.id === b.provider)) throw new HttpError(400, 'weather_provider_unknown', { provider: String(b.provider) });
+    saveWeatherConfig(db, typeof b.apiKey === 'string' && b.apiKey ? { provider: b.provider, apiKey: b.apiKey } : { provider: b.provider });
     return { ok: true };
   });
 

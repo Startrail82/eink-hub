@@ -256,6 +256,7 @@ export const ru: Catalogue = {
   'weather.provider': 'Источник погоды',
   'weather.key': 'Ключ API',
   'weather.now': 'Сейчас в {place}: {temp}°, мин. {low}°, макс. {high}°',
+  'weather.now_simple': 'Сейчас в {place}: {temp}°',
   'weather.rain': 'Вероятность дождя {n}%',
   'weather.no_location': 'Выбери местоположение выше, чтобы увидеть погоду.',
   'settings.location_legacy': 'Родная страна: {country}. Выберите местоположение, чтобы заменить её.',

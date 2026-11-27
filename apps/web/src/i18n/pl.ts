@@ -256,6 +256,7 @@ export const pl: Catalogue = {
   'weather.provider': 'Źródło pogody',
   'weather.key': 'Klucz API',
   'weather.now': 'Teraz w {place}: {temp}°, min {low}°, max {high}°',
+  'weather.now_simple': 'Teraz w {place}: {temp}°',
   'weather.rain': '{n}% szans na deszcz',
   'weather.no_location': 'Wybierz powyżej lokalizację, aby zobaczyć pogodę.',
   'settings.location_legacy': 'Kraj ojczysty: {country}. Wybierz lokalizację, aby go zastąpić.',

@@ -248,6 +248,7 @@ export const eu: Messages = {
   'weather.provider': 'Eguraldi-iturria',
   'weather.key': 'API gakoa',
   'weather.now': 'Orain {place}: {temp}°, min {low}°, max {high}°',
+  'weather.now_simple': 'Orain {place} hirian: {temp}°',
   'weather.rain': 'Euri-probabilitatea %{n}',
   'weather.no_location': 'Aukeratu goian kokaleku bat eguraldia ikusteko.',
   'settings.location_legacy': 'Jatorrizko herrialdea: {country}. Aukeratu kokapen bat hura ordezkatzeko.',

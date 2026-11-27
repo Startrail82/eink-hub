@@ -50,7 +50,7 @@ export function WeatherSettings() {
             {!now.data.place
               ? t('weather.no_location')
               : w
-                ? `${t('weather.now', { place: now.data.place.name, temp: Math.round(w.temperature), low: Math.round(w.low ?? w.temperature), high: Math.round(w.high ?? w.temperature) })}${w.rain === null ? '' : ` · ${t('weather.rain', { n: Math.round(w.rain) })}`}`
+                ? `${w.low == null || w.high == null ? t('weather.now_simple', { place: now.data.place.name, temp: Math.round(w.temperature) }) : t('weather.now', { place: now.data.place.name, temp: Math.round(w.temperature), low: Math.round(w.low), high: Math.round(w.high) })}${w.rain === null ? '' : ` · ${t('weather.rain', { n: Math.round(w.rain) })}`}`
                 : now.data.error}
           </p>
         )}

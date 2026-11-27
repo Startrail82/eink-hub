@@ -248,6 +248,7 @@ export const zhTW: Catalogue = {
   'weather.provider': '天氣來源',
   'weather.key': 'API 金鑰',
   'weather.now': '現在 {place}：{temp}°，最低 {low}°，最高 {high}°',
+  'weather.now_simple': '{place}目前：{temp}°',
   'weather.rain': '降雨機率 {n}%',
   'weather.no_location': '請在上方選擇位置以查看當地天氣。',
   'settings.location_legacy': '本國：{country}。選擇一個位置來取代它。',

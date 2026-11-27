@@ -248,6 +248,7 @@ export const ko: Catalogue = {
   'weather.provider': '날씨 소스',
   'weather.key': 'API 키',
   'weather.now': '지금 {place}: {temp}°, 최저 {low}°, 최고 {high}°',
+  'weather.now_simple': '현재 {place}: {temp}°',
   'weather.rain': '강수 확률 {n}%',
   'weather.no_location': '위에서 위치를 선택하면 그곳의 날씨를 볼 수 있습니다.',
   'settings.location_legacy': '자국: {country}. 위치를 선택하면 이를 대체합니다.',

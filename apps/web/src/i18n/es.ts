@@ -247,6 +247,7 @@ export const es = {
   'weather.provider': 'Fuente del tiempo',
   'weather.key': 'Clave API',
   'weather.now': 'Ahora en {place}: {temp}°, mín. {low}°, máx. {high}°',
+  'weather.now_simple': 'Ahora en {place}: {temp}°',
   'weather.rain': '{n} % de probabilidad de lluvia',
   'weather.no_location': 'Elige arriba una ubicación para ver el tiempo allí.',
   'settings.location_legacy': 'País de origen: {country}. Elige una ubicación para sustituirlo.',

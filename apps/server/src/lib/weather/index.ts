@@ -40,10 +40,13 @@ export interface Coordinates {
 }
 
 const cache = new Map<string, { at: number; value: WeatherForecast }>();
+/** Fetches under way, so Canvases waking together share one request instead of one each. */
+const pending = new Map<string, Promise<WeatherForecast>>();
 const TTL_MS = 15 * 60_000;
 
 export function clearWeatherCache() {
   cache.clear();
+  pending.clear();
 }
 
 /**
@@ -56,9 +59,19 @@ export async function fetchForecast(place: Coordinates, cfg: WeatherConfig, now 
   const key = `${provider.id},${place.latitude.toFixed(3)},${place.longitude.toFixed(3)}`;
   const hit = cache.get(key);
   if (hit && now - hit.at < TTL_MS) return hit.value;
-  const value = await provider.fetch({ latitude: place.latitude, longitude: place.longitude, apiKey: cfg.apiKey });
-  cache.set(key, { at: now, value });
-  return value;
+  // Expired entries are dropped, so the cache does not grow with every place ever asked for.
+  cache.delete(key);
+  const busy = pending.get(key);
+  if (busy) return busy;
+  const request = provider
+    .fetch({ latitude: place.latitude, longitude: place.longitude, apiKey: cfg.apiKey })
+    .then((value) => {
+      cache.set(key, { at: now, value });
+      return value;
+    })
+    .finally(() => pending.delete(key));
+  pending.set(key, request);
+  return request;
 }
 
 /** The weather at a place, now or `hours` ahead (0 to 47). */
