@@ -650,4 +650,5 @@ export const ko: Catalogue = {
   'ai.panel': '화면 종류',
   'ai.panel_hint': '이미지는 이 화면 종류와 방향에 맞게 생성됩니다.',
   'ai.mismatch': '이 컬렉션은 {made}용 이미지를 만들지만, 이 Canvas는 {frame}입니다. 이미지가 잘리거나 크기가 조정됩니다.',
+  'ai.pick_hint': '이미지마다 선택지 중 하나를 무작위로 고릅니다. 예: {pick: 산 | 해안 | 숲}. 클릭하여 복사.',
 };

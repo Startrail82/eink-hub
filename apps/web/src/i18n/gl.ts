@@ -650,4 +650,5 @@ export const gl: Catalogue = {
   'ai.panel': 'Tipo de pantalla',
   'ai.panel_hint': 'As imaxes xéranse para este tipo de pantalla e esta orientación.',
   'ai.mismatch': 'Esta colección crea imaxes para {made}, pero este Canvas é {frame}. As imaxes recortaranse ou escalaranse.',
+  'ai.pick_hint': 'Escolle unha opción ao chou en cada imaxe, por exemplo {pick: montañas | costa | bosque}. Preme para copiar.',
 };

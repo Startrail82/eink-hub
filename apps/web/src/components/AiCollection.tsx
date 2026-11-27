@@ -11,12 +11,13 @@ const DEFAULT_KEEP = 20;
 
 /** Placeholders each source fills in (see the server's lib/ai/sources). */
 const TAGS: Record<AiSource, string[]> = {
-  prompt: ['date', 'time', 'season'],
-  rss: ['title', 'description', 'date', 'time', 'season'],
+  prompt: ['pick', 'date', 'time', 'season'],
+  rss: ['pick', 'title', 'description', 'date', 'time', 'season'],
 };
 
 /** What each placeholder becomes, shown next to it. */
 const TAG_HINT: Record<string, MsgKey> = {
+  pick: 'ai.pick_hint',
   date: 'ai.tag_date',
   time: 'ai.tag_time',
   season: 'ai.tag_season',
@@ -35,9 +36,9 @@ function TagChips({ tags, onPick }: { tags: string[]; onPick: (tag: string) => v
             type="button"
             title={t('ai.tag_insert')}
             className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2.5 py-1 font-mono text-xs text-ink-2 transition hover:bg-accent/10 hover:text-accent"
-            onClick={() => onPick(`{${tag}}`)}
+            onClick={() => onPick(tag === 'pick' ? '{pick: one | two | three}' : `{${tag}}`)}
           >
-            {`{${tag}}`}
+            {tag === 'pick' ? '{pick: … | …}' : `{${tag}}`}
           </button>
           {t(TAG_HINT[tag])}
         </li>

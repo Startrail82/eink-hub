@@ -666,4 +666,5 @@ export const pl: Catalogue = {
   'ai.panel': 'Typ ekranu',
   'ai.panel_hint': 'Obrazy są generowane dla tego typu ekranu i tej orientacji.',
   'ai.mismatch': 'Ta kolekcja tworzy obrazy dla {made}, ale ten Canvas to {frame}. Obrazy zostaną przycięte lub przeskalowane.',
+  'ai.pick_hint': 'Losuje jedną opcję dla każdego obrazu, na przykład {pick: góry | wybrzeże | las}. Kliknij, aby skopiować.',
 };

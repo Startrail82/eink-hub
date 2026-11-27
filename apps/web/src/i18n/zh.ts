@@ -650,4 +650,5 @@ export const zh: Catalogue = {
   'ai.panel': '屏幕类型',
   'ai.panel_hint': '图片将按此屏幕类型和方向生成。',
   'ai.mismatch': '此图集按 {made} 生成图片，但此 Canvas 为 {frame}。图片将被裁剪或缩放。',
+  'ai.pick_hint': '每张图片随机选取一个选项，例如 {pick: 山 | 海岸 | 森林}。点击复制。',
 };

@@ -649,6 +649,7 @@ export const es = {
   'ai.panel': 'Tipo de pantalla',
   'ai.panel_hint': 'Las imágenes se generan para este tipo de pantalla y esta orientación.',
   'ai.mismatch': 'Esta colección crea imágenes para {made}, pero este Canvas es {frame}. Las imágenes se recortarán o escalarán.',
+  'ai.pick_hint': 'Elige una opción al azar en cada imagen, por ejemplo {pick: montañas | costa | bosque}. Clic para copiar.',
 };
 
 export type Messages = Record<keyof typeof es, string>;

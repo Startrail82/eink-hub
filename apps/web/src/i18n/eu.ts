@@ -650,4 +650,5 @@ export const eu: Messages = {
   'ai.panel': 'Pantaila mota',
   'ai.panel_hint': 'Irudiak pantaila mota eta norabide honetarako sortzen dira.',
   'ai.mismatch': 'Bilduma honek {made} motarako sortzen ditu irudiak, baina Canvas hau {frame} da. Irudiak moztu edo eskalatu egingo dira.',
+  'ai.pick_hint': 'Aukeretako bat ausaz hautatzen du irudi bakoitzeko, adibidez {pick: mendiak | kostaldea | basoa}. Egin klik kopiatzeko.',
 };

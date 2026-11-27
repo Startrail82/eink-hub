@@ -650,4 +650,5 @@ export const fr: Catalogue = {
   'ai.panel': 'Type d’écran',
   'ai.panel_hint': 'Les images sont générées pour ce type d\'écran et cette orientation.',
   'ai.mismatch': 'Cette collection crée des images pour {made}, mais ce Canvas est {frame}. Les images seront recadrées ou mises à l’échelle.',
+  'ai.pick_hint': 'Choisit une option au hasard pour chaque image, par exemple {pick: montagnes | côte | forêt}. Clique pour copier.',
 };

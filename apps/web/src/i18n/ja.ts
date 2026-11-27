@@ -650,4 +650,5 @@ export const ja: Catalogue = {
   'ai.panel': '画面の種類',
   'ai.panel_hint': '画像はこの画面タイプと向きに合わせて生成されます。',
   'ai.mismatch': 'このコレクションは {made} 向けの画像を作成しますが、この Canvas は {frame} です。画像はトリミングまたは拡大縮小されます。',
+  'ai.pick_hint': '画像ごとに選択肢の1つをランダムに選びます。例：{pick: 山 | 海岸 | 森}。クリックでコピー。',
 };
