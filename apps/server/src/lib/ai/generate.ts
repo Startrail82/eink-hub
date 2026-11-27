@@ -6,6 +6,9 @@ import type { Ctx } from '../context.js';
 import { deleteImage, saveLocalUpload } from '../images.js';
 import { AiError, generateImage } from './providers.js';
 import { aiConfig, aiConfigured } from './settings.js';
+import { usesWeather, weatherVars } from './weather.js';
+import { frameLocation } from '../location.js';
+import { cleanOffset, fetchSnapshot, WeatherError, weatherConfig } from '../weather/index.js';
 import { commonVars, fetchFeed, fillTemplate, nextFeedItem, type PromptVars } from './sources.js';
 
 export const aiSources = ['prompt', 'rss'] as const;
@@ -17,6 +20,8 @@ export interface AiCollectionConfig {
   /** Prompt text; {title}, {description}, {date}, {time}, {season} are filled in. Empty = a default. */
   prompt: string;
   feedUrl: string;
+  /** Hours ahead the weather placeholders are for (0 = now, up to 47). */
+  weatherOffset: number;
   /** How many generated pictures to keep; 0 = keep them all. */
   keep: number;
   /** Panel resolution to generate for, "shortxlong" (e.g. "1200x1600"). Null = follow the first frame showing the collection. */
@@ -37,6 +42,7 @@ export function collectionConfig(c: Collection): AiCollectionConfig {
     source: (aiSources as readonly string[]).includes(raw.source ?? '') ? (raw.source as AiSource) : 'prompt',
     prompt: typeof raw.prompt === 'string' ? raw.prompt : '',
     feedUrl: typeof raw.feedUrl === 'string' ? raw.feedUrl.trim() : '',
+    weatherOffset: cleanOffset(raw.weatherOffset),
     keep: Number.isInteger(keep) && keep >= 0 ? keep : DEFAULT_KEEP,
     panel: typeof raw.panel === 'string' && /^\d{2,5}x\d{2,5}$/.test(raw.panel) ? raw.panel : null,
     orientation: raw.orientation === 'landscape' ? 'landscape' : 'portrait',
@@ -86,10 +92,11 @@ export function forgetState(db: DB, id: number) {
 // --- Prompt ---------------------------------------------------------------------------------
 
 /** The prompt for the next picture, plus the feed item it is about (to remember it afterwards). */
-export async function buildPrompt(cfg: AiCollectionConfig, seen: string[]): Promise<{ prompt: string; itemId?: string }> {
-  const vars: PromptVars = commonVars();
-  if (cfg.source === 'prompt') return { prompt: fillTemplate(cfg.prompt, vars) };
-  const template = cfg.prompt.trim() || DEFAULT_PROMPTS[cfg.source];
+export async function buildPrompt(cfg: AiCollectionConfig, seen: string[], weather?: () => Promise<PromptVars>): Promise<{ prompt: string; itemId?: string }> {
+  const template = cfg.source === 'prompt' ? cfg.prompt : cfg.prompt.trim() || DEFAULT_PROMPTS[cfg.source];
+  // The weather is only asked for when the prompt uses it.
+  const vars: PromptVars = { ...commonVars(), ...(weather && usesWeather(template) ? await weather() : {}) };
+  if (cfg.source === 'prompt') return { prompt: fillTemplate(template, vars) };
   const items = await fetchFeed(cfg.feedUrl);
   // Everything illustrated already? Start over with the newest rather than showing nothing new.
   const item = nextFeedItem(items, seen) ?? items[0];
@@ -150,8 +157,19 @@ export async function generateFor(ctx: Ctx, collectionId: number): Promise<boole
     const cfg = collectionConfig(c);
     validateCollectionConfig(cfg);
     const state = aiState(ctx.db, c.id);
-    const { prompt, itemId } = await buildPrompt(cfg, state.seen);
-    const buf = await generateImage(provider, prompt, sizeFor(cfg, framesOf(ctx.db, c.id)[0]));
+    const frame = framesOf(ctx.db, c.id)[0];
+    const { prompt, itemId } = await buildPrompt(cfg, state.seen, async () => {
+      // The weather of the first Canvas that shows the collection (its own location, or the hub's).
+      const place = frameLocation(ctx.db, frame);
+      if (!place) throw new AiError('The weather needs a location: set one under Settings > Location');
+      try {
+        return weatherVars(await fetchSnapshot(place, weatherConfig(ctx.db), cfg.weatherOffset));
+      } catch (err) {
+        if (err instanceof WeatherError) throw new AiError(err.message);
+        throw err;
+      }
+    });
+    const buf = await generateImage(provider, prompt, sizeFor(cfg, frame));
     const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
     const img = await saveLocalUpload(ctx.db, buf, `ai-${c.id}-${stamp}.png`);
     addItems(ctx.db, c.id, [img.id]);

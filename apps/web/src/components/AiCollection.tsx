@@ -10,9 +10,10 @@ import { useAiSettings } from './AiSettings';
 const DEFAULT_KEEP = 20;
 
 /** Placeholders each source fills in (see the server's lib/ai/sources). */
+const WEATHER_TAGS = ['condition', 'temperature', 'high', 'low', 'wind', 'daypart', 'sunrise', 'sunset'];
 const TAGS: Record<AiSource, string[]> = {
-  prompt: ['date', 'time', 'season'],
-  rss: ['title', 'description', 'date', 'time', 'season'],
+  prompt: [...WEATHER_TAGS, 'date', 'time', 'season'],
+  rss: ['title', 'description', ...WEATHER_TAGS, 'date', 'time', 'season'],
 };
 
 /** What each placeholder becomes, shown next to it. */
@@ -22,6 +23,14 @@ const TAG_HINT: Record<string, MsgKey> = {
   season: 'ai.tag_season',
   title: 'ai.tag_title',
   description: 'ai.tag_description',
+  condition: 'ai.tag_condition',
+  temperature: 'ai.tag_temperature',
+  high: 'ai.tag_high',
+  low: 'ai.tag_low',
+  wind: 'ai.tag_wind',
+  daypart: 'ai.tag_daypart',
+  sunrise: 'ai.tag_sunrise',
+  sunset: 'ai.tag_sunset',
 };
 
 /** The placeholders with what each one becomes; click one to add it to the prompt. */
@@ -51,6 +60,7 @@ function configOf(c?: Collection): AiCollectionConfig {
   return {
     source: raw.source ?? 'prompt',
     prompt: raw.prompt ?? '',
+    weatherOffset: Math.min(47, Math.max(0, Math.floor(Number(raw.weatherOffset) || 0))),
     feedUrl: raw.feedUrl ?? '',
     keep: raw.keep ?? DEFAULT_KEEP,
     panel: raw.panel ?? null,
@@ -146,6 +156,18 @@ export function AiCollectionDialog({ open, onClose, collection, onCreated }: { o
             <input className={inputClass} placeholder="https://example.org/feed.xml" value={cfg.feedUrl} onChange={(e) => set('feedUrl', e.target.value)} />
           </Field>
         )}
+        <Field label={t('ai.weather_offset')} hint={t('ai.weather_offset_hint')}>
+          <input
+            className={inputClass}
+            type="number"
+            inputMode="numeric"
+            min={0}
+            max={47}
+            step={1}
+            value={cfg.weatherOffset}
+            onChange={(e) => set('weatherOffset', Math.min(47, Math.max(0, Math.floor(Number(e.target.value) || 0))))}
+          />
+        </Field>
         <Field label={t('ai.prompt')} hint={t(hint[cfg.source])} hintFirst group>
           <textarea
             ref={promptRef}

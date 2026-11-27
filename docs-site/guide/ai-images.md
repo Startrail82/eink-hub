@@ -69,12 +69,31 @@ A prompt can contain placeholders. Each time a picture is made, the Hub replaces
 | `{date}` | The day, in English | `Friday 27 November 2026` |
 | `{time}` | The nearest full hour, in the Hub's time zone. A picture is made shortly before the Canvas changes, so this is about the time it goes on screen. | `14:00` |
 | `{season}` | The season, in English. For now it follows the northern hemisphere. | `winter`, `spring`, `summer`, `autumn` |
+| `{condition}` | The weather, the way a picture can show it (see below) | `steady rain, rain streaks falling` |
+| `{daypart}` | The light at the hour of the picture | `sunset, warm glowing sky` |
+| `{temperature}`, `{high}`, `{low}`, `{wind}` | Degrees Celsius and km/h, rounded | `12` |
+| `{sunrise}`, `{sunset}` | That day's times at the location | `07:52` |
 | `{title}` | RSS only: the headline of the feed item | |
 | `{description}` | RSS only: the summary of the feed item, up to 500 characters | |
 
 An unknown placeholder (a typo, say) is left out rather than sent to the generator as is. For example, `A watercolour of a quiet street on a {season} {date}, around {time}` becomes "A watercolour of a quiet street on a winter Friday 27 November 2026, around 14:00".
 
 Choose the **Screen type** and **orientation** the pictures are made for. They are generated at that screen's shape, so they fit without cropping. When you later use the collection on a Canvas with a different resolution or orientation, the Hub warns you that the pictures will be cropped or scaled.
+
+### The weather in a prompt
+
+Any prompt can use the weather. Add one of these placeholders and the Hub fetches the weather for the location of the first Canvas that shows the collection (its own location, or else the hub's under **Settings > Location**), using the source chosen under [Settings > Weather](/guide/weather):
+
+- `{condition}`: the weather the way a picture can show it, for example `steady rain, rain streaks falling, wet glistening ground with puddle reflections`, `snowfall, snowflakes drifting through the air, snow-covered ground` or, by night, `clear sky with a bright moon and stars`.
+- `{daypart}`: `night time, dark night`, `sunrise, soft golden light on the horizon` (within 45 minutes of sunrise), `day time` or `sunset, warm glowing sky` (within 45 minutes of sunset), for the hour of the picture.
+- `{temperature}`, `{high}`, `{low}` and `{wind}`: degrees Celsius and km/h, rounded.
+- `{sunrise}` and `{sunset}`: that day's times at the location.
+
+For example: `A charming illustration of {condition}, {temperature} degrees Celsius, {daypart}, {season}. Soft colours, no text or lettering.` A prompt without these placeholders never asks for the weather.
+
+With **Weather in (hours)** the placeholders are for a later moment: with `4`, a picture made at 06:50 and shown at 07:00 is about the weather at 11:00 (and `{daypart}` is the light of that hour, so a morning picture for the afternoon is not dark). You can look up to 47 hours ahead; `0` is the weather now.
+
+To draw the weather itself on a picture, see the **Weather bar** of a [schedule](/guide/schedules).
 
 Use **Generate now** in the collection to make a first picture and check the result. Failures (an unreachable service, a refused key) show up on the collection.
 

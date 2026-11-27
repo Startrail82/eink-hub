@@ -340,6 +340,8 @@ export interface AiCollectionConfig {
   source: AiSource;
   prompt: string;
   feedUrl: string;
+  /** Hours ahead the weather placeholders are for (0 is now). */
+  weatherOffset: number;
   keep: number;
   /** Panel resolution "shortxlong" the pictures are made for, and how that panel hangs. */
   panel: string | null;

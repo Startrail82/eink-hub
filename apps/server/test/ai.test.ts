@@ -284,6 +284,32 @@ describe('collections end to end', () => {
     expect(aiState(db, col.id).lastGenerated).not.toBeNull();
   });
 
+  it('puts the weather at the hub location into the prompt, or says a location is needed', async () => {
+    setSetting(db, 'ai.provider', 'openai');
+    setSetting(db, 'ai.url', 'http://llm/v1');
+    setSetting(db, 'ai.model', 'm');
+    const prompts: string[] = [];
+    vi.stubGlobal('fetch', async (url: string, init: RequestInit) => {
+      if (String(url).includes('open-meteo')) {
+        const hours = Array.from({ length: 24 }, (_, h) => `2026-11-23T${String(h).padStart(2, '0')}:00`);
+        return jsonRes({
+          current: { time: '2026-11-23T12:10', temperature_2m: 6.4, weather_code: 63, is_day: 1, wind_speed_10m: 12 },
+          hourly: { time: hours, temperature_2m: hours.map(() => 6), weather_code: hours.map(() => 63), is_day: hours.map(() => 1), wind_speed_10m: hours.map(() => 12), precipitation_probability: hours.map(() => 50) },
+          daily: { time: ['2026-11-23'], weather_code: [63], temperature_2m_max: [8], temperature_2m_min: [3], precipitation_probability_max: [70], sunrise: ['2026-11-23T08:00'], sunset: ['2026-11-23T16:45'] },
+        });
+      }
+      prompts.push(JSON.parse(String(init.body)).prompt);
+      return jsonRes({ data: [{ b64_json: png.toString('base64') }] });
+    });
+    const col = addCollection({ source: 'prompt', prompt: 'Weather: {condition}, {temperature} degrees, {daypart}' });
+    setSetting(db, 'location', '');
+    expect(await generateFor({ db, log }, col.id)).toBe(false);
+    expect(db.select().from(schema.collections).all().find((c) => c.id === col.id)!.syncError).toMatch(/needs a location/);
+    setSetting(db, 'location', JSON.stringify({ name: 'Boechout', region: '', country: 'Belgium', countryCode: 'BE', latitude: 51.16, longitude: 4.49 }));
+    expect(await generateFor({ db, log }, col.id)).toBe(true);
+    expect(prompts).toEqual(['Weather: steady rain, rain streaks falling, wet glistening ground with puddle reflections, 6 degrees, day time']);
+  });
+
   it('illustrates each feed item once', async () => {
     const feed = `<rss><channel><item><title>New</title><guid>n</guid><pubDate>Tue, 03 Nov 2026 10:00:00 GMT</pubDate></item><item><title>Old</title><guid>o</guid><pubDate>Mon, 02 Nov 2026 10:00:00 GMT</pubDate></item></channel></rss>`;
     vi.stubGlobal('fetch', async () => new Response(feed));
